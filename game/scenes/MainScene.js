@@ -193,28 +193,33 @@ export default class MainScene extends Phaser.Scene {
     handleClick(pointer) {
         if (!this.selectedBuilding) return;
 
-        let clickedTile = null;
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        
+        // Encontrar o tile mais próximo do clique
+        let minDistance = Infinity;
+        let clickedTile = null;
 
         for (let y = 0; y < this.grid.length; y++) {
             for (let x = 0; x < this.grid[y].length; x++) {
                 const tile = this.grid[y][x];
-                const bounds = tile.getBounds();
-                
-                // Ajusta as coordenadas para considerar a origem do tile
-                const adjustedBounds = new Phaser.Geom.Rectangle(
-                    bounds.x,
-                    bounds.y - (this.tileHeight / 4),
-                    bounds.width,
-                    bounds.height / 2
+                const tileCenter = {
+                    x: tile.x,
+                    y: tile.y - (this.tileHeight / 4) // Ajuste para o centro visual do tile
+                };
+
+                // Calcula a distância entre o ponto do clique e o centro do tile
+                const distance = Phaser.Math.Distance.Between(
+                    worldPoint.x,
+                    worldPoint.y,
+                    tileCenter.x,
+                    tileCenter.y
                 );
 
-                if (adjustedBounds.contains(worldPoint.x, worldPoint.y)) {
+                if (distance < minDistance && distance < this.tileWidth) {
+                    minDistance = distance;
                     clickedTile = tile;
-                    break;
                 }
             }
-            if (clickedTile) break;
         }
 
         if (clickedTile && !this.buildingGrid[`${clickedTile.data.gridX},${clickedTile.data.gridY}`]) {
@@ -234,7 +239,13 @@ export default class MainScene extends Phaser.Scene {
         const key = `${gridX},${gridY}`;
         
         // Verifica se a posição é válida e está livre
-        if (this.buildingGrid[key] || !this.isValidGridPosition(gridX, gridY)) {
+        if (!this.isValidGridPosition(gridX, gridY)) {
+            return false;
+        }
+
+        // Verifica se já existe uma construção neste tile
+        if (this.buildingGrid[key]) {
+            console.log('Tile ocupado');
             return false;
         }
 
