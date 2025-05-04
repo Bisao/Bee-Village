@@ -6,6 +6,7 @@ export default class MainScene extends Phaser.Scene {
         this.minZoom = 0.5;
         this.maxZoom = 2;
         this.selectedBuilding = 'farmerHouse';
+        this.buildingGrid = {}; // Rastreia estruturas posicionadas
 
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -229,6 +230,11 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(gridX, gridY, buildingKey) {
+        // Check for overlap
+        if (this.buildingGrid[`${gridX},${gridY}`]) {
+            return; // Building already exists at this location
+        }
+
         // Calcula as coordenadas isométricas centrais do tile
         const tileX = (gridX - gridY) * this.tileWidth;
         const tileY = (gridX + gridY) * this.tileHeight / 2;
@@ -246,6 +252,8 @@ export default class MainScene extends Phaser.Scene {
         const scale = (this.tileWidth * 1.2) / building.width;
         building.setScale(scale);
 
+        // Track building placement
+        this.buildingGrid[`${gridX},${gridY}`] = building;
         return building;
     }
 
