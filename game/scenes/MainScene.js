@@ -180,15 +180,14 @@ export default class MainScene extends Phaser.Scene {
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
             for (let x = 0; x < gridWidth; x++) {
-                const tileX = (x - y) * (this.tileWidth / 2);
+                const tileX = (x - y) * this.tileWidth;
                 const tileY = (x + y) * (this.tileHeight / 2);
 
-                const tileTypes = ['tile_grass', 'tile_grass_2', 'tile_grass_2_flowers', 'tile_grass_3_flower'];
-                const randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
+                // Create tile with tile_grass.png
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
-                    randomTile
+                    'tile_grass'
                 ).setScale(1);
 
                 tile.setInteractive();
@@ -202,7 +201,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(x, y, buildingKey) {
-        const tileX = (x - y) * this.tileWidth / 2;
+        const tileX = (x - y) * this.tileWidth;
         const tileY = (x + y) * this.tileHeight / 2;
 
         const building = this.add.image(
