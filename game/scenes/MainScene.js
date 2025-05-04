@@ -25,10 +25,10 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tile_grass', '/assets/tiles/tile_grass.png');
-        this.load.image('tile_grass_2', '/assets/tiles/tile_grass_2.png');
-        this.load.image('tile_grass_2_flowers', '/assets/tiles/tile_grass_2_flowers.png');
-        this.load.image('tile_grass_3_flower', '/assets/tiles/tile_grass_3_flower.png');
+        this.load.image('tile_grass', 'assets/tiles/tile_grass.png');
+        this.load.image('tile_grass_2', 'assets/tiles/tile_grass_2.png');
+        this.load.image('tile_grass_2_flowers', 'assets/tiles/tile_grass_2_flowers.png');
+        this.load.image('tile_grass_3_flower', 'assets/tiles/tile_grass_3_flower.png');
         
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
