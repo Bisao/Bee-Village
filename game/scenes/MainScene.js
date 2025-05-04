@@ -17,23 +17,13 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    createAnimations() {
-        // Define a animação de caminhada
-        this.anims.create({
-            key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1
-        });
-    }
-
     create() {
         this.createIsometricGrid(5, 5);
         this.input.on('pointerdown', this.handleClick, this);
 
         // Cria as animações do Farmer
         this.anims.create({
-            key: 'walk',
+            key: 'walk_down',
             frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
@@ -42,15 +32,16 @@ export default class MainScene extends Phaser.Scene {
         // Adiciona o Farmer
         this.farmer = this.add.sprite(
             this.cameras.main.centerX,
-            this.cameras.main.centerY,
+            this.cameras.main.centerY - 50,
             'farmer'
         );
         
-        // Ajusta a escala para melhor visualização
+        // Ajusta a escala e profundidade
         this.farmer.setScale(2);
+        this.farmer.setDepth(1);
 
         // Inicia a animação
-        this.farmer.play('walk');
+        this.farmer.play('walk_down');
 
         // Adiciona movimento isométrico
         this.tweens.add({
