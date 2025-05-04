@@ -1,11 +1,11 @@
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        // Define tamanho fixo dos tiles em 32x32
         this.tileWidth = 64;
         this.tileHeight = 64;
         this.minZoom = 0.5;
         this.maxZoom = 2;
+        this.selectedBuilding = 'farmerHouse';
         
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -34,6 +34,16 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.createIsometricGrid(5, 5);
+        
+        // Setup UI handlers
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedBuilding = btn.dataset.building;
+            });
+        });
         
         // Configuração do drag da câmera
         this.isDragging = false;
@@ -246,7 +256,7 @@ export default class MainScene extends Phaser.Scene {
 
         if (gridX >= 0 && gridX < this.grid[0].length && 
             gridY >= 0 && gridY < this.grid.length) {
-            this.placeBuilding(gridX, gridY, 'farmerHouse');
+            this.placeBuilding(gridX, gridY, this.selectedBuilding);
         }
     }
 }
