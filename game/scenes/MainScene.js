@@ -276,12 +276,10 @@ class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(x, y, buildingKey) {
-        const tileX = (x - y) * this.tileWidth;
-        const tileY = (x + y) * this.tileHeight / 2;
-
+        const tile = this.grid[y][x];
         const building = this.add.image(
-            this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.tileHeight / 2),
+            tile.x,
+            tile.y - (this.tileHeight / 2),
             buildingKey
         );
         
@@ -296,15 +294,19 @@ class MainScene extends Phaser.Scene {
     handleClick(pointer) {
         if (!this.selectedBuilding) return;
 
-        const worldX = pointer.x + this.mainCamera.scrollX - this.cameras.main.centerX;
-        const worldY = pointer.y + this.mainCamera.scrollY - this.cameras.main.centerY;
-
-        const gridX = Math.round((worldX / this.tileWidth + worldY / this.tileHeight) / 2);
-        const gridY = Math.round((worldY / this.tileHeight - worldX / this.tileWidth) / 2);
-
-        if (gridX >= 0 && gridX < this.grid[0].length && 
-            gridY >= 0 && gridY < this.grid.length) {
-            this.placeBuilding(gridX, gridY, this.selectedBuilding);
+        const worldPoint = this.mainCamera.getWorldPoint(pointer.x, pointer.y);
+        
+        for (let y = 0; y < this.grid.length; y++) {
+            for (let x = 0; x < this.grid[y].length; x++) {
+                const tile = this.grid[y][x];
+                const bounds = tile.getBounds();
+                
+                // Verificar se o clique está dentro do tile
+                if (Phaser.Geom.Rectangle.Contains(bounds, worldPoint.x, worldPoint.y)) {
+                    this.placeBuilding(x, y, this.selectedBuilding);
+                    return;
+                }
+            }
         }
     }
 }
