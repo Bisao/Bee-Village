@@ -24,12 +24,8 @@ export default class MainScene extends Phaser.Scene {
         });
 
         // Load tree images with explicit error handling
-        const trees = [
-            'tree_simple',
-            'tree_pine',
-            'tree_fruit',
-            'tree_autumn'
-        ];
+        // Load tree images with proper error handling
+        const trees = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
 
         trees.forEach(tree => {
             this.load.image(tree, `assets/trees/${tree}.png`);
@@ -37,6 +33,12 @@ export default class MainScene extends Phaser.Scene {
 
         this.load.on('loaderror', (fileObj) => {
             console.error('Error loading asset:', fileObj.key);
+        });
+
+        this.load.on('filecomplete', (key, type, data) => {
+            if (trees.includes(key)) {
+                console.log('Successfully loaded tree:', key);
+            }
         });
 
         const buildings = [
@@ -81,8 +83,9 @@ export default class MainScene extends Phaser.Scene {
                 continue;
             }
 
-            const randomTree = treeTypes[Math.floor(Math.random() * treeTypes.length)];
-            const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
+            try {
+                const randomTree = treeTypes[Math.floor(Math.random() * treeTypes.length)];
+                const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
 
             const tree = this.add.image(
                 this.cameras.main.centerX + tileX,
@@ -103,6 +106,10 @@ export default class MainScene extends Phaser.Scene {
             };
 
             placedTrees++;
+            } catch (error) {
+                console.error('Error placing tree:', error);
+                continue;
+            }
         }
     }
 
