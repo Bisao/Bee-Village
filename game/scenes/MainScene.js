@@ -2,10 +2,13 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Ajusta o tamanho dos tiles baseado no dispositivo
-        this.tileWidth = window.innerWidth < 768 ? 64 : 96;
-        this.tileHeight = window.innerWidth < 768 ? 32 : 48;
-        this.minZoom = window.innerWidth < 768 ? 0.3 : 0.5;
-        this.maxZoom = window.innerWidth < 768 ? 1.5 : 2;
+        this.tileWidth = window.innerWidth < 768 ? 96 : 128;
+        this.tileHeight = window.innerWidth < 768 ? 48 : 64;
+        this.minZoom = window.innerWidth < 768 ? 0.5 : 0.7;
+        this.maxZoom = window.innerWidth < 768 ? 2.0 : 2.5;
+        
+        // Ajusta zoom inicial baseado no dispositivo
+        this.initialZoom = window.innerWidth < 768 ? 0.8 : 1;
         
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -31,6 +34,7 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.createIsometricGrid(5, 5);
+        this.cameras.main.setZoom(this.initialZoom);
         
         // Configuração do drag da câmera
         this.isDragging = false;
