@@ -12,7 +12,10 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tile', 'assets/tile.png');
+        this.load.image('tile_grass', 'assets/tiles/tile_grass.png');
+        this.load.image('tile_grass_2', 'assets/tiles/tile_grass_2.png');
+        this.load.image('tile_grass_2_flowers', 'assets/tiles/tile_grass_2_flowers.png');
+        this.load.image('tile_grass_3_flower', 'assets/tiles/tile_grass_3_flower.png');
         
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
@@ -177,10 +180,12 @@ export default class MainScene extends Phaser.Scene {
                 const tileX = (x - y) * (this.tileWidth / 2);
                 const tileY = (x + y) * (this.tileHeight / 2);
 
+                const tileTypes = ['tile_grass', 'tile_grass_2', 'tile_grass_2_flowers', 'tile_grass_3_flower'];
+                const randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
-                    'tile'
+                    randomTile
                 ).setScale(1.2);
 
                 tile.setInteractive();
