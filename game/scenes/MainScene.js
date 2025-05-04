@@ -174,9 +174,12 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
-        for (let y = 0; y < height; y++) {
+        const gridWidth = 10;  // Increased grid size
+        const gridHeight = 10; // Increased grid size
+        
+        for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
-            for (let x = 0; x < width; x++) {
+            for (let x = 0; x < gridWidth; x++) {
                 const tileX = (x - y) * (this.tileWidth / 2);
                 const tileY = (x + y) * (this.tileHeight / 2);
 
@@ -186,7 +189,7 @@ export default class MainScene extends Phaser.Scene {
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
                     randomTile
-                ).setScale(1.2);
+                ).setScale(1);
 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
