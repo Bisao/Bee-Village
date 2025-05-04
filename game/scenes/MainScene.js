@@ -70,7 +70,7 @@ export default class MainScene extends Phaser.Scene {
         });
 
         this.input.on('pointermove', (pointer) => {
-            if (this.isDragging && pointer.isDown) {
+            if (this.isDragging && !this.input.pointer1.isDown && !this.input.pointer2.isDown) {
                 const deltaX = pointer.x - this.dragStartX;
                 const deltaY = pointer.y - this.dragStartY;
 
