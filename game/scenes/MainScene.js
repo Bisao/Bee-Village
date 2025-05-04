@@ -2,8 +2,8 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Define tamanho fixo dos tiles em 32x32
-        this.tileWidth = 32;
-        this.tileHeight = 32;
+        this.tileWidth = 64;
+        this.tileHeight = 64;
         this.minZoom = 0.5;
         this.maxZoom = 2;
         
@@ -155,7 +155,7 @@ export default class MainScene extends Phaser.Scene {
         );
         
         // Ajusta a escala e profundidade
-        this.farmer.setScale(2);
+        this.farmer.setScale(3);
         this.farmer.setDepth(1);
 
         // Inicia a animação
@@ -231,7 +231,7 @@ export default class MainScene extends Phaser.Scene {
         building.setDepth(y + 1);
         
         // Ajusta a escala para corresponder ao tamanho do tile com proporção melhor
-        const scale = (this.tileWidth * 0.8) / building.width; // Reduz para 80% do tamanho do tile
+        const scale = (this.tileWidth * 1.2) / building.width; // Aumenta para 120% do tamanho do tile
         building.setScale(scale);
         
         return building;
