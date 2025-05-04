@@ -34,8 +34,15 @@ export default class MainScene extends Phaser.Scene {
         
         // Configuração do drag da câmera
         this.isDragging = false;
+        this.touchStartTime = 0;
+        
         this.input.on('pointerdown', (pointer) => {
-            if (pointer.rightButtonDown()) {
+            if (this.isMobile) {
+                this.touchStartTime = Date.now();
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            } else if (pointer.rightButtonDown()) {
                 this.isDragging = true;
                 this.dragStartX = pointer.x;
                 this.dragStartY = pointer.y;
@@ -57,7 +64,21 @@ export default class MainScene extends Phaser.Scene {
             }
         });
 
-        this.input.on('pointerup', () => {
+        this.input.on('pointerup', (pointer) => {
+            if (this.isMobile) {
+                const touchDuration = Date.now() - this.touchStartTime;
+                const dragDistance = Phaser.Math.Distance.Between(
+                    this.dragStartX, 
+                    this.dragStartY, 
+                    pointer.x, 
+                    pointer.y
+                );
+                
+                // Se o toque foi curto e não houve muito movimento, considera como clique
+                if (touchDuration < 200 && dragDistance < 10) {
+                    this.handleClick(pointer);
+                }
+            }
             this.isDragging = false;
         });
         
