@@ -94,12 +94,12 @@ export default class MainScene extends Phaser.Scene {
 
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - 32, // Ajuste a altura para parecer que está sobre o tile
+            this.cameras.main.centerY + tileY - 16, // Ajuste mais sutil na altura
             buildingKey
         );
         
-        building.setDepth(y + 1); // Garante que as construções mais ao fundo apareçam atrás
-        building.setScale(1.5);
+        building.setDepth(y + 1);
+        building.setScale(0.8); // Escala menor para caber melhor no grid
         return building;
     }
 
