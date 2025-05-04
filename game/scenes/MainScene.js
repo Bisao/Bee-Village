@@ -180,14 +180,18 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
-        const gridWidth = 10;  // Increased grid size
-        const gridHeight = 10; // Increased grid size
+        const gridWidth = 10;  
+        const gridHeight = 10;
+        
+        // Calcula o offset para centralizar o grid
+        const offsetX = -(gridWidth * this.tileWidth) / 2;
+        const offsetY = -(gridHeight * this.tileHeight) / 4;
         
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
             for (let x = 0; x < gridWidth; x++) {
-                const tileX = (x - y) * (this.tileWidth - 0.5); // Remove horizontal spacing
-                const tileY = (x + y) * (this.tileHeight / 2 - 0.5); // Remove vertical spacing
+                const tileX = (x - y) * (this.tileWidth - 0.5) + offsetX; 
+                const tileY = (x + y) * (this.tileHeight / 2 - 0.5) + offsetY;
 
                 // Lista de tiles disponíveis com pesos (mais tiles sem flores)
                 const tileTypes = [
