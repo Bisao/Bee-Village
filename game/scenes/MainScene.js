@@ -1,3 +1,4 @@
+
 class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
@@ -34,24 +35,22 @@ class MainScene extends Phaser.Scene {
     create() {
         // Configuração das câmeras
         this.mainCamera = this.cameras.main;
-
-        // Criar câmera UI separada
-        this.uiCamera = this.cameras.add(0, 0, 800, 600);
-        this.uiCamera.setScroll(0, 0);
-        this.uiCamera.setBackgroundColor('rgba(0,0,0,0)');
-
+        
         // Container para elementos do jogo
         this.gameContainer = this.add.container(0, 0);
-
-        // Container para UI
+        
+        // Container para UI fixo na tela
         this.uiContainer = this.add.container(0, 0);
+        this.uiContainer.setScrollFactor(0);
         this.isPanelVisible = true;
 
         this.createIsometricGrid(10, 10);
         this.createBuildingPanel();
-
         this.setupInputEvents();
         this.setupFarmerAnimation();
+
+        // Ajusta a UI para não ser afetada pelo zoom
+        this.mainCamera.ignore(this.uiContainer);
     }
 
     createBuildingPanel() {
@@ -67,7 +66,7 @@ class MainScene extends Phaser.Scene {
         const panelWidth = 200;
         const panelHeight = 400;
 
-        // Criar container do painel
+        // Painel principal
         this.buildingPanel = this.add.container(10, 10);
         this.uiContainer.add(this.buildingPanel);
 
@@ -81,7 +80,7 @@ class MainScene extends Phaser.Scene {
         const toggleButton = this.add.graphics();
         toggleButton.fillStyle(0x34495e, 1);
         toggleButton.fillRect(panelWidth + 10, 0, 30, 30);
-        toggleButton.setInteractive(new Phaser.Geom.Rectangle(0, 0, 30, 30), Phaser.Geom.Rectangle.Contains);
+        toggleButton.setInteractive(new Phaser.Geom.Rectangle(panelWidth + 10, 0, 30, 30), Phaser.Geom.Rectangle.Contains);
 
         const toggleIcon = this.add.text(panelWidth + 20, 5, '<', { 
             fontSize: '20px',
@@ -92,8 +91,12 @@ class MainScene extends Phaser.Scene {
         this.buildingPanel.add(toggleIcon);
 
         toggleButton.on('pointerdown', () => {
-            this.buildingPanel.visible = !this.buildingPanel.visible;
-            toggleIcon.setText(this.buildingPanel.visible ? '<' : '>');
+            panel.visible = !panel.visible;
+            toggleIcon.setText(panel.visible ? '<' : '>');
+            buildings.forEach((_, index) => {
+                const elements = this.buildingPanel.list.slice(3 + (index * 3), 6 + (index * 3));
+                elements.forEach(element => element.visible = panel.visible);
+            });
         });
 
         // Título
@@ -167,7 +170,6 @@ class MainScene extends Phaser.Scene {
                 tile.displayWidth = this.tileWidth * 2;
                 tile.displayHeight = this.tileHeight * 2;
                 tile.setOrigin(0.5, 0.75);
-
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
 
@@ -212,7 +214,6 @@ class MainScene extends Phaser.Scene {
             this.isDragging = false;
         });
 
-        // Zoom com roda do mouse
         this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
             if (!this.isPointerOverUI(pointer)) {
                 const zoom = this.mainCamera.zoom;
@@ -223,7 +224,6 @@ class MainScene extends Phaser.Scene {
             }
         });
 
-        // Zoom com pinça no mobile
         if (this.isMobile) {
             this.input.addPointer(1);
             let prevDist = 0;
@@ -253,7 +253,8 @@ class MainScene extends Phaser.Scene {
     }
 
     isPointerOverUI(pointer) {
-        return this.buildingPanel.getBounds().contains(pointer.x, pointer.y);
+        const bounds = this.buildingPanel.getBounds();
+        return bounds.contains(pointer.x, pointer.y);
     }
 
     setupFarmerAnimation() {
@@ -280,9 +281,9 @@ class MainScene extends Phaser.Scene {
         );
 
         building.setDepth(y + 1);
-        const scale = (this.tileWidth * 1.5) / building.width;
+        const scale = (this.tileWidth * 2) / building.width;
         building.setScale(scale);
-
+        
         this.gameContainer.add(building);
         return building;
     }
@@ -291,14 +292,11 @@ class MainScene extends Phaser.Scene {
         if (!this.selectedBuilding) return;
 
         const worldPoint = this.mainCamera.getWorldPoint(pointer.x, pointer.y);
-
+        
         for (let y = 0; y < this.grid.length; y++) {
             for (let x = 0; x < this.grid[y].length; x++) {
                 const tile = this.grid[y][x];
-                const bounds = tile.getBounds();
-
-                // Verificar se o clique está dentro do tile
-                if (Phaser.Geom.Rectangle.Contains(bounds, worldPoint.x, worldPoint.y)) {
+                if (Phaser.Geom.Rectangle.Contains(tile.getBounds(), worldPoint.x, worldPoint.y)) {
                     this.placeBuilding(x, y, this.selectedBuilding);
                     return;
                 }
