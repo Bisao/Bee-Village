@@ -58,14 +58,35 @@
     </style>
 </head>
 <body>
-    <button id="menu-button">
-        <i class="fas fa-bars"></i>
-    </button>
-    <div id="sidebar">
-        <a href="#" class="menu-item">Início</a>
-        <a href="#" class="menu-item">Construções</a>
-        <a href="#" class="menu-item">Personagens</a>
-        <a href="#" class="menu-item">Configurações</a>
+    <div id="game-ui">
+        <div id="building-panel">
+            <h3>Construções</h3>
+            <div class="building-item" data-building="farmerHouse">
+                <img src="assets/buildings/FarmerHouse.png" alt="Casa do Fazendeiro">
+                <span>Casa do Fazendeiro</span>
+            </div>
+            <div class="building-item" data-building="chickenHouse">
+                <img src="assets/buildings/ChickenHouse.png" alt="Galinheiro">
+                <span>Galinheiro</span>
+            </div>
+            <div class="building-item" data-building="cowHouse">
+                <img src="assets/buildings/CowHouse.png" alt="Estábulo">
+                <span>Estábulo</span>
+            </div>
+            <div class="building-item" data-building="pigHouse">
+                <img src="assets/buildings/PigHouse.png" alt="Chiqueiro">
+                <span>Chiqueiro</span>
+            </div>
+            <div class="building-item" data-building="minerHouse">
+                <img src="assets/buildings/MinerHouse.png" alt="Casa do Minerador">
+                <span>Casa do Minerador</span>
+            </div>
+        </div>
+        <div id="controls">
+            <button id="rotate-left"><i class="fas fa-undo"></i></button>
+            <button id="rotate-right"><i class="fas fa-redo"></i></button>
+            <button id="delete-mode"><i class="fas fa-trash"></i></button>
+        </div>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
