@@ -1,10 +1,14 @@
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        this.tileWidth = 64;
-        this.tileHeight = 32;
-        this.minZoom = 0.5;
-        this.maxZoom = 2;
+        // Ajusta o tamanho dos tiles baseado no dispositivo
+        this.tileWidth = window.innerWidth < 768 ? 48 : 64;
+        this.tileHeight = window.innerWidth < 768 ? 24 : 32;
+        this.minZoom = window.innerWidth < 768 ? 0.3 : 0.5;
+        this.maxZoom = window.innerWidth < 768 ? 1.5 : 2;
+        
+        // Detecta se é dispositivo móvel
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
 
     preload() {
@@ -57,32 +61,40 @@ export default class MainScene extends Phaser.Scene {
             this.isDragging = false;
         });
         
-        // Adiciona controle de zoom
-        this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-            const zoom = this.cameras.main.zoom;
-            const newZoom = zoom - (deltaY * 0.001);
-            this.cameras.main.setZoom(
-                Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
-            );
-        });
+        // Configuração de zoom adaptativa
+        if (!this.isMobile) {
+            // Zoom com roda do mouse para PC
+            this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+                const zoom = this.cameras.main.zoom;
+                const newZoom = zoom - (deltaY * (window.innerWidth < 768 ? 0.0005 : 0.001));
+                this.cameras.main.setZoom(
+                    Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+                );
+            });
+        }
 
-        // Adiciona suporte para pinça no mobile
+        // Suporte aprimorado para pinça no mobile
         this.input.addPointer(1);
         let prevDist = 0;
+        let lastZoomTime = 0;
         
         this.input.on('pointermove', (pointer) => {
+            const now = Date.now();
+            
             if (this.input.pointer1.isDown && this.input.pointer2.isDown) {
                 const dx = this.input.pointer1.x - this.input.pointer2.x;
                 const dy = this.input.pointer1.y - this.input.pointer2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 
-                if (prevDist > 0) {
+                if (prevDist > 0 && (now - lastZoomTime > 16)) { // Limite de 60fps para zoom
                     const delta = dist - prevDist;
                     const zoom = this.cameras.main.zoom;
-                    const newZoom = zoom + (delta * 0.001);
+                    const sensitivity = window.innerWidth < 768 ? 0.002 : 0.001;
+                    const newZoom = zoom + (delta * sensitivity);
                     this.cameras.main.setZoom(
                         Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
                     );
+                    lastZoomTime = now;
                 }
                 prevDist = dist;
             }
