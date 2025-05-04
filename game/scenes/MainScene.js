@@ -15,7 +15,16 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tile', 'assets/tile.png');
+        // Carrega os tiles de grama
+        this.load.image('grass', 'attached_assets/grass.png');
+        this.load.image('grass_2', 'attached_assets/grass_2.png');
+        this.load.image('grass_2_flowers', 'attached_assets/grass_2_flowers.png');
+        this.load.image('grass_3_flower', 'attached_assets/grass_3_flower.png');
+        
+        // Carrega os tiles de terra
+        this.load.image('dirt', 'attached_assets/dirt.png');
+        this.load.image('dirt_2', 'attached_assets/dirt_2.png');
+        this.load.image('dirt_3', 'attached_assets/dirt_3.png');
         
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
@@ -175,20 +184,36 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
+        
+        // Define tiles disponíveis
+        const grassTiles = ['grass', 'grass_2', 'grass_2_flowers', 'grass_3_flower'];
+        const dirtTiles = ['dirt', 'dirt_2', 'dirt_3'];
+        
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
                 const tileX = (x - y) * (this.tileWidth / 2);
                 const tileY = (x + y) * (this.tileHeight / 2);
+                
+                // Lógica para escolher o tipo de tile
+                let tileKey;
+                const random = Math.random();
+                
+                // 70% chance de ser grama, 30% terra
+                if (random < 0.7) {
+                    tileKey = grassTiles[Math.floor(Math.random() * grassTiles.length)];
+                } else {
+                    tileKey = dirtTiles[Math.floor(Math.random() * dirtTiles.length)];
+                }
 
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
-                    'tile'
-                ).setScale(1.2);
+                    tileKey
+                ).setScale(0.5);
 
                 tile.setInteractive();
-                tile.data = { gridX: x, gridY: y };
+                tile.data = { gridX: x, gridY: y, type: tileKey };
                 tile.on('rightdown', (event) => {
                     event.event.preventDefault();
                 });
