@@ -53,13 +53,22 @@ export default class MainScene extends Phaser.Scene {
     setupControls() {
         this.isDragging = false;
         this.touchStartTime = 0;
+        this.lastTapTime = 0;
 
         this.input.on('pointerdown', (pointer) => {
+            const currentTime = Date.now();
+            
             if (this.isMobile) {
-                this.touchStartTime = Date.now();
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
+                if (currentTime - this.lastTapTime < 300) {
+                    // Double tap - place building
+                    this.handleClick(pointer);
+                } else {
+                    // Single tap - start drag
+                    this.isDragging = true;
+                    this.dragStartX = pointer.x;
+                    this.dragStartY = pointer.y;
+                }
+                this.lastTapTime = currentTime;
             } else if (pointer.rightButtonDown()) {
                 this.isDragging = true;
                 this.dragStartX = pointer.x;
@@ -107,8 +116,21 @@ export default class MainScene extends Phaser.Scene {
         }
 
         this.grid = [];
+        const gridWidth = 10;
+        const gridHeight = 10;
+        
+        // Ajusta o tamanho dos tiles para telas menores
+        if (this.isMobile) {
+            this.tileWidth = 48;
+            this.tileHeight = 48;
+        }
+        
+        // Centraliza o grid considerando o tamanho total
+        const totalWidth = (gridWidth + gridHeight) * (this.tileWidth / 2);
+        const totalHeight = (gridWidth + gridHeight) * (this.tileHeight / 4);
+        
         const offsetX = this.cameras.main.width / 2;
-        const offsetY = this.cameras.main.height / 4;
+        const offsetY = this.cameras.main.height / 3;
 
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
