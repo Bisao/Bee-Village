@@ -148,6 +148,9 @@ export default class MainScene extends Phaser.Scene {
 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
+                tile.on('rightdown', (event) => {
+                    event.event.preventDefault();
+                });
                 this.grid[y][x] = tile;
             }
         }
