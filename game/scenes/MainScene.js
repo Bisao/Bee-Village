@@ -40,6 +40,7 @@ class MainScene extends Phaser.Scene {
 
         // Container para UI
         this.uiContainer = this.add.container(0, 0);
+        this.isPanelVisible = true;
         
         this.createIsometricGrid(5, 5);
         this.createBuildingPanel();
@@ -209,6 +210,29 @@ class MainScene extends Phaser.Scene {
     }
 
     createBuildingPanel() {
+        this.buildingPanel = this.add.container(0, 0);
+        this.uiContainer.add(this.buildingPanel);
+
+        // Botão de expandir/ocultar
+        const toggleButton = this.add.graphics();
+        toggleButton.fillStyle(0x2c3e50, 1);
+        toggleButton.fillRect(10, 10, 30, 30);
+        toggleButton.setInteractive(new Phaser.Geom.Rectangle(10, 10, 30, 30), Phaser.Geom.Rectangle.Contains);
+        this.uiContainer.add(toggleButton);
+
+        // Ícone do botão
+        const toggleIcon = this.add.text(20, 15, '>', { 
+            fontSize: '20px',
+            fill: '#fff'
+        });
+        this.uiContainer.add(toggleIcon);
+
+        toggleButton.on('pointerdown', () => {
+            this.isPanelVisible = !this.isPanelVisible;
+            this.buildingPanel.setVisible(this.isPanelVisible);
+            toggleIcon.setText(this.isPanelVisible ? '<' : '>');
+        });
+
         const buildings = [
             { key: 'farmerHouse', name: 'Casa do Fazendeiro' },
             { key: 'cowHouse', name: 'Estábulo' },
@@ -239,18 +263,18 @@ class MainScene extends Phaser.Scene {
             button.fillStyle(0x34495e, 0.8);
             button.fillRect(20, y, panelWidth - 20, 45);
             button.setInteractive(new Phaser.Geom.Rectangle(20, y, panelWidth - 20, 45), Phaser.Geom.Rectangle.Contains);
-            this.uiContainer.add(button);
+            this.buildingPanel.add(button);
 
             const text = this.add.text(30, y + 12, building.name, { 
                 fontSize: '16px', 
                 fill: '#fff' 
             });
-            this.uiContainer.add(text);
+            this.buildingPanel.add(text);
 
             const thumbnail = this.add.image(panelWidth - 40, y + 22, building.key);
             const scaleRatio = 40 / thumbnail.height;
             thumbnail.setScale(scaleRatio);
-            this.uiContainer.add(thumbnail);
+            this.buildingPanel.add(thumbnail);
 
             button.on('pointerdown', () => {
                 this.selectedBuilding = building.key;
