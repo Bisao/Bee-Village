@@ -33,6 +33,12 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
+        // Add resize event handler
+        this.scale.on('resize', this.resize, this);
+        
+        // Initial resize
+        this.resize(this.scale);
+        
         this.createIsometricGrid(5, 5);
         
         // Configuração do drag da câmera
@@ -254,3 +260,24 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 }
+    resize(gameSize) {
+        const width = gameSize.width;
+        const height = gameSize.height;
+        
+        // Update camera
+        this.cameras.main.setViewport(0, 0, width, height);
+        this.cameras.main.centerOn(0, 0);
+        
+        // Center the game objects
+        if (this.grid) {
+            const centerX = width / 2;
+            const centerY = height / 2;
+            this.grid.forEach(row => {
+                row.forEach(tile => {
+                    const relX = tile.x - this.cameras.main.centerX;
+                    const relY = tile.y - this.cameras.main.centerY;
+                    tile.setPosition(centerX + relX, centerY + relY);
+                });
+            });
+        }
+    }

@@ -3,13 +3,14 @@ import MainScene from './scenes/MainScene.js';
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
-    scene: MainScene,
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.RESIZE,
+        parent: 'game',
+        width: '100%',
+        height: '100%',
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
+    scene: MainScene,
     physics: {
         default: 'arcade',
         arcade: {
