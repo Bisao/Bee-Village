@@ -33,7 +33,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createIsometricGrid(5, 5);
+        this.createIsometricGrid(8, 8);
         this.cameras.main.setZoom(this.initialZoom);
         
         // Configuração do drag da câmera
@@ -175,8 +175,8 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
-        const offsetX = (width * this.tileWidth / 4);
-        const offsetY = 0;
+        const offsetX = (width * this.tileWidth / 2);
+        const offsetY = (height * this.tileHeight / 4);
         
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
