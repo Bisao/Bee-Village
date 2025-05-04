@@ -23,10 +23,10 @@ export default class MainScene extends Phaser.Scene {
         });
 
         const trees = [
-            'tree_simple',
-            'tree_pine',
-            'tree_fruit',
-            'tree_autumn'
+            'tree_1', 
+            'tree_2',
+            'tree_3',
+            'tree_4'
         ];
 
         trees.forEach(tree => {
