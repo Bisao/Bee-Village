@@ -16,15 +16,15 @@ export default class MainScene extends Phaser.Scene {
 
     preload() {
         // Carrega os tiles de grama
-        this.load.image('grass', 'attached_assets/grass.png');
-        this.load.image('grass_2', 'attached_assets/grass_2.png');
-        this.load.image('grass_2_flowers', 'attached_assets/grass_2_flowers.png');
-        this.load.image('grass_3_flower', 'attached_assets/grass_3_flower.png');
+        this.load.image('grass', 'assets/tiles/grass.png');
+        this.load.image('grass_2', 'assets/tiles/grass_2.png');
+        this.load.image('grass_2_flowers', 'assets/tiles/grass_2_flowers.png');
+        this.load.image('grass_3_flower', 'assets/tiles/grass_3_flower.png');
         
         // Carrega os tiles de terra
-        this.load.image('dirt', 'attached_assets/dirt.png');
-        this.load.image('dirt_2', 'attached_assets/dirt_2.png');
-        this.load.image('dirt_3', 'attached_assets/dirt_3.png');
+        this.load.image('dirt', 'assets/tiles/dirt.png');
+        this.load.image('dirt_2', 'assets/tiles/dirt_2.png');
+        this.load.image('dirt_3', 'assets/tiles/dirt_3.png');
         
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
