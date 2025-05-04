@@ -33,14 +33,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        // Criar câmera principal para o jogo
-        this.mainCamera = this.cameras.main;
-        
-        // Criar câmera UI que não será afetada pelo zoom
-        this.uiCamera = this.cameras.add(0, 0, 800, 600);
-        this.uiCamera.setScroll(0, 0);
-        this.uiCamera.setScrollFactor(0);
-        
         this.createIsometricGrid(5, 5);
         this.createBuildingPanel();
         
@@ -215,10 +207,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createBuildingPanel() {
-        // Criar container para elementos UI
-        this.uiContainer = this.add.container(0, 0);
-        this.uiCamera.ignore(this.grid);
-        
         const buildings = [
             { key: 'farmerHouse', name: 'Casa do Fazendeiro' },
             { key: 'cowHouse', name: 'Estábulo' },
@@ -236,7 +224,7 @@ export default class MainScene extends Phaser.Scene {
         const panel = this.add.graphics();
         panel.fillStyle(0x2c3e50, 0.8);
         panel.fillRect(10, 10, panelWidth, panelHeight);
-        this.uiContainer.add(panel);
+        panel.setScrollFactor(0);
 
         // Título do painel
         const title = this.add.text(20, 20, 'Estruturas', { 
