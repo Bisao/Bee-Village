@@ -23,14 +23,14 @@ export default class MainScene extends Phaser.Scene {
         });
 
         const trees = [
-            'tree_simple|tree_simple',
-            'tree_pine|tree_pine',
-            'tree_fruit|tree_fruit'
+            'tree_simple',
+            'tree_pine',
+            'tree_fruit',
+            'tree_autumn'
         ];
 
         trees.forEach(tree => {
-            const [key, filename] = tree.split('|');
-            this.load.image(key, `assets/trees/${filename}.png`);
+            this.load.image(tree, `assets/trees/${tree}.png`);
         });
 
         const buildings = [
@@ -62,40 +62,30 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeTrees() {
-        const numTrees = 15; // Number of trees to place
+        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
+        const numTrees = 15;
 
         for (let i = 0; i < numTrees; i++) {
             const randomX = Math.floor(Math.random() * this.grid[0].length);
             const randomY = Math.floor(Math.random() * this.grid.length);
             const key = `${randomX},${randomY}`;
 
-            // Skip if there's already a building or tree in this position
             if (this.buildingGrid[key]) {
                 continue;
             }
 
+            const randomTree = treeTypes[Math.floor(Math.random() * treeTypes.length)];
             const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
-            
-            // Create a tree using graphics
-            const tree = this.add.graphics();
-            tree.lineStyle(2, 0x00ff00);
-            tree.fillStyle(0x228B22);
-            
-            // Draw tree shape
-            const treeSize = this.tileWidth * 0.8;
-            tree.beginFill();
-            tree.moveTo(-treeSize/2, treeSize/2);
-            tree.lineTo(0, -treeSize/2);
-            tree.lineTo(treeSize/2, treeSize/2);
-            tree.closePath();
-            tree.fill();
-            
-            tree.setPosition(
+
+            const tree = this.add.image(
                 this.cameras.main.centerX + tileX,
-                this.cameras.main.centerY + tileY - (this.tileHeight / 3)
+                this.cameras.main.centerY + tileY - (this.tileHeight / 3),
+                randomTree
             );
 
             tree.setDepth(randomY + 1);
+            const scale = (this.tileWidth * 0.8) / tree.width;
+            tree.setScale(scale);
 
             this.buildingGrid[key] = {
                 sprite: tree,
@@ -250,7 +240,6 @@ export default class MainScene extends Phaser.Scene {
 
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 
-        // Encontrar o tile mais próximo do clique
         let minDistance = Infinity;
         let clickedTile = null;
 
@@ -259,10 +248,9 @@ export default class MainScene extends Phaser.Scene {
                 const tile = this.grid[y][x];
                 const tileCenter = {
                     x: tile.x,
-                    y: tile.y - (this.tileHeight / 4) // Ajuste para o centro visual do tile
+                    y: tile.y - (this.tileHeight / 4) 
                 };
 
-                // Calcula a distância entre o ponto do clique e o centro do tile
                 const distance = Phaser.Math.Distance.Between(
                     worldPoint.x,
                     worldPoint.y,
@@ -281,7 +269,6 @@ export default class MainScene extends Phaser.Scene {
             const success = this.placeBuilding(clickedTile.data.gridX, clickedTile.data.gridY, this.selectedBuilding);
 
             if (success) {
-                // Limpa a seleção e desmarca o botão após posicionar com sucesso
                 this.selectedBuilding = null;
                 document.querySelectorAll('.building-btn').forEach(btn => {
                     btn.classList.remove('selected');
@@ -293,12 +280,10 @@ export default class MainScene extends Phaser.Scene {
     placeBuilding(gridX, gridY, buildingKey) {
         const key = `${gridX},${gridY}`;
 
-        // Verifica se a posição é válida e está livre
         if (!this.isValidGridPosition(gridX, gridY)) {
             return false;
         }
 
-        // Verifica se já existe uma construção neste tile
         if (this.buildingGrid[key]) {
             console.log('Tile ocupado');
             return false;
