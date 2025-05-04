@@ -3,19 +3,25 @@ import MainScene from './scenes/MainScene.js';
 
 const config = {
     type: Phaser.AUTO,
-    width: 800,
-    height: 600,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    backgroundColor: '#87ceeb',
     scene: MainScene,
     scale: {
-        mode: Phaser.Scale.FIT,
+        mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
         default: 'arcade',
         arcade: {
-            debug: false
+            debug: false,
+            gravity: { y: 0 }
         }
     }
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+window.addEventListener('resize', () => {
+    game.scale.resize(window.innerWidth, window.innerHeight);
+});
