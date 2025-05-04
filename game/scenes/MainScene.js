@@ -116,27 +116,28 @@ export default class MainScene extends Phaser.Scene {
         }
 
         this.grid = [];
-        const gridWidth = 10;
-        const gridHeight = 10;
+        const gridWidth = width;
+        const gridHeight = height;
         
-        // Ajusta o tamanho dos tiles para telas menores
         if (this.isMobile) {
             this.tileWidth = 48;
-            this.tileHeight = 48;
+            this.tileHeight = 24;
+        } else {
+            this.tileWidth = 64;
+            this.tileHeight = 32;
         }
         
-        // Centraliza o grid considerando o tamanho total
         const totalWidth = (gridWidth + gridHeight) * (this.tileWidth / 2);
-        const totalHeight = (gridWidth + gridHeight) * (this.tileHeight / 4);
+        const totalHeight = (gridWidth + gridHeight) * (this.tileHeight / 2);
         
         const offsetX = this.cameras.main.width / 2;
-        const offsetY = this.cameras.main.height / 3;
+        const offsetY = this.cameras.main.height / 4;
 
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
                 const tileX = (x - y) * (this.tileWidth / 2);
-                const tileY = (x + y) * (this.tileHeight / 4);
+                const tileY = (x + y) * (this.tileHeight / 2);
 
                 const tileTypes = [
                     'tile_grass',
