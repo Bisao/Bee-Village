@@ -53,22 +53,13 @@ export default class MainScene extends Phaser.Scene {
     setupControls() {
         this.isDragging = false;
         this.touchStartTime = 0;
-        this.lastTapTime = 0;
 
         this.input.on('pointerdown', (pointer) => {
-            const currentTime = Date.now();
-            
             if (this.isMobile) {
-                if (currentTime - this.lastTapTime < 300) {
-                    // Double tap - place building
-                    this.handleClick(pointer);
-                } else {
-                    // Single tap - start drag
-                    this.isDragging = true;
-                    this.dragStartX = pointer.x;
-                    this.dragStartY = pointer.y;
-                }
-                this.lastTapTime = currentTime;
+                this.touchStartTime = Date.now();
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
             } else if (pointer.rightButtonDown()) {
                 this.isDragging = true;
                 this.dragStartX = pointer.x;
@@ -116,28 +107,14 @@ export default class MainScene extends Phaser.Scene {
         }
 
         this.grid = [];
-        const gridWidth = width;
-        const gridHeight = height;
-        
-        if (this.isMobile) {
-            this.tileWidth = 48;
-            this.tileHeight = 24;
-        } else {
-            this.tileWidth = 64;
-            this.tileHeight = 32;
-        }
-        
-        const totalWidth = (gridWidth + gridHeight) * (this.tileWidth / 2);
-        const totalHeight = (gridWidth + gridHeight) * (this.tileHeight / 2);
-        
         const offsetX = this.cameras.main.width / 2;
         const offsetY = this.cameras.main.height / 4;
 
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
-                const tileX = (x - y) * this.tileWidth;
-                const tileY = (x + y) * (this.tileHeight / 2);
+                const tileX = (x - y) * (this.tileWidth / 2);
+                const tileY = (x + y) * (this.tileHeight / 4);
 
                 const tileTypes = [
                     'tile_grass',
@@ -158,11 +135,9 @@ export default class MainScene extends Phaser.Scene {
                     randomTile
                 );
 
-                // Ajusta a escala mantendo a proporção do tile
-                const scale = this.tileWidth / tile.width;
-                tile.setScale(scale);
+                tile.displayWidth = this.tileWidth + 1;
+                tile.displayHeight = this.tileHeight + 1;
                 tile.setOrigin(0.5, 0.75);
-                tile.setDepth(y); // Garante ordem correta de renderização
 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
