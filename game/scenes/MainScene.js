@@ -188,8 +188,13 @@ export default class MainScene extends Phaser.Scene {
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
                     'tile_grass'
-                ).setScale(1);
-
+                );
+                
+                // Ajusta a escala para garantir que a imagem tenha 32x32 pixels
+                tile.displayWidth = this.tileWidth;
+                tile.displayHeight = this.tileHeight;
+                tile.setOrigin(0.5, 0.75); // Ajusta a origem para melhor alinhamento isométrico
+                
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
                 tile.on('rightdown', (event) => {
