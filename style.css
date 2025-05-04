@@ -9,6 +9,44 @@ html, body {
     background: #1a1a1a;
 }
 
+.topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(10px);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-button {
+    background: transparent;
+    border: none;
+    color: #4CAF50;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 8px;
+    margin-right: 15px;
+    transition: all 0.3s ease;
+}
+
+.menu-button:hover {
+    transform: scale(1.1);
+    color: #45a049;
+}
+
+.topbar h1 {
+    color: #fff;
+    margin: 0;
+    font-size: 1.4em;
+    font-weight: 600;
+}
+
 #game-ui {
     position: absolute;
     top: 0;
@@ -21,7 +59,7 @@ html, body {
 #side-panel {
     position: absolute;
     right: 20px;
-    top: 20px;
+    top: 80px;
     width: 280px;
     height: calc(100% - 40px);
     background: rgba(15, 15, 15, 0.85);
@@ -163,32 +201,7 @@ h2::after {
         font-size: 0.85em;
     }
 
-    .toggle-panel {
-        position: fixed;
-        right: 20px;
-        bottom: 20px;
-        top: auto;
-        background: #4CAF50;
-        border: none;
-        color: white;
-        width: 56px;
-        height: 56px;
-        border-radius: 50%;
-        cursor: pointer;
-        pointer-events: auto;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 1.5em;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        z-index: 1000;
-        transition: all 0.3s ease;
-    }
-
-    .toggle-panel:hover {
-        transform: scale(1.1);
-        background: #45a049;
-    }
+    
 }
 
 @media (max-width: 480px) {
