@@ -52,7 +52,11 @@ export default class MainScene extends Phaser.Scene {
         });
 
         this.input.on('pointermove', (pointer) => {
-            if (this.isDragging) {
+            // Verifica se há dois dedos na tela
+            const twoFingersDown = this.input.pointer1.isDown && this.input.pointer2.isDown;
+            
+            // Só move o grid se estiver arrastando com um dedo
+            if (this.isDragging && !twoFingersDown) {
                 const deltaX = pointer.x - this.dragStartX;
                 const deltaY = pointer.y - this.dragStartY;
                 
