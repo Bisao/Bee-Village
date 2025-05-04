@@ -183,14 +183,18 @@ export default class MainScene extends Phaser.Scene {
                 const tileX = (x - y) * (this.tileWidth - 0.5); // Remove horizontal spacing
                 const tileY = (x + y) * (this.tileHeight / 2 - 0.5); // Remove vertical spacing
 
-                // Lista de tiles disponíveis com pesos
+                // Lista de tiles disponíveis com pesos (mais tiles sem flores)
                 const tileTypes = [
                     'tile_grass',
                     'tile_grass',
+                    'tile_grass',
+                    'tile_grass',
                     'tile_grass_2',
                     'tile_grass_2',
-                    'tile_grass_2_flowers',
-                    'tile_grass_3_flower'
+                    'tile_grass_2',
+                    'tile_grass_2',
+                    'tile_grass_2_flowers',  // menor chance
+                    'tile_grass_3_flower'    // menor chance
                 ];
                 
                 // Seleciona um tile aleatório (tiles sem flores têm maior chance)
