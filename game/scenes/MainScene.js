@@ -27,7 +27,35 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.createIsometricGrid(5, 5);
-        this.input.on('pointerdown', this.handleClick, this);
+        
+        // Configuração do drag da câmera
+        this.isDragging = false;
+        this.input.on('pointerdown', (pointer) => {
+            if (pointer.rightButtonDown()) {
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            } else {
+                this.handleClick(pointer);
+            }
+        });
+
+        this.input.on('pointermove', (pointer) => {
+            if (this.isDragging) {
+                const deltaX = pointer.x - this.dragStartX;
+                const deltaY = pointer.y - this.dragStartY;
+                
+                this.cameras.main.scrollX -= deltaX;
+                this.cameras.main.scrollY -= deltaY;
+                
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            }
+        });
+
+        this.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
         
         // Adiciona controle de zoom
         this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
