@@ -2,13 +2,17 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Ajusta o tamanho dos tiles baseado no dispositivo
-        this.tileWidth = window.innerWidth < 768 ? 96 : 128;
-        this.tileHeight = window.innerWidth < 768 ? 48 : 64;
-        this.minZoom = window.innerWidth < 768 ? 0.5 : 0.7;
-        this.maxZoom = window.innerWidth < 768 ? 2.0 : 2.5;
+        this.tileWidth = window.innerWidth < 768 ? 128 : 160;
+        this.tileHeight = window.innerWidth < 768 ? 64 : 80;
+        this.minZoom = window.innerWidth < 768 ? 0.6 : 0.8;
+        this.maxZoom = window.innerWidth < 768 ? 2.5 : 3.0;
         
         // Ajusta zoom inicial baseado no dispositivo
-        this.initialZoom = window.innerWidth < 768 ? 0.8 : 1;
+        this.initialZoom = window.innerWidth < 768 ? 1.0 : 1.2;
+        
+        // Ajusta sensibilidade do zoom e movimento baseado no dispositivo
+        this.zoomSensitivity = window.innerWidth < 768 ? 0.003 : 0.001;
+        this.dragSensitivity = window.innerWidth < 768 ? 1.2 : 1.0;
         
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -61,8 +65,8 @@ export default class MainScene extends Phaser.Scene {
             
             // Só move o grid se estiver arrastando com um dedo
             if (this.isDragging && !twoFingersDown) {
-                const deltaX = pointer.x - this.dragStartX;
-                const deltaY = pointer.y - this.dragStartY;
+                const deltaX = (pointer.x - this.dragStartX) * this.dragSensitivity;
+                const deltaY = (pointer.y - this.dragStartY) * this.dragSensitivity;
                 
                 this.cameras.main.scrollX -= deltaX;
                 this.cameras.main.scrollY -= deltaY;
@@ -210,7 +214,9 @@ export default class MainScene extends Phaser.Scene {
         building.setDepth(y + 1);
         
         // Ajusta a escala para corresponder ao tamanho do tile com proporção melhor
-        const scale = (this.tileWidth * 0.8) / building.width; // Reduz para 80% do tamanho do tile
+        const scale = this.isMobile ? 
+            (this.tileWidth * 0.9) / building.width : // 90% do tamanho do tile no mobile
+            (this.tileWidth * 0.8) / building.width;  // 80% do tamanho do tile no desktop
         building.setScale(scale);
         
         return building;
