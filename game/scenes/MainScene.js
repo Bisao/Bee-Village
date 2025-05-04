@@ -53,17 +53,11 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
-        const totalWidth = (width + height) * (this.tileWidth / 2);
-        const totalHeight = (width + height) * (this.tileHeight / 4);
-        
-        const centerOffsetX = totalWidth / 2;
-        const centerOffsetY = totalHeight / 2;
-
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
-                const tileX = (x - y) * (this.tileWidth / 2);
-                const tileY = (x + y) * (this.tileHeight / 4);
+                const tileX = (x - y) * (this.tileWidth - 0.5);
+                const tileY = (x + y) * (this.tileHeight / 2 - 0.5);
 
                 const tileTypes = [
                     'tile_grass',
@@ -76,8 +70,8 @@ export default class MainScene extends Phaser.Scene {
 
                 const randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
                 const tile = this.add.image(
-                    this.cameras.main.centerX + tileX - centerOffsetX,
-                    this.cameras.main.centerY + tileY - centerOffsetY,
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY,
                     randomTile
                 );
 
@@ -105,42 +99,18 @@ export default class MainScene extends Phaser.Scene {
 
     setupInputHandlers() {
         this.isDragging = false;
-        this.lastTap = 0;
-        this.dragThreshold = 10;
-        
         this.input.on('pointerdown', this.handlePointerDown, this);
         this.input.on('pointermove', this.handlePointerMove, this);
         this.input.on('pointerup', this.handlePointerUp, this);
 
-        // Mouse wheel zoom with smoother sensitivity
         if (!this.isMobile) {
             this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
                 const zoom = this.cameras.main.zoom;
-                const sensitivity = window.innerWidth < 768 ? 0.0003 : 0.0005;
-                const newZoom = zoom - (deltaY * sensitivity);
-                this.cameras.main.zoomTo(
-                    Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom),
-                    100
+                const newZoom = zoom - (deltaY * (window.innerWidth < 768 ? 0.0005 : 0.001));
+                this.cameras.main.setZoom(
+                    Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
                 );
             });
-        }
-
-        // Double tap to zoom for mobile
-        this.input.on('pointerdown', (pointer) => {
-            const now = Date.now();
-            if (now - this.lastTap < 300) {
-                const currentZoom = this.cameras.main.zoom;
-                const targetZoom = currentZoom < (this.maxZoom + this.minZoom) / 2 ? 
-                    this.maxZoom : this.minZoom;
-                this.cameras.main.zoomTo(targetZoom, 250);
-            }
-            this.lastTap = now;
-        });
-
-        // Initial zoom based on screen size
-        const width = window.innerWidth;
-        if (width < 768) {
-            this.cameras.main.setZoom(0.8);
         }
 
         this.setupPinchZoom();
@@ -150,37 +120,25 @@ export default class MainScene extends Phaser.Scene {
         this.input.addPointer(1);
         let prevDist = 0;
         let lastZoomTime = 0;
-        
-        this.input.on('pointermove', (pointer) => {
-            if (this.input.pointer1.isDown && this.input.pointer2.isDown) {
-                const p1 = this.input.pointer1;
-                const p2 = this.input.pointer2;
-                const dx = p1.x - p2.x;
-                const dy = p1.y - p2.y;
-                const currentDist = Math.sqrt(dx * dx + dy * dy);
 
-                if (prevDist > 0) {
-                    const now = Date.now();
-                    if (now - lastZoomTime > 16) {
-                        const delta = currentDist - prevDist;
-                        const zoom = this.cameras.main.zoom;
-                        const sensitivity = this.isMobile ? 0.002 : 0.001;
-                        const newZoom = zoom + (delta * sensitivity);
-                        
-                        this.cameras.main.zoomTo(
-                            Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom),
-                            100
-                        );
-                        
-                        // Center zoom on midpoint between fingers
-                        const midX = (p1.x + p2.x) / 2;
-                        const midY = (p1.y + p2.y) / 2;
-                        this.cameras.main.pan(midX, midY, 100);
-                        
-                        lastZoomTime = now;
-                    }
+        this.input.on('pointermove', (pointer) => {
+            const now = Date.now();
+            if (this.input.pointer1.isDown && this.input.pointer2.isDown) {
+                const dx = this.input.pointer1.x - this.input.pointer2.x;
+                const dy = this.input.pointer1.y - this.input.pointer2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+
+                if (prevDist > 0 && (now - lastZoomTime > 16)) {
+                    const delta = dist - prevDist;
+                    const zoom = this.cameras.main.zoom;
+                    const sensitivity = window.innerWidth < 768 ? 0.002 : 0.001;
+                    const newZoom = zoom + (delta * sensitivity);
+                    this.cameras.main.setZoom(
+                        Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+                    );
+                    lastZoomTime = now;
                 }
-                prevDist = currentDist;
+                prevDist = dist;
             }
         });
 

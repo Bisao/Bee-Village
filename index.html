@@ -4,91 +4,44 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>Bee Village</title>
+    <title>Isometric Game</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="loading-screen" id="loadingScreen">
-        <div class="loading-content">
-            <h2>Carregando...</h2>
-            <div class="progress-bar">
-                <div class="progress"></div>
-            </div>
-        </div>
-    </div>
-
-    <div class="game-container">
-        <header class="top-bar">
+    <div id="game-ui">
+        <div class="topbar">
             <button class="menu-button" id="togglePanel">☰</button>
             <h1>Bee Village</h1>
-            <div class="top-controls">
-                <button class="icon-button" id="soundToggle">🔊</button>
-                <button class="icon-button" id="settingsButton">⚙️</button>
-            </div>
-        </header>
-
-        <main class="main-content">
-            <div id="side-panel">
-                <div class="building-list">
-                    <button class="building-btn" data-building="farmerHouse">
-                        <img src="assets/buildings/FarmerHouse.png" alt="Casa do Fazendeiro">
-                        <span class="tooltip">Casa do Fazendeiro</span>
-                    </button>
-                    <button class="building-btn" data-building="cowHouse">
-                        <img src="assets/buildings/CowHouse.png" alt="Estábulo">
-                        <span class="tooltip">Estábulo</span>
-                    </button>
-                    <button class="building-btn" data-building="chickenHouse">
-                        <img src="assets/buildings/ChickenHouse.png" alt="Galinheiro">
-                        <span class="tooltip">Galinheiro</span>
-                    </button>
-                    <button class="building-btn" data-building="pigHouse">
-                        <img src="assets/buildings/PigHouse.png" alt="Chiqueiro">
-                        <span class="tooltip">Chiqueiro</span>
-                    </button>
-                    <button class="building-btn" data-building="minerHouse">
-                        <img src="assets/buildings/MinerHouse.png" alt="Casa do Minerador">
-                        <span class="tooltip">Casa do Minerador</span>
-                    </button>
-                    <button class="building-btn" data-building="fishermanHouse">
-                        <img src="assets/buildings/fishermanHouse.png" alt="Casa do Pescador">
-                        <span class="tooltip">Casa do Pescador</span>
-                    </button>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div class="settings-modal" id="settingsModal">
-        <div class="modal-content">
-            <button class="close-button">×</button>
-            <h2>Configurações</h2>
-            <div class="settings-group">
-                <label>
-                    <span>Som</span>
-                    <input type="checkbox" id="soundSetting" checked>
-                </label>
-                <label>
-                    <span>Qualidade Gráfica</span>
-                    <select id="graphicsQuality">
-                        <option value="low">Baixa</option>
-                        <option value="medium" selected>Média</option>
-                        <option value="high">Alta</option>
-                    </select>
-                </label>
-                <label>
-                    <span>Controles</span>
-                    <select id="controlType">
-                        <option value="keyboard">Teclado</option>
-                        <option value="touch">Touch</option>
-                    </select>
-                </label>
+        </div>
+        <div id="side-panel">
+            <div class="building-list">
+                <button class="building-btn" data-building="farmerHouse">
+                    <img src="assets/buildings/FarmerHouse.png" alt="Casa do Fazendeiro">
+                    <span class="tooltip">Casa do Fazendeiro</span>
+                </button>
+                <button class="building-btn" data-building="cowHouse">
+                    <img src="assets/buildings/CowHouse.png" alt="Estábulo">
+                    <span class="tooltip">Estábulo</span>
+                </button>
+                <button class="building-btn" data-building="chickenHouse">
+                    <img src="assets/buildings/ChickenHouse.png" alt="Galinheiro">
+                    <span class="tooltip">Galinheiro</span>
+                </button>
+                <button class="building-btn" data-building="pigHouse">
+                    <img src="assets/buildings/PigHouse.png" alt="Chiqueiro">
+                    <span class="tooltip">Chiqueiro</span>
+                </button>
+                <button class="building-btn" data-building="minerHouse">
+                    <img src="assets/buildings/MinerHouse.png" alt="Casa do Minerador">
+                    <span class="tooltip">Casa do Minerador</span>
+                </button>
+                <button class="building-btn" data-building="fishermanHouse">
+                    <img src="assets/buildings/fishermanHouse.png" alt="Casa do Pescador">
+                    <span class="tooltip">Casa do Pescador</span>
+                </button>
             </div>
         </div>
     </div>
-
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="game/config.js" type="module"></script>
 </body>
