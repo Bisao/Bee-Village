@@ -191,32 +191,34 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleClick(pointer) {
-        // Verifica se há uma estrutura selecionada
         if (!this.selectedBuilding) return;
 
-        // Encontra o tile mais próximo do clique
-        let closestTile = null;
-        let closestDistance = Infinity;
+        let clickedTile = null;
+        const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
 
         for (let y = 0; y < this.grid.length; y++) {
             for (let x = 0; x < this.grid[y].length; x++) {
                 const tile = this.grid[y][x];
-                const distance = Phaser.Math.Distance.Between(
-                    pointer.x,
-                    pointer.y,
-                    tile.x,
-                    tile.y
+                const bounds = tile.getBounds();
+                
+                // Ajusta as coordenadas para considerar a origem do tile
+                const adjustedBounds = new Phaser.Geom.Rectangle(
+                    bounds.x,
+                    bounds.y - (this.tileHeight / 4),
+                    bounds.width,
+                    bounds.height / 2
                 );
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestTile = tile;
+
+                if (adjustedBounds.contains(worldPoint.x, worldPoint.y)) {
+                    clickedTile = tile;
+                    break;
                 }
             }
+            if (clickedTile) break;
         }
 
-        // Tenta posicionar a estrutura apenas se houver um tile disponível
-        if (closestTile && !this.buildingGrid[`${closestTile.data.gridX},${closestTile.data.gridY}`]) {
-            const success = this.placeBuilding(closestTile.data.gridX, closestTile.data.gridY, this.selectedBuilding);
+        if (clickedTile && !this.buildingGrid[`${clickedTile.data.gridX},${clickedTile.data.gridY}`]) {
+            const success = this.placeBuilding(clickedTile.data.gridX, clickedTile.data.gridY, this.selectedBuilding);
             
             if (success) {
                 // Limpa a seleção e desmarca o botão após posicionar com sucesso
