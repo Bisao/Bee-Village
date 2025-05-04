@@ -136,7 +136,7 @@ export default class MainScene extends Phaser.Scene {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
                 const tileX = (x - y) * (this.tileWidth / 2);
-                const tileY = (x + y) * (this.tileHeight / 2);
+                const tileY = (x + y) * (this.tileHeight / 4);
 
                 const tileTypes = [
                     'tile_grass',
@@ -159,7 +159,7 @@ export default class MainScene extends Phaser.Scene {
 
                 tile.displayWidth = this.tileWidth;
                 tile.displayHeight = this.tileHeight;
-                tile.setOrigin(0.5, 0.5);
+                tile.setOrigin(0.5, 0.75);
                 tile.setDepth(y); // Garante ordem correta de renderização
 
                 tile.setInteractive();
