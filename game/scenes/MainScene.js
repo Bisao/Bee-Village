@@ -76,8 +76,99 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
+        setupInputHandlers() {
         // Configuração do drag da câmera
         this.isDragging = false;
+        this.input.on('pointerdown', this.handlePointerDown.bind(this));
+        this.input.on('pointermove', this.handlePointerMove.bind(this));
+        this.input.on('pointerup', this.handlePointerUp.bind(this));
+    }
+
+    createInitialBuildings() {
+        // Posiciona algumas casas iniciais
+        this.placeBuilding(0, 0, 'farmerHouse');
+        this.placeBuilding(4, 0, 'cowHouse');
+        this.placeBuilding(0, 4, 'chickenHouse');
+        this.placeBuilding(4, 4, 'pigHouse');
+        this.placeBuilding(2, 2, 'minerHouse');
+    }
+
+    createFarmerCharacter() {
+        // Cria as animações do Farmer
+        this.anims.create({
+            key: 'walk_down',
+            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Adiciona o Farmer
+        this.farmer = this.add.sprite(
+            this.cameras.main.centerX,
+            this.cameras.main.centerY - 50,
+            'farmer'
+        );
+
+        // Ajusta a escala e profundidade
+        this.farmer.setScale(3);
+        this.farmer.setDepth(1);
+
+        // Inicia a animação
+        this.farmer.play('walk_down');
+
+        // Adiciona movimento isométrico
+        this.tweens.add({
+            targets: this.farmer,
+            x: this.farmer.x + 100,
+            y: this.farmer.y + 50,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1
+        });
+    }
+
+    handlePointerDown(pointer) {
+        if (this.isMobile) {
+            this.touchStartTime = Date.now();
+            this.isDragging = true;
+            this.dragStartX = pointer.x;
+            this.dragStartY = pointer.y;
+        } else if (pointer.rightButtonDown()) {
+            this.isDragging = true;
+            this.dragStartX = pointer.x;
+            this.dragStartY = pointer.y;
+        } else {
+            this.handleClick(pointer);
+        }
+    }
+
+    handlePointerMove(pointer) {
+        const twoFingersDown = this.input.pointer1.isDown && this.input.pointer2.isDown;
+        if (this.isDragging && !twoFingersDown) {
+            const deltaX = pointer.x - this.dragStartX;
+            const deltaY = pointer.y - this.dragStartY;
+            this.cameras.main.scrollX -= deltaX;
+            this.cameras.main.scrollY -= deltaY;
+            this.dragStartX = pointer.x;
+            this.dragStartY = pointer.y;
+        }
+    }
+
+    handlePointerUp(pointer) {
+        if (this.isMobile) {
+            const touchDuration = Date.now() - this.touchStartTime;
+            const dragDistance = Phaser.Math.Distance.Between(
+                this.dragStartX,
+                this.dragStartY,
+                pointer.x,
+                pointer.y
+            );
+            if (touchDuration < 200 && dragDistance < 10) {
+                this.handleClick(pointer);
+            }
+        }
+        this.isDragging = false;
+    }
         this.touchStartTime = 0;
 
         this.input.on('pointerdown', (pointer) => {
