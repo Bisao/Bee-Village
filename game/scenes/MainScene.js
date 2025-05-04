@@ -4,8 +4,8 @@ export default class MainScene extends Phaser.Scene {
         // Define tamanho fixo dos tiles em 32x32
         this.tileWidth = 32;
         this.tileHeight = 32;
-        this.minZoom = 0.5;
-        this.maxZoom = 2;
+        this.minZoom = 0.3;
+        this.maxZoom = 3;
         
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
