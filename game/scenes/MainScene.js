@@ -9,19 +9,6 @@ export default class MainScene extends Phaser.Scene {
         
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        
-        // Estrutura selecionada atualmente
-        this.selectedBuilding = null;
-        
-        // Lista de construções disponíveis
-        this.availableBuildings = [
-            { key: 'farmerHouse', name: 'Casa do Fazendeiro' },
-            { key: 'cowHouse', name: 'Estábulo' },
-            { key: 'chickenHouse', name: 'Galinheiro' },
-            { key: 'pigHouse', name: 'Chiqueiro' },
-            { key: 'minerHouse', name: 'Casa do Minerador' },
-            { key: 'fishermanHouse', name: 'Casa do Pescador' }
-        ];
     }
 
     preload() {
@@ -47,7 +34,6 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.createIsometricGrid(5, 5);
-        this.createBuildingMenu();
         
         // Configuração do drag da câmera
         this.isDragging = false;
@@ -145,6 +131,13 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointerup', () => {
             prevDist = 0;
         });
+
+        // Posiciona algumas casas iniciais
+        this.placeBuilding(0, 0, 'farmerHouse');
+        this.placeBuilding(4, 0, 'cowHouse');
+        this.placeBuilding(0, 4, 'chickenHouse');
+        this.placeBuilding(4, 4, 'pigHouse');
+        this.placeBuilding(2, 2, 'minerHouse');
 
         // Cria as animações do Farmer
         this.anims.create({
@@ -249,8 +242,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleClick(pointer) {
-        if (!this.selectedBuilding) return;
-        
         const worldX = pointer.x - this.cameras.main.centerX;
         const worldY = pointer.y - this.cameras.main.centerY;
 
@@ -259,59 +250,7 @@ export default class MainScene extends Phaser.Scene {
 
         if (gridX >= 0 && gridX < this.grid[0].length && 
             gridY >= 0 && gridY < this.grid.length) {
-            this.placeBuilding(gridX, gridY, this.selectedBuilding);
+            this.placeBuilding(gridX, gridY, 'farmerHouse');
         }
     }
 }
-    createBuildingMenu() {
-        const menuY = 10;
-        const buttonWidth = 140;
-        const buttonHeight = 40;
-        const buttonSpacing = 10;
-        
-        this.availableBuildings.forEach((building, index) => {
-            const button = this.add.rectangle(
-                10 + buttonWidth/2,
-                menuY + (buttonHeight + buttonSpacing) * index,
-                buttonWidth,
-                buttonHeight,
-                0x4a4a4a
-            );
-            
-            const text = this.add.text(
-                button.x,
-                button.y,
-                building.name,
-                {
-                    font: '16px Arial',
-                    fill: '#ffffff'
-                }
-            ).setOrigin(0.5);
-            
-            button.setScrollFactor(0);
-            text.setScrollFactor(0);
-            button.setInteractive();
-            
-            button.on('pointerover', () => {
-                button.setFillStyle(0x666666);
-            });
-            
-            button.on('pointerout', () => {
-                button.setFillStyle(0x4a4a4a);
-            });
-            
-            button.on('pointerdown', () => {
-                this.selectedBuilding = building.key;
-                this.availableBuildings.forEach((b, i) => {
-                    const otherButton = this.children.list.find(
-                        child => child.type === 'Rectangle' &&
-                        child.y === menuY + (buttonHeight + buttonSpacing) * i
-                    );
-                    if (otherButton) {
-                        otherButton.setFillStyle(0x4a4a4a);
-                    }
-                });
-                button.setFillStyle(0x00ff00);
-            });
-        });
-    }
