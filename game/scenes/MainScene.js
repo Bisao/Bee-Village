@@ -11,6 +11,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
+        // Load tile images
         const tiles = [
             'tile_grass',
             'tile_grass_2',
@@ -22,6 +23,7 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(tile, `assets/tiles/${tile}.png`);
         });
 
+        // Load tree images with explicit error handling
         const trees = [
             'tree_simple',
             'tree_pine',
@@ -31,6 +33,10 @@ export default class MainScene extends Phaser.Scene {
 
         trees.forEach(tree => {
             this.load.image(tree, `assets/trees/${tree}.png`);
+        });
+
+        this.load.on('loaderror', (fileObj) => {
+            console.error('Error loading asset:', fileObj.key);
         });
 
         const buildings = [
@@ -64,8 +70,9 @@ export default class MainScene extends Phaser.Scene {
     placeTrees() {
         const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
         const numTrees = 15;
+        let placedTrees = 0;
 
-        for (let i = 0; i < numTrees; i++) {
+        while (placedTrees < numTrees) {
             const randomX = Math.floor(Math.random() * this.grid[0].length);
             const randomY = Math.floor(Math.random() * this.grid.length);
             const key = `${randomX},${randomY}`;
@@ -77,16 +84,17 @@ export default class MainScene extends Phaser.Scene {
             const randomTree = treeTypes[Math.floor(Math.random() * treeTypes.length)];
             const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
 
-            const tree = this.add.image(
-                this.cameras.main.centerX + tileX,
-                this.cameras.main.centerY + tileY - (this.tileHeight / 3),
-                randomTree
-            );
+            try {
+                const tree = this.add.image(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.tileHeight / 2),
+                    randomTree
+                );
 
-            tree.setDepth(randomY + 1);
-            const scale = (this.tileWidth * 1.2) / Math.max(tree.width, 1);
-            tree.setScale(scale);
-            tree.setOrigin(0.5, 1);
+                tree.setDepth(randomY + 1);
+                const scale = (this.tileWidth * 1.5) / Math.max(tree.width, 1);
+                tree.setScale(scale);
+                tree.setOrigin(0.5, 1);
 
             this.buildingGrid[key] = {
                 sprite: tree,
