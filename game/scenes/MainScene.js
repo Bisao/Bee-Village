@@ -10,6 +10,22 @@ export default class MainScene extends Phaser.Scene {
         // Placeholder tiles - replace with your assets
         this.load.image('tile', 'assets/tile.png');
         this.load.image('building', 'assets/building.png');
+        
+        // Carrega o spritesheet - ajuste frameWidth e frameHeight conforme seu sprite
+        this.load.spritesheet('character', 'assets/sprites/character.png', {
+            frameWidth: 32,
+            frameHeight: 32
+        });
+    }
+
+    createAnimations() {
+        // Define a animação de caminhada
+        this.anims.create({
+            key: 'walk',
+            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1
+        });
     }
 
     create() {
