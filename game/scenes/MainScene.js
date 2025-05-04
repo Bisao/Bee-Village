@@ -1,0 +1,55 @@
+
+export default class MainScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'MainScene' });
+        this.tileWidth = 64;
+        this.tileHeight = 32;
+    }
+
+    preload() {
+        // Placeholder tiles - replace with your assets
+        this.load.image('tile', 'assets/tile.png');
+        this.load.image('building', 'assets/building.png');
+    }
+
+    create() {
+        this.createIsometricGrid(5, 5);
+        this.input.on('pointerdown', this.handleClick, this);
+    }
+
+    createIsometricGrid(width, height) {
+        this.grid = [];
+        for (let y = 0; y < height; y++) {
+            this.grid[y] = [];
+            for (let x = 0; x < width; x++) {
+                const tileX = (x - y) * this.tileWidth / 2;
+                const tileY = (x + y) * this.tileHeight / 2;
+                
+                const tile = this.add.image(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY,
+                    'tile'
+                );
+                
+                tile.setInteractive();
+                tile.data = { gridX: x, gridY: y };
+                this.grid[y][x] = tile;
+            }
+        }
+    }
+
+    handleClick(pointer) {
+        // Convert screen coordinates to isometric grid coordinates
+        const worldX = pointer.x - this.cameras.main.centerX;
+        const worldY = pointer.y - this.cameras.main.centerY;
+        
+        const gridX = Math.round((worldX / this.tileWidth + worldY / this.tileHeight));
+        const gridY = Math.round((worldY / this.tileHeight - worldX / this.tileWidth));
+        
+        if (gridX >= 0 && gridX < this.grid[0].length && 
+            gridY >= 0 && gridY < this.grid.length) {
+            console.log(`Clicked grid position: ${gridX}, ${gridY}`);
+            // Aqui você pode adicionar a lógica de construção
+        }
+    }
+}
