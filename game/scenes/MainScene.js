@@ -1,11 +1,11 @@
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        // Ajusta o tamanho dos tiles baseado no dispositivo
-        this.tileWidth = window.innerWidth < 768 ? 64 : 96;
-        this.tileHeight = window.innerWidth < 768 ? 32 : 48;
-        this.minZoom = window.innerWidth < 768 ? 0.3 : 0.5;
-        this.maxZoom = window.innerWidth < 768 ? 1.5 : 2;
+        // Define tamanho fixo dos tiles em 32x32
+        this.tileWidth = 32;
+        this.tileHeight = 32;
+        this.minZoom = 0.5;
+        this.maxZoom = 2;
         
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -207,7 +207,7 @@ export default class MainScene extends Phaser.Scene {
 
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.tileHeight / 2), // Ajuste na altura para centralizar
+            this.cameras.main.centerY + tileY - (this.tileHeight / 4), // Ajuste na altura para centralizar
             buildingKey
         );
         
