@@ -6,26 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Isometric Game</title>
     <style>
-        html, body { 
-            margin: 0; 
-            padding: 0; 
-            width: 100%; 
-            height: 100%; 
-            overflow: hidden;
-            background: #2c3e50; 
-        }
-        #game {
-            width: 100%;
-            height: 100%;
-        }
-        canvas { 
-            width: 100%;
-            height: 100%;
-        }
+        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; }
+        canvas { max-width: 100%; max-height: 100vh; }
     </style>
-</head>
-<body>
-    <div id="game"></div>
 </head>
 <body>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
