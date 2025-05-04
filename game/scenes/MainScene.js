@@ -3,6 +3,8 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.tileWidth = 64;
         this.tileHeight = 32;
+        this.minZoom = 0.5;
+        this.maxZoom = 2;
     }
 
     preload() {
@@ -26,6 +28,41 @@ export default class MainScene extends Phaser.Scene {
     create() {
         this.createIsometricGrid(5, 5);
         this.input.on('pointerdown', this.handleClick, this);
+        
+        // Adiciona controle de zoom
+        this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+            const zoom = this.cameras.main.zoom;
+            const newZoom = zoom - (deltaY * 0.001);
+            this.cameras.main.setZoom(
+                Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+            );
+        });
+
+        // Adiciona suporte para pinça no mobile
+        this.input.addPointer(1);
+        let prevDist = 0;
+        
+        this.input.on('pointermove', (pointer) => {
+            if (this.input.pointer1.isDown && this.input.pointer2.isDown) {
+                const dx = this.input.pointer1.x - this.input.pointer2.x;
+                const dy = this.input.pointer1.y - this.input.pointer2.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                
+                if (prevDist > 0) {
+                    const delta = dist - prevDist;
+                    const zoom = this.cameras.main.zoom;
+                    const newZoom = zoom + (delta * 0.001);
+                    this.cameras.main.setZoom(
+                        Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+                    );
+                }
+                prevDist = dist;
+            }
+        });
+
+        this.input.on('pointerup', () => {
+            prevDist = 0;
+        });
 
         // Posiciona algumas casas iniciais
         this.placeBuilding(0, 0, 'farmerHouse');
