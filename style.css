@@ -63,10 +63,10 @@ html, body {
 
 #side-panel {
     position: absolute;
-    right: 12px;
+    right: 8px;
     top: 60px;
-    width: 15%;
-    min-width: 180px;
+    width: 5%;
+    min-width: 120px;
     height: calc(100% - 72px);
     background: rgba(15, 15, 15, 0.9);
     backdrop-filter: blur(10px);
