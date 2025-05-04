@@ -190,6 +190,12 @@ export default class MainScene extends Phaser.Scene {
                     this.cameras.main.centerY + tileY,
                     randomTile
                 ).setScale(1);
+                
+                // Ajusta o origin para que o tile fique alinhado corretamente
+                tile.setOrigin(0.5, 0.75);
+                // Garante que o tile ocupe todo o espaço da célula
+                tile.displayWidth = this.tileWidth * 2;
+                tile.displayHeight = this.tileHeight * 2;
 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
