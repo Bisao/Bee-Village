@@ -1,4 +1,3 @@
-
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
@@ -12,6 +11,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
+        // Carrega tiles
         const tiles = [
             'tile_grass',
             'tile_grass_2',
@@ -23,6 +23,7 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(tile, `assets/tiles/${tile}.png`);
         });
 
+        // Carrega construções
         const buildings = [
             'chickenHouse|ChickenHouse',
             'cowHouse|CowHouse', 
@@ -37,6 +38,7 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(key, `assets/buildings/${filename}.png`);
         });
 
+        // Carrega sprite do fazendeiro
         this.load.spritesheet('farmer', 'assets/sprites/Farmer.png', {
             frameWidth: 32,
             frameHeight: 48
@@ -53,6 +55,7 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
+
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
@@ -191,10 +194,8 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleClick(pointer) {
-        // Verifica se há uma estrutura selecionada
         if (!this.selectedBuilding) return;
 
-        // Encontra o tile mais próximo do clique
         let closestTile = null;
         let closestDistance = Infinity;
 
@@ -214,17 +215,12 @@ export default class MainScene extends Phaser.Scene {
             }
         }
 
-        // Tenta posicionar a estrutura no tile mais próximo
         if (closestTile && !this.buildingGrid[`${closestTile.data.gridX},${closestTile.data.gridY}`]) {
-            const success = this.placeBuilding(closestTile.data.gridX, closestTile.data.gridY, this.selectedBuilding);
-            
-            if (success) {
-                // Limpa a seleção após posicionar com sucesso
-                this.selectedBuilding = null;
-                document.querySelectorAll('.building-btn').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-            }
+            this.placeBuilding(closestTile.data.gridX, closestTile.data.gridY, this.selectedBuilding);
+            this.selectedBuilding = null;
+            document.querySelectorAll('.building-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
         }
     }
 
@@ -232,7 +228,7 @@ export default class MainScene extends Phaser.Scene {
         const key = `${gridX},${gridY}`;
 
         if (this.buildingGrid[key] || !this.isValidGridPosition(gridX, gridY)) {
-            return false;
+            return null;
         }
 
         try {
@@ -254,10 +250,10 @@ export default class MainScene extends Phaser.Scene {
                 gridY
             };
 
-            return true;
+            return building;
         } catch (error) {
             console.error('Error placing building:', error);
-            return false;
+            return null;
         }
     }
 
