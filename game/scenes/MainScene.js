@@ -174,14 +174,14 @@ export default class MainScene extends Phaser.Scene {
 
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY,
+            this.cameras.main.centerY + tileY - (this.tileHeight / 2), // Ajuste na altura para centralizar
             buildingKey
         );
         
         building.setDepth(y + 1);
         
-        // Ajusta a escala para corresponder ao tamanho do tile
-        const scale = this.tileWidth / building.width;
+        // Ajusta a escala para corresponder ao tamanho do tile com proporção melhor
+        const scale = (this.tileWidth * 0.8) / building.width; // Reduz para 80% do tamanho do tile
         building.setScale(scale);
         
         return building;
