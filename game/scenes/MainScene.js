@@ -23,12 +23,16 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(tile, `assets/tiles/${tile}.png`);
         });
 
-        // Load tree images with explicit error handling
-        // Load tree images with proper error handling
-        const trees = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
+        // Load tree images
+        const trees = [
+            { key: 'tree_simple', path: 'assets/trees/tree_simple.png' },
+            { key: 'tree_pine', path: 'assets/trees/tree_pine.png' },
+            { key: 'tree_fruit', path: 'assets/trees/tree_fruit.png' },
+            { key: 'tree_autumn', path: 'assets/trees/tree_autumn.png' }
+        ];
 
         trees.forEach(tree => {
-            this.load.image(tree, `assets/trees/${tree}.png`);
+            this.load.image(tree.key, tree.path);
         });
 
         this.load.on('loaderror', (fileObj) => {
