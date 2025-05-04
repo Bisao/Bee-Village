@@ -10,10 +10,10 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('tile', 'assets/tile.png');
         this.load.image('building', 'assets/building.png');
 
-        // Carrega o spritesheet do personagem
-        this.load.spritesheet('character', 'assets/sprites/character.png', {
+        // Carrega o spritesheet do Farmer
+        this.load.spritesheet('farmer', 'assets/sprites/Farmer.png', {
             frameWidth: 32,
-            frameHeight: 32
+            frameHeight: 48
         });
     }
 
@@ -31,28 +31,32 @@ export default class MainScene extends Phaser.Scene {
         this.createIsometricGrid(5, 5);
         this.input.on('pointerdown', this.handleClick, this);
 
-        // Cria as animações
+        // Cria as animações do Farmer
         this.anims.create({
             key: 'walk',
-            frames: this.anims.generateFrameNumbers('character', { start: 0, end: 3 }),
+            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
 
-        // Adiciona o personagem
-        this.character = this.add.sprite(
+        // Adiciona o Farmer
+        this.farmer = this.add.sprite(
             this.cameras.main.centerX,
             this.cameras.main.centerY,
-            'character'
+            'farmer'
         );
+        
+        // Ajusta a escala para melhor visualização
+        this.farmer.setScale(2);
 
         // Inicia a animação
-        this.character.play('walk');
+        this.farmer.play('walk');
 
-        // Adiciona movimento
+        // Adiciona movimento isométrico
         this.tweens.add({
-            targets: this.character,
-            x: this.character.x + 100,
+            targets: this.farmer,
+            x: this.farmer.x + 100,
+            y: this.farmer.y + 50,
             duration: 2000,
             yoyo: true,
             repeat: -1
