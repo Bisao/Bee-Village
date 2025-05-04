@@ -13,30 +13,59 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tile_grass', 'assets/tiles/tile_grass.png');
-        this.load.image('tile_grass_2', 'assets/tiles/tile_grass_2.png');
-        this.load.image('tile_grass_2_flowers', 'assets/tiles/tile_grass_2_flowers.png');
-        this.load.image('tile_grass_3_flower', 'assets/tiles/tile_grass_3_flower.png');
+        const assets = {
+            tiles: [
+                'tile_grass',
+                'tile_grass_2',
+                'tile_grass_2_flowers', 
+                'tile_grass_3_flower'
+            ],
+            buildings: [
+                'chickenHouse|ChickenHouse',
+                'cowHouse|CowHouse',
+                'farmerHouse|FarmerHouse',
+                'minerHouse|MinerHouse',
+                'pigHouse|PigHouse',
+                'fishermanHouse|fishermanHouse'
+            ]
+        };
 
-        // Carrega as imagens das casas
-        this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
-        this.load.image('cowHouse', 'assets/buildings/CowHouse.png');
-        this.load.image('farmerHouse', 'assets/buildings/FarmerHouse.png');
-        this.load.image('minerHouse', 'assets/buildings/MinerHouse.png');
-        this.load.image('pigHouse', 'assets/buildings/PigHouse.png');
-        this.load.image('fishermanHouse', 'assets/buildings/fishermanHouse.png');
+        // Load tiles
+        assets.tiles.forEach(tile => {
+            this.load.image(tile, `assets/tiles/${tile}.png`);
+        });
 
-        // Carrega o spritesheet do Farmer
+        // Load buildings
+        assets.buildings.forEach(building => {
+            const [key, filename] = building.split('|');
+            this.load.image(key, `assets/buildings/${filename}.png`);
+        });
+
+        // Load farmer sprite
         this.load.spritesheet('farmer', 'assets/sprites/Farmer.png', {
             frameWidth: 32,
             frameHeight: 48
         });
+
+        // Error handling for asset loading
+        this.load.on('loaderror', (fileObj) => {
+            console.warn('Error loading asset:', fileObj.key);
+        });
     }
 
     create() {
-        this.createIsometricGrid(5, 5);
+        this.initializeGame();
+        this.setupUIHandlers();
+        this.setupInputHandlers();
+        this.createInitialBuildings();
+        this.createFarmerCharacter();
+    }
 
-        // Setup UI handlers
+    initializeGame() {
+        this.createIsometricGrid(5, 5);
+    }
+
+    setupUIHandlers() {
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -45,6 +74,7 @@ export default class MainScene extends Phaser.Scene {
                 this.selectedBuilding = btn.dataset.building;
             });
         });
+    }
 
         // Configuração do drag da câmera
         this.isDragging = false;
@@ -230,31 +260,59 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(gridX, gridY, buildingKey) {
-        // Check for overlap
-        if (this.buildingGrid[`${gridX},${gridY}`]) {
-            return; // Building already exists at this location
+        const key = `${gridX},${gridY}`;
+        
+        // Validações
+        if (this.buildingGrid[key]) {
+            console.warn('Tile already occupied');
+            return null;
         }
 
-        // Calcula as coordenadas isométricas centrais do tile
-        const tileX = (gridX - gridY) * this.tileWidth;
-        const tileY = (gridX + gridY) * this.tileHeight / 2;
+        if (!this.isValidGridPosition(gridX, gridY)) {
+            console.warn('Invalid grid position');
+            return null;
+        }
 
-        // Cria a estrutura na posição calculada
-        const building = this.add.image(
-            this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.tileHeight / 3), // Ajuste na altura para ficar no centro
-            buildingKey
-        );
+        try {
+            // Calcula coordenadas isométricas
+            const {x: tileX, y: tileY} = this.gridToIso(gridX, gridY);
 
-        building.setDepth(gridY + 1); // Corrige a profundidade usando gridY
+            // Cria a estrutura
+            const building = this.add.image(
+                this.cameras.main.centerX + tileX,
+                this.cameras.main.centerY + tileY - (this.tileHeight / 3),
+                buildingKey
+            );
 
-        // Ajusta a escala para corresponder ao tamanho do tile
-        const scale = (this.tileWidth * 1.2) / building.width;
-        building.setScale(scale);
+            // Configurações da estrutura
+            building.setDepth(gridY + 1);
+            const scale = (this.tileWidth * 1.2) / building.width;
+            building.setScale(scale);
 
-        // Track building placement
-        this.buildingGrid[`${gridX},${gridY}`] = building;
-        return building;
+            // Registra a estrutura
+            this.buildingGrid[key] = {
+                sprite: building,
+                type: buildingKey,
+                gridX,
+                gridY
+            };
+
+            return building;
+        } catch (error) {
+            console.error('Error placing building:', error);
+            return null;
+        }
+    }
+
+    isValidGridPosition(x, y) {
+        return x >= 0 && x < this.grid[0].length && y >= 0 && y < this.grid.length;
+    }
+
+    gridToIso(gridX, gridY) {
+        return {
+            x: (gridX - gridY) * this.tileWidth,
+            y: (gridX + gridY) * this.tileHeight / 2
+        };
     }
 
     handleClick(pointer) {
