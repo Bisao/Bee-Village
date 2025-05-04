@@ -54,6 +54,43 @@ export default class MainScene extends Phaser.Scene {
         this.setupUIHandlers();
         this.setupInputHandlers();
         this.createFarmerCharacter();
+        this.placeTrees();
+    }
+
+    placeTrees() {
+        const treeTypes = ['tree_round', 'tree_pine', 'tree_autumn', 'tree_fruit'];
+        const numTrees = 15; // Number of trees to place
+
+        for (let i = 0; i < numTrees; i++) {
+            const randomX = Math.floor(Math.random() * this.grid[0].length);
+            const randomY = Math.floor(Math.random() * this.grid.length);
+            const key = `${randomX},${randomY}`;
+
+            // Skip if there's already a building or tree in this position
+            if (this.buildingGrid[key]) {
+                continue;
+            }
+
+            const randomTree = treeTypes[Math.floor(Math.random() * treeTypes.length)];
+            const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
+            
+            const tree = this.add.image(
+                this.cameras.main.centerX + tileX,
+                this.cameras.main.centerY + tileY - (this.tileHeight / 3),
+                randomTree
+            );
+
+            tree.setDepth(randomY + 1);
+            const scale = (this.tileWidth * 0.8) / tree.width;
+            tree.setScale(scale);
+
+            this.buildingGrid[key] = {
+                sprite: tree,
+                type: 'tree',
+                gridX: randomX,
+                gridY: randomY
+            };
+        }
     }
 
     createIsometricGrid(width, height) {
