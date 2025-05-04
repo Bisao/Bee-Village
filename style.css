@@ -68,26 +68,42 @@ h2::after {
 }
 
 .building-btn {
-    padding: 16px;
-    background: rgba(42, 42, 42, 0.7);
+    padding: 12px;
+    background: rgba(42, 42, 42, 0.85);
     border: 2px solid rgba(76, 175, 80, 0.3);
     color: #fff;
     cursor: pointer;
     border-radius: 12px;
     transition: all 0.3s ease;
-    font-size: 0.95em;
+    font-size: 0.9em;
     text-align: left;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
+    width: 100%;
     backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+}
+
+.building-btn img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 4px;
+    transition: all 0.3s ease;
+}
+
+.building-btn span {
+    flex: 1;
 }
 
 .building-btn::before {
     content: '';
     position: absolute;
     inset: 0;
-    border-radius: 12px;
     background: linear-gradient(45deg, #4CAF50, #45a049);
     opacity: 0;
     transition: all 0.3s ease;
@@ -100,6 +116,11 @@ h2::after {
     box-shadow: 0 5px 15px rgba(76, 175, 80, 0.2);
 }
 
+.building-btn:hover img {
+    transform: scale(1.1);
+    background: rgba(76, 175, 80, 0.1);
+}
+
 .building-btn:hover::before {
     opacity: 0.1;
 }
@@ -109,6 +130,10 @@ h2::after {
     border-color: #45a049;
     color: white;
     box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+.building-btn.selected img {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 /* Mobile Responsive */
