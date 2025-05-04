@@ -258,15 +258,36 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleClick(pointer) {
-        const worldX = pointer.x - this.cameras.main.centerX;
-        const worldY = pointer.y - this.cameras.main.centerY;
+        if (!this.selectedBuilding) return; // Se não houver estrutura selecionada, não faz nada
 
-        const gridX = Math.round((worldX / this.tileWidth + worldY / this.tileHeight));
-        const gridY = Math.round((worldY / this.tileHeight - worldX / this.tileWidth));
+        // Encontra o tile clicado
+        let closestTile = null;
+        let closestDistance = Infinity;
 
-        if (gridX >= 0 && gridX < this.grid[0].length && 
-            gridY >= 0 && gridY < this.grid.length) {
-            this.placeBuilding(gridX, gridY, this.selectedBuilding);
+        for (let y = 0; y < this.grid.length; y++) {
+            for (let x = 0; x < this.grid[y].length; x++) {
+                const tile = this.grid[y][x];
+                const distance = Phaser.Math.Distance.Between(
+                    pointer.x,
+                    pointer.y,
+                    tile.x,
+                    tile.y
+                );
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestTile = tile;
+                }
+            }
+        }
+
+        if (closestTile && !this.buildingGrid[`${closestTile.data.gridX},${closestTile.data.gridY}`]) {
+            this.placeBuilding(closestTile.data.gridX, closestTile.data.gridY, this.selectedBuilding);
+            // Limpa a seleção após posicionar
+            this.selectedBuilding = null;
+            // Remove a classe selected de todos os botões
+            document.querySelectorAll('.building-btn').forEach(btn => {
+                btn.classList.remove('selected');
+            });
         }
     }
 }
