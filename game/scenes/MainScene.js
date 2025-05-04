@@ -2,8 +2,8 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Ajusta o tamanho dos tiles baseado no dispositivo
-        this.tileWidth = window.innerWidth < 768 ? 96 : 128;
-        this.tileHeight = window.innerWidth < 768 ? 48 : 64;
+        this.tileWidth = window.innerWidth < 768 ? 64 : 96;
+        this.tileHeight = window.innerWidth < 768 ? 32 : 48;
         this.minZoom = window.innerWidth < 768 ? 0.5 : 0.7;
         this.maxZoom = window.innerWidth < 768 ? 2.0 : 2.5;
         
