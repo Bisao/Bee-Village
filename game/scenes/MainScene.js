@@ -43,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createIsometricGrid(20, 20);
+        this.createIsometricGrid(10, 10);
         this.setupUIHandlers();
         this.setupInputHandlers();
         this.createInitialBuildings();
