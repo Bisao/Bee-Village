@@ -1,0 +1,13 @@
+
+{
+  "name": "bee-village",
+  "version": "1.0.0",
+  "description": "An isometric village game",
+  "main": "index.html",
+  "scripts": {
+    "dev": "http-server -c-1"
+  },
+  "dependencies": {
+    "http-server": "^14.1.1"
+  }
+}
