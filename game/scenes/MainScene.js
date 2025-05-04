@@ -183,11 +183,22 @@ export default class MainScene extends Phaser.Scene {
                 const tileX = (x - y) * this.tileWidth;
                 const tileY = (x + y) * (this.tileHeight / 2);
 
-                // Create tile with tile_grass.png
+                // Lista de tiles disponíveis
+                const tileTypes = [
+                    'tile_grass',
+                    'tile_grass_2',
+                    'tile_grass_2_flowers',
+                    'tile_grass_3_flower'
+                ];
+                
+                // Seleciona um tile aleatório
+                const randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
+                
+                // Cria o tile com a imagem aleatória
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
-                    'tile_grass'
+                    randomTile
                 );
                 
                 // Ajusta a escala para garantir que a imagem tenha 32x32 pixels
