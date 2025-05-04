@@ -1,4 +1,4 @@
-export default class MainScene extends Phaser.Scene {
+export default export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Define tamanho fixo dos tiles em 32x32
@@ -183,15 +183,17 @@ export default class MainScene extends Phaser.Scene {
         const gridWidth = 10;  
         const gridHeight = 10;
         
-        // Calcula o offset para centralizar o grid
-        const offsetX = -(gridWidth * this.tileWidth) / 2;
-        const offsetY = -(gridHeight * this.tileHeight) / 4;
+        // Centraliza o grid na tela
+        const gameWidth = this.cameras.main.width;
+        const gameHeight = this.cameras.main.height;
+        const offsetX = gameWidth / 2 - (gridWidth * this.tileWidth) / 4;
+        const offsetY = gameHeight / 4;
         
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
             for (let x = 0; x < gridWidth; x++) {
-                const tileX = (x - y) * (this.tileWidth - 0.5) + offsetX; 
-                const tileY = (x + y) * (this.tileHeight / 2 - 0.5) + offsetY;
+                const tileX = (x - y) * (this.tileWidth / 2) + offsetX;
+                const tileY = (x + y) * (this.tileHeight / 4) + offsetY;
 
                 // Lista de tiles disponíveis com pesos (mais tiles sem flores)
                 const tileTypes = [
