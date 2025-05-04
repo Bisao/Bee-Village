@@ -136,7 +136,7 @@ export default class MainScene extends Phaser.Scene {
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
-                const tileX = (x - y) * (this.tileWidth / 2);
+                const tileX = (x - y) * this.tileWidth;
                 const tileY = (x + y) * (this.tileHeight / 2);
 
                 const tileTypes = [
