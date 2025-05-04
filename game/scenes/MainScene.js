@@ -46,7 +46,6 @@ export default class MainScene extends Phaser.Scene {
         this.createIsometricGrid(10, 10);
         this.setupUIHandlers();
         this.setupInputHandlers();
-        this.createInitialBuildings();
         this.createFarmerCharacter();
     }
 
@@ -272,20 +271,6 @@ export default class MainScene extends Phaser.Scene {
             console.error('Error placing building:', error);
             return false;
         }
-    }
-
-    createInitialBuildings() {
-        const initialBuildings = [
-            [0, 0, 'farmerHouse'],
-            [4, 0, 'cowHouse'],
-            [0, 4, 'chickenHouse'],
-            [4, 4, 'pigHouse'],
-            [2, 2, 'minerHouse']
-        ];
-
-        initialBuildings.forEach(([x, y, type]) => {
-            this.placeBuilding(x, y, type);
-        });
     }
 
     createFarmerCharacter() {
