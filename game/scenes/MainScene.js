@@ -62,7 +62,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeTrees() {
-        const treeTypes = ['tree_1', 'tree_2', 'tree_3', 'tree_4'];
+        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
         const numTrees = 15;
 
         for (let i = 0; i < numTrees; i++) {
