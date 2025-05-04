@@ -180,8 +180,8 @@ export default class MainScene extends Phaser.Scene {
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
             for (let x = 0; x < gridWidth; x++) {
-                const tileX = (x - y) * this.tileWidth;
-                const tileY = (x + y) * (this.tileHeight / 2);
+                const tileX = (x - y) * (this.tileWidth - 0.5); // Remove horizontal spacing
+                const tileY = (x + y) * (this.tileHeight / 2 - 0.5); // Remove vertical spacing
 
                 // Lista de tiles disponíveis
                 const tileTypes = [
@@ -201,10 +201,10 @@ export default class MainScene extends Phaser.Scene {
                     randomTile
                 );
                 
-                // Ajusta a escala para garantir que a imagem tenha 32x32 pixels
-                tile.displayWidth = this.tileWidth;
-                tile.displayHeight = this.tileHeight;
-                tile.setOrigin(0.5, 0.75); // Ajusta a origem para melhor alinhamento isométrico
+                // Ajusta a escala para garantir que a imagem cubra todo o espaço
+                tile.displayWidth = this.tileWidth + 1; // Adiciona 1 pixel para eliminar gaps
+                tile.displayHeight = this.tileHeight + 1; // Adiciona 1 pixel para eliminar gaps
+                tile.setOrigin(0.5, 0.75); // Mantém o alinhamento isométrico
                 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
