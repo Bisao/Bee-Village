@@ -22,6 +22,12 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(tile, `assets/tiles/${tile}.png`);
         });
 
+        // Load trees
+        this.load.image('tree_round', 'assets/trees/tree_round.png');
+        this.load.image('tree_pine', 'assets/trees/tree_pine.png');
+        this.load.image('tree_autumn', 'assets/trees/tree_autumn.png');
+        this.load.image('tree_fruit', 'assets/trees/tree_fruit.png');
+
         const buildings = [
             'chickenHouse|ChickenHouse',
             'cowHouse|CowHouse', 
@@ -29,13 +35,6 @@ export default class MainScene extends Phaser.Scene {
             'minerHouse|MinerHouse',
             'pigHouse|PigHouse',
             'fishermanHouse|fishermanHouse'
-
-        // Load trees
-        this.load.image('tree_round', 'assets/trees/tree_round.png');
-        this.load.image('tree_pine', 'assets/trees/tree_pine.png');
-        this.load.image('tree_autumn', 'assets/trees/tree_autumn.png');
-        this.load.image('tree_fruit', 'assets/trees/tree_fruit.png');
-
         ];
 
         buildings.forEach(building => {
