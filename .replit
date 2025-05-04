@@ -9,3 +9,15 @@ channel = "stable-24_05"
 publicDir = "/"
 deploymentTarget = "static"
 run = ["sh", "-c", "npm run dev"]
+
+[workflows]
+runButton = "Run Game"
+
+[[workflows.workflow]]
+name = "Run Game"
+author = 42265507
+mode = "sequential"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npm run dev"
