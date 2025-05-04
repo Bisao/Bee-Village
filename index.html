@@ -8,60 +8,44 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         body { margin: 0; padding: 0; display: flex; height: 100vh; background: #2c3e50; overflow: hidden; }
-        canvas { max-width: 100%; max-height: 100vh; touch-action: none; }
+        canvas { max-width: 100%; max-height: 100vh; }
         #menu-button { 
             position: fixed;
             top: 20px;
             left: 20px;
             z-index: 1000;
-            background: rgba(52, 152, 219, 0.9);
+            background: #3498db;
             border: none;
             color: white;
             width: 50px;
             height: 50px;
             border-radius: 50%;
             cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-            backdrop-filter: blur(5px);
-            transition: transform 0.2s;
-        }
-        #menu-button:active {
-            transform: scale(0.95);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         #sidebar {
             position: fixed;
-            left: -280px;
+            left: -250px;
             top: 0;
-            width: 270px;
+            width: 250px;
             height: 100vh;
-            background: rgba(52, 73, 94, 0.95);
-            backdrop-filter: blur(10px);
-            transition: 0.3s ease-out;
+            background: #34495e;
+            transition: 0.3s;
             z-index: 999;
             padding-top: 80px;
-            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
         }
         #sidebar.active {
             left: 0;
         }
         .menu-item {
             color: white;
-            padding: 18px 25px;
-            display: flex;
-            align-items: center;
+            padding: 15px 20px;
+            display: block;
             text-decoration: none;
-            border-bottom: 1px solid rgba(70, 99, 127, 0.3);
-            font-family: Arial, sans-serif;
-            transition: all 0.2s;
+            border-bottom: 1px solid #46637f;
         }
-        .menu-item i {
-            margin-right: 15px;
-            width: 24px;
-            text-align: center;
-        }
-        .menu-item:hover, .menu-item:active {
-            background: rgba(44, 62, 80, 0.8);
-            padding-left: 30px;
+        .menu-item:hover {
+            background: #2c3e50;
         }
         @media (max-width: 768px) {
             #menu-button {
@@ -78,11 +62,10 @@
         <i class="fas fa-bars"></i>
     </button>
     <div id="sidebar">
-        <a href="#" class="menu-item"><i class="fas fa-home"></i>Início</a>
-        <a href="#" class="menu-item"><i class="fas fa-building"></i>Construções</a>
-        <a href="#" class="menu-item"><i class="fas fa-users"></i>Personagens</a>
-        <a href="#" class="menu-item"><i class="fas fa-coins"></i>Recursos</a>
-        <a href="#" class="menu-item"><i class="fas fa-cog"></i>Configurações</a>
+        <a href="#" class="menu-item">Início</a>
+        <a href="#" class="menu-item">Construções</a>
+        <a href="#" class="menu-item">Personagens</a>
+        <a href="#" class="menu-item">Configurações</a>
     </div>
     
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
