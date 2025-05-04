@@ -1,4 +1,3 @@
-
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
@@ -44,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createIsometricGrid(10, 10);
+        this.createIsometricGrid(20, 20);
         this.setupUIHandlers();
         this.setupInputHandlers();
         this.createInitialBuildings();
@@ -194,7 +193,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.selectedBuilding) return;
 
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-        
+
         // Encontrar o tile mais próximo do clique
         let minDistance = Infinity;
         let clickedTile = null;
@@ -224,7 +223,7 @@ export default class MainScene extends Phaser.Scene {
 
         if (clickedTile && !this.buildingGrid[`${clickedTile.data.gridX},${clickedTile.data.gridY}`]) {
             const success = this.placeBuilding(clickedTile.data.gridX, clickedTile.data.gridY, this.selectedBuilding);
-            
+
             if (success) {
                 // Limpa a seleção e desmarca o botão após posicionar com sucesso
                 this.selectedBuilding = null;
@@ -237,7 +236,7 @@ export default class MainScene extends Phaser.Scene {
 
     placeBuilding(gridX, gridY, buildingKey) {
         const key = `${gridX},${gridY}`;
-        
+
         // Verifica se a posição é válida e está livre
         if (!this.isValidGridPosition(gridX, gridY)) {
             return false;
