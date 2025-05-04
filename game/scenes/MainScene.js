@@ -15,7 +15,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tile', 'assets/tiles/tile.png');
+        this.load.image('tile', '/assets/tiles/tile.png');
         
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
@@ -33,7 +33,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createIsometricGrid(8, 8);
+        this.createIsometricGrid(10, 10);
         this.cameras.main.setZoom(this.initialZoom);
         
         // Configuração do drag da câmera
@@ -175,7 +175,7 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
-        const offsetX = (width * this.tileWidth / 4);
+        const offsetX = (width * this.tileWidth / 2);
         const offsetY = (height * this.tileHeight / 4);
         
         for (let y = 0; y < height; y++) {
