@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -5,70 +6,95 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Isometric Game</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="style.css" rel="stylesheet">
+    <style>
+        body { margin: 0; padding: 0; display: flex; height: 100vh; background: #2c3e50; overflow: hidden; }
+        canvas { max-width: 100%; max-height: 100vh; touch-action: none; }
+        #menu-button { 
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: rgba(52, 152, 219, 0.9);
+            border: none;
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            backdrop-filter: blur(5px);
+            transition: transform 0.2s;
+        }
+        #menu-button:active {
+            transform: scale(0.95);
+        }
+        #sidebar {
+            position: fixed;
+            left: -280px;
+            top: 0;
+            width: 270px;
+            height: 100vh;
+            background: rgba(52, 73, 94, 0.95);
+            backdrop-filter: blur(10px);
+            transition: 0.3s ease-out;
+            z-index: 999;
+            padding-top: 80px;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.2);
+        }
+        #sidebar.active {
+            left: 0;
+        }
+        .menu-item {
+            color: white;
+            padding: 18px 25px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            border-bottom: 1px solid rgba(70, 99, 127, 0.3);
+            font-family: Arial, sans-serif;
+            transition: all 0.2s;
+        }
+        .menu-item i {
+            margin-right: 15px;
+            width: 24px;
+            text-align: center;
+        }
+        .menu-item:hover, .menu-item:active {
+            background: rgba(44, 62, 80, 0.8);
+            padding-left: 30px;
+        }
+        @media (max-width: 768px) {
+            #menu-button {
+                width: 40px;
+                height: 40px;
+                top: 10px;
+                left: 10px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div id="game-container">
-        <div id="ui-overlay">
-            <button id="menu-button" class="ui-button">
-                <i class="fas fa-bars"></i>
-            </button>
-
-            <div id="building-toolbar">
-                <button class="building-btn" data-building="farmerHouse">
-                    <i class="fas fa-home"></i>
-                    <span>Casa</span>
-                </button>
-                <button class="building-btn" data-building="chickenHouse">
-                    <i class="fas fa-drumstick-bite"></i>
-                    <span>Galinheiro</span>
-                </button>
-                <button class="building-btn" data-building="cowHouse">
-                    <i class="fas fa-cow"></i>
-                    <span>Estábulo</span>
-                </button>
-            </div>
-        </div>
-
-        <div id="sidebar" class="sidebar">
-            <div class="sidebar-header">
-                <h2>Menu</h2>
-                <button id="close-sidebar" class="close-btn">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="sidebar-content">
-                <a href="#" class="menu-item">
-                    <i class="fas fa-home"></i>
-                    <span>Início</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-coins"></i>
-                    <span>Recursos</span>
-                </a>
-                <a href="#" class="menu-item">
-                    <i class="fas fa-cog"></i>
-                    <span>Configurações</span>
-                </a>
-            </div>
-        </div>
+    <button id="menu-button">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div id="sidebar">
+        <a href="#" class="menu-item"><i class="fas fa-home"></i>Início</a>
+        <a href="#" class="menu-item"><i class="fas fa-building"></i>Construções</a>
+        <a href="#" class="menu-item"><i class="fas fa-users"></i>Personagens</a>
+        <a href="#" class="menu-item"><i class="fas fa-coins"></i>Recursos</a>
+        <a href="#" class="menu-item"><i class="fas fa-cog"></i>Configurações</a>
     </div>
-
+    
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="game/config.js" type="module"></script>
     <script>
         const menuButton = document.getElementById('menu-button');
         const sidebar = document.getElementById('sidebar');
-        const closeSidebarButton = document.getElementById('close-sidebar');
-
+        
         menuButton.addEventListener('click', () => {
             sidebar.classList.toggle('active');
         });
-
-        closeSidebarButton.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-        });
-
+        
         // Fecha o menu ao clicar fora
         document.addEventListener('click', (e) => {
             if (!sidebar.contains(e.target) && !menuButton.contains(e.target)) {
