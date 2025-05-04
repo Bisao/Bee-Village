@@ -2,8 +2,8 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Ajusta o tamanho dos tiles baseado no dispositivo
-        this.tileWidth = window.innerWidth < 768 ? 64 : 96;
-        this.tileHeight = window.innerWidth < 768 ? 32 : 48;
+        this.tileWidth = window.innerWidth < 768 ? 96 : 128;
+        this.tileHeight = window.innerWidth < 768 ? 48 : 64;
         this.minZoom = window.innerWidth < 768 ? 0.5 : 0.7;
         this.maxZoom = window.innerWidth < 768 ? 2.0 : 2.5;
         
@@ -15,7 +15,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('tile', 'assets/tile.png');
+        this.load.image('tile', '/assets/tiles/tile.png');
         
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
@@ -33,7 +33,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createIsometricGrid(5, 5);
+        this.createIsometricGrid(10, 10);
         this.cameras.main.setZoom(this.initialZoom);
         
         // Configuração do drag da câmera
@@ -175,6 +175,9 @@ export default class MainScene extends Phaser.Scene {
 
     createIsometricGrid(width, height) {
         this.grid = [];
+        const offsetX = (width * this.tileWidth / 2);
+        const offsetY = (height * this.tileHeight / 4);
+        
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
@@ -182,8 +185,8 @@ export default class MainScene extends Phaser.Scene {
                 const tileY = (x + y) * (this.tileHeight / 2);
 
                 const tile = this.add.image(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY,
+                    this.cameras.main.centerX + tileX - offsetX,
+                    this.cameras.main.centerY + tileY - offsetY,
                     'tile'
                 ).setScale(1.2);
 
@@ -198,12 +201,14 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(x, y, buildingKey) {
+        const offsetX = (this.grid[0].length * this.tileWidth / 4);
+        const offsetY = 0;
         const tileX = (x - y) * this.tileWidth / 2;
         const tileY = (x + y) * this.tileHeight / 2;
 
         const building = this.add.image(
-            this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.tileHeight / 2), // Ajuste na altura para centralizar
+            this.cameras.main.centerX + tileX - offsetX,
+            this.cameras.main.centerY + tileY - offsetY - (this.tileHeight / 2), // Ajuste na altura para centralizar
             buildingKey
         );
         
