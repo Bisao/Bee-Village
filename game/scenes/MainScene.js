@@ -6,7 +6,7 @@ export default class MainScene extends Phaser.Scene {
         this.minZoom = 0.5;
         this.maxZoom = 2;
         this.selectedBuilding = 'farmerHouse';
-        
+
         // Detecta se é dispositivo móvel
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     }
@@ -16,7 +16,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('tile_grass_2', 'assets/tiles/tile_grass_2.png');
         this.load.image('tile_grass_2_flowers', 'assets/tiles/tile_grass_2_flowers.png');
         this.load.image('tile_grass_3_flower', 'assets/tiles/tile_grass_3_flower.png');
-        
+
         // Carrega as imagens das casas
         this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
         this.load.image('cowHouse', 'assets/buildings/CowHouse.png');
@@ -34,7 +34,7 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.createIsometricGrid(5, 5);
-        
+
         // Setup UI handlers
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(btn => {
@@ -44,11 +44,11 @@ export default class MainScene extends Phaser.Scene {
                 this.selectedBuilding = btn.dataset.building;
             });
         });
-        
+
         // Configuração do drag da câmera
         this.isDragging = false;
         this.touchStartTime = 0;
-        
+
         this.input.on('pointerdown', (pointer) => {
             if (this.isMobile) {
                 this.touchStartTime = Date.now();
@@ -67,15 +67,15 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointermove', (pointer) => {
             // Verifica se há dois dedos na tela
             const twoFingersDown = this.input.pointer1.isDown && this.input.pointer2.isDown;
-            
+
             // Só move o grid se estiver arrastando com um dedo
             if (this.isDragging && !twoFingersDown) {
                 const deltaX = pointer.x - this.dragStartX;
                 const deltaY = pointer.y - this.dragStartY;
-                
+
                 this.cameras.main.scrollX -= deltaX;
                 this.cameras.main.scrollY -= deltaY;
-                
+
                 this.dragStartX = pointer.x;
                 this.dragStartY = pointer.y;
             }
@@ -90,7 +90,7 @@ export default class MainScene extends Phaser.Scene {
                     pointer.x, 
                     pointer.y
                 );
-                
+
                 // Se o toque foi curto e não houve muito movimento, considera como clique
                 if (touchDuration < 200 && dragDistance < 10) {
                     this.handleClick(pointer);
@@ -98,7 +98,7 @@ export default class MainScene extends Phaser.Scene {
             }
             this.isDragging = false;
         });
-        
+
         // Configuração de zoom adaptativa
         if (!this.isMobile) {
             // Zoom com roda do mouse para PC
@@ -115,15 +115,15 @@ export default class MainScene extends Phaser.Scene {
         this.input.addPointer(1);
         let prevDist = 0;
         let lastZoomTime = 0;
-        
+
         this.input.on('pointermove', (pointer) => {
             const now = Date.now();
-            
+
             if (this.input.pointer1.isDown && this.input.pointer2.isDown) {
                 const dx = this.input.pointer1.x - this.input.pointer2.x;
                 const dy = this.input.pointer1.y - this.input.pointer2.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
-                
+
                 if (prevDist > 0 && (now - lastZoomTime > 16)) { // Limite de 60fps para zoom
                     const delta = dist - prevDist;
                     const zoom = this.cameras.main.zoom;
@@ -163,7 +163,7 @@ export default class MainScene extends Phaser.Scene {
             this.cameras.main.centerY - 50,
             'farmer'
         );
-        
+
         // Ajusta a escala e profundidade
         this.farmer.setScale(3);
         this.farmer.setDepth(1);
@@ -186,7 +186,7 @@ export default class MainScene extends Phaser.Scene {
         this.grid = [];
         const gridWidth = 10;  // Increased grid size
         const gridHeight = 10; // Increased grid size
-        
+
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
             for (let x = 0; x < gridWidth; x++) {
@@ -202,22 +202,22 @@ export default class MainScene extends Phaser.Scene {
                     'tile_grass_2_flowers',
                     'tile_grass_3_flower'
                 ];
-                
+
                 // Seleciona um tile aleatório (tiles sem flores têm maior chance)
                 const randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
-                
+
                 // Cria o tile com a imagem aleatória
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
                     randomTile
                 );
-                
+
                 // Ajusta a escala para garantir que a imagem cubra todo o espaço
                 tile.displayWidth = this.tileWidth + 1; // Adiciona 1 pixel para eliminar gaps
                 tile.displayHeight = this.tileHeight + 1; // Adiciona 1 pixel para eliminar gaps
                 tile.setOrigin(0.5, 0.75); // Mantém o alinhamento isométrico
-                
+
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
                 tile.on('rightdown', (event) => {
@@ -228,22 +228,24 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    placeBuilding(x, y, buildingKey) {
-        const tileX = (x - y) * this.tileWidth;
-        const tileY = (x + y) * this.tileHeight / 2;
+    placeBuilding(gridX, gridY, buildingKey) {
+        // Calcula as coordenadas isométricas centrais do tile
+        const tileX = (gridX - gridY) * this.tileWidth;
+        const tileY = (gridX + gridY) * this.tileHeight / 2;
 
+        // Cria a estrutura na posição calculada
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.tileHeight / 4), // Ajuste na altura para centralizar
+            this.cameras.main.centerY + tileY - (this.tileHeight / 3), // Ajuste na altura para ficar no centro
             buildingKey
         );
-        
-        building.setDepth(y + 1);
-        
-        // Ajusta a escala para corresponder ao tamanho do tile com proporção melhor
-        const scale = (this.tileWidth * 1.2) / building.width; // Aumenta para 120% do tamanho do tile
+
+        building.setDepth(gridY + 1); // Corrige a profundidade usando gridY
+
+        // Ajusta a escala para corresponder ao tamanho do tile
+        const scale = (this.tileWidth * 1.2) / building.width;
         building.setScale(scale);
-        
+
         return building;
     }
 
