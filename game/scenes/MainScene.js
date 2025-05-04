@@ -43,10 +43,18 @@ export default class MainScene extends Phaser.Scene {
         const width = gameSize.width;
         const height = gameSize.height;
 
+        // Ajusta o tamanho dos tiles baseado no tamanho da tela
+        const baseTileSize = Math.min(width, height) / 15;
+        this.tileWidth = baseTileSize;
+        this.tileHeight = baseTileSize / 2;
+
+        // Ajusta o número de tiles baseado no tamanho da tela
+        const gridSize = Math.max(10, Math.floor(Math.min(width, height) / baseTileSize));
+
         this.cameras.main.setViewport(0, 0, width, height);
 
         if (this.grid) {
-            this.createIsometricGrid(10, 10);
+            this.createIsometricGrid(gridSize, gridSize);
         }
     }
 
