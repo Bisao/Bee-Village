@@ -158,8 +158,9 @@ export default class MainScene extends Phaser.Scene {
                     randomTile
                 );
 
-                tile.displayWidth = this.tileWidth;
-                tile.displayHeight = this.tileHeight;
+                // Ajusta a escala mantendo a proporção do tile
+                const scale = this.tileWidth / tile.width;
+                tile.setScale(scale);
                 tile.setOrigin(0.5, 0.75);
                 tile.setDepth(y); // Garante ordem correta de renderização
 
