@@ -253,7 +253,9 @@ export default class MainScene extends Phaser.Scene {
 
             // Miniatura da estrutura
             const thumbnail = this.add.image(panelWidth - 40, y + 22, building.key);
-            thumbnail.setScale(0.25); // Reduzindo a escala para 0.25
+            // Ajusta a escala para que a altura seja 40px (ligeiramente menor que o botão para margem)
+            const scaleRatio = 40 / thumbnail.height;
+            thumbnail.setScale(scaleRatio);
             thumbnail.setScrollFactor(0);
 
             // Interatividade
