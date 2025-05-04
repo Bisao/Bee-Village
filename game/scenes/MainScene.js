@@ -34,6 +34,7 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         this.createIsometricGrid(5, 5);
+        this.createBuildingPanel();
         
         // Configuração do drag da câmera
         this.isDragging = false;
@@ -205,6 +206,75 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
+    createBuildingPanel() {
+        const buildings = [
+            { key: 'farmerHouse', name: 'Casa do Fazendeiro' },
+            { key: 'cowHouse', name: 'Estábulo' },
+            { key: 'chickenHouse', name: 'Galinheiro' },
+            { key: 'pigHouse', name: 'Chiqueiro' },
+            { key: 'minerHouse', name: 'Casa do Minerador' },
+            { key: 'fishermanHouse', name: 'Casa do Pescador' }
+        ];
+
+        const panelWidth = 200;
+        const panelHeight = 400;
+        const padding = 10;
+        
+        // Criar painel de fundo
+        const panel = this.add.graphics();
+        panel.fillStyle(0x2c3e50, 0.8);
+        panel.fillRect(10, 10, panelWidth, panelHeight);
+        panel.setScrollFactor(0);
+
+        // Título do painel
+        const title = this.add.text(20, 20, 'Estruturas', { 
+            fontSize: '20px', 
+            fill: '#fff' 
+        });
+        title.setScrollFactor(0);
+
+        // Adicionar botões para cada estrutura
+        buildings.forEach((building, index) => {
+            const y = 60 + (index * 55);
+            
+            // Fundo do botão
+            const button = this.add.graphics();
+            button.fillStyle(0x34495e, 0.8);
+            button.fillRect(20, y, panelWidth - 20, 45);
+            button.setScrollFactor(0);
+            button.setInteractive(new Phaser.Geom.Rectangle(20, y, panelWidth - 20, 45), Phaser.Geom.Rectangle.Contains);
+
+            // Texto do botão
+            const text = this.add.text(30, y + 12, building.name, { 
+                fontSize: '16px', 
+                fill: '#fff' 
+            });
+            text.setScrollFactor(0);
+
+            // Miniatura da estrutura
+            const thumbnail = this.add.image(panelWidth - 40, y + 22, building.key);
+            thumbnail.setScale(0.4);
+            thumbnail.setScrollFactor(0);
+
+            // Interatividade
+            button.on('pointerdown', () => {
+                this.selectedBuilding = building.key;
+            });
+
+            button.on('pointerover', () => {
+                button.clear();
+                button.fillStyle(0x3498db, 0.8);
+                button.fillRect(20, y, panelWidth - 20, 45);
+            });
+
+            button.on('pointerout', () => {
+                button.clear();
+                button.fillStyle(0x34495e, 0.8);
+                button.fillRect(20, y, panelWidth - 20, 45);
+            });
+        });
+    }
+
     placeBuilding(x, y, buildingKey) {
         const tileX = (x - y) * this.tileWidth;
         const tileY = (x + y) * this.tileHeight / 2;
@@ -233,7 +303,9 @@ export default class MainScene extends Phaser.Scene {
 
         if (gridX >= 0 && gridX < this.grid[0].length && 
             gridY >= 0 && gridY < this.grid.length) {
-            this.placeBuilding(gridX, gridY, 'farmerHouse');
+            if (this.selectedBuilding) {
+                this.placeBuilding(gridX, gridY, this.selectedBuilding);
+            }
         }
     }
 }
