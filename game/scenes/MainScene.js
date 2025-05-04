@@ -1,3 +1,4 @@
+
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
@@ -9,7 +10,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        // Corrigindo caminhos dos assets
         this.load.image('tile_grass', './assets/tiles/tile_grass.png');
         this.load.image('tile_grass_2', './assets/tiles/tile_grass_2.png');
         this.load.image('tile_grass_2_flowers', './assets/tiles/tile_grass_2_flowers.png');
@@ -43,18 +43,10 @@ export default class MainScene extends Phaser.Scene {
         const width = gameSize.width;
         const height = gameSize.height;
 
-        // Ajusta o tamanho dos tiles baseado no tamanho da tela
-        const baseTileSize = Math.min(width, height) / 15;
-        this.tileWidth = baseTileSize;
-        this.tileHeight = baseTileSize / 2;
-
-        // Ajusta o número de tiles baseado no tamanho da tela
-        const gridSize = Math.max(10, Math.floor(Math.min(width, height) / baseTileSize));
-
         this.cameras.main.setViewport(0, 0, width, height);
 
         if (this.grid) {
-            this.createIsometricGrid(gridSize, gridSize);
+            this.createIsometricGrid(10, 10);
         }
     }
 
@@ -122,7 +114,7 @@ export default class MainScene extends Phaser.Scene {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
                 const tileX = (x - y) * (this.tileWidth / 2);
-                const tileY = (x + y) * (this.tileHeight / 4);
+                const tileY = (x + y) * (this.tileHeight / 2);
 
                 const tileTypes = [
                     'tile_grass',
@@ -143,9 +135,10 @@ export default class MainScene extends Phaser.Scene {
                     randomTile
                 );
 
-                tile.displayWidth = this.tileWidth + 1;
-                tile.displayHeight = this.tileHeight + 1;
-                tile.setOrigin(0.5, 0.75);
+                tile.displayWidth = this.tileWidth;
+                tile.displayHeight = this.tileHeight;
+                tile.setOrigin(0.5, 0.5);
+                tile.setDepth(y);
 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
