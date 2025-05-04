@@ -5,85 +5,13 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Isometric Game</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { margin: 0; padding: 0; display: flex; height: 100vh; background: #2c3e50; overflow: hidden; }
+        body { margin: 0; padding: 0; display: flex; justify-content: center; align-items: center; height: 100vh; background: #2c3e50; }
         canvas { max-width: 100%; max-height: 100vh; }
-        #menu-button { 
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background: #3498db;
-            border: none;
-            color: white;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        #sidebar {
-            position: fixed;
-            left: -250px;
-            top: 0;
-            width: 250px;
-            height: 100vh;
-            background: #34495e;
-            transition: 0.3s;
-            z-index: 999;
-            padding-top: 80px;
-        }
-        #sidebar.active {
-            left: 0;
-        }
-        .menu-item {
-            color: white;
-            padding: 15px 20px;
-            display: block;
-            text-decoration: none;
-            border-bottom: 1px solid #46637f;
-        }
-        .menu-item:hover {
-            background: #2c3e50;
-        }
-        @media (max-width: 768px) {
-            #menu-button {
-                width: 40px;
-                height: 40px;
-                top: 10px;
-                left: 10px;
-            }
-        }
     </style>
 </head>
 <body>
-    <button id="menu-button">
-        <i class="fas fa-bars"></i>
-    </button>
-    <div id="sidebar">
-        <a href="#" class="menu-item">Início</a>
-        <a href="#" class="menu-item">Construções</a>
-        <a href="#" class="menu-item">Personagens</a>
-        <a href="#" class="menu-item">Configurações</a>
-    </div>
-    
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
     <script src="game/config.js" type="module"></script>
-    <script>
-        const menuButton = document.getElementById('menu-button');
-        const sidebar = document.getElementById('sidebar');
-        
-        menuButton.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-        });
-        
-        // Fecha o menu ao clicar fora
-        document.addEventListener('click', (e) => {
-            if (!sidebar.contains(e.target) && !menuButton.contains(e.target)) {
-                sidebar.classList.remove('active');
-            }
-        });
-    </script>
 </body>
 </html>
