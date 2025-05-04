@@ -36,41 +36,12 @@ export default class MainScene extends Phaser.Scene {
         this.createIsometricGrid(5, 5);
         this.cameras.main.setZoom(this.initialZoom);
         
-        // Configuração do drag da câmera
-        this.isDragging = false;
-        this.touchStartTime = 0;
+        // Importa e inicializa os controles apropriados
+        import { MobileControls, DesktopControls } from '../core/Controls.js';
         
-        this.input.on('pointerdown', (pointer) => {
-            if (this.isMobile) {
-                this.touchStartTime = Date.now();
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            } else if (pointer.rightButtonDown()) {
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            } else {
-                this.handleClick(pointer);
-            }
-        });
-
-        this.input.on('pointermove', (pointer) => {
-            // Verifica se há dois dedos na tela
-            const twoFingersDown = this.input.pointer1.isDown && this.input.pointer2.isDown;
-            
-            // Só move o grid se estiver arrastando com um dedo
-            if (this.isDragging && !twoFingersDown) {
-                const deltaX = pointer.x - this.dragStartX;
-                const deltaY = pointer.y - this.dragStartY;
-                
-                this.cameras.main.scrollX -= deltaX;
-                this.cameras.main.scrollY -= deltaY;
-                
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            }
-        });
+        this.controls = this.isMobile ? 
+            new MobileControls(this) : 
+            new DesktopControls(this);
 
         this.input.on('pointerup', (pointer) => {
             if (this.isMobile) {
