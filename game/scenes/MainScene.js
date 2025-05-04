@@ -74,8 +74,8 @@ export default class MainScene extends Phaser.Scene {
                     randomTile
                 );
 
-                tile.displayWidth = this.tileWidth + 1;
-                tile.displayHeight = this.tileHeight + 1;
+                tile.displayWidth = this.tileWidth;
+                tile.displayHeight = this.tileHeight;
                 tile.setOrigin(0.5, 0.75);
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
