@@ -6,9 +6,15 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        // Placeholder tiles - replace with your assets
         this.load.image('tile', 'assets/tile.png');
-        this.load.image('building', 'assets/building.png');
+        
+        // Carrega as imagens das casas
+        this.load.image('chickenHouse', 'assets/buildings/ChickenHouse.png');
+        this.load.image('cowHouse', 'assets/buildings/CowHouse.png');
+        this.load.image('farmerHouse', 'assets/buildings/FarmerHouse.png');
+        this.load.image('minerHouse', 'assets/buildings/MinerHouse.png');
+        this.load.image('pigHouse', 'assets/buildings/PigHouse.png');
+        this.load.image('fishermanHouse', 'assets/buildings/fishermanHouse.png');
 
         // Carrega o spritesheet do Farmer
         this.load.spritesheet('farmer', 'assets/sprites/Farmer.png', {
@@ -20,6 +26,13 @@ export default class MainScene extends Phaser.Scene {
     create() {
         this.createIsometricGrid(5, 5);
         this.input.on('pointerdown', this.handleClick, this);
+
+        // Posiciona algumas casas iniciais
+        this.placeBuilding(0, 0, 'farmerHouse');
+        this.placeBuilding(4, 0, 'cowHouse');
+        this.placeBuilding(0, 4, 'chickenHouse');
+        this.placeBuilding(4, 4, 'pigHouse');
+        this.placeBuilding(2, 2, 'minerHouse');
 
         // Cria as animações do Farmer
         this.anims.create({
@@ -75,8 +88,22 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
+    placeBuilding(x, y, buildingKey) {
+        const tileX = (x - y) * this.tileWidth / 2;
+        const tileY = (x + y) * this.tileHeight / 2;
+
+        const building = this.add.image(
+            this.cameras.main.centerX + tileX,
+            this.cameras.main.centerY + tileY - 32, // Ajuste a altura para parecer que está sobre o tile
+            buildingKey
+        );
+        
+        building.setDepth(y + 1); // Garante que as construções mais ao fundo apareçam atrás
+        building.setScale(1.5);
+        return building;
+    }
+
     handleClick(pointer) {
-        // Convert screen coordinates to isometric grid coordinates
         const worldX = pointer.x - this.cameras.main.centerX;
         const worldY = pointer.y - this.cameras.main.centerY;
 
@@ -85,8 +112,7 @@ export default class MainScene extends Phaser.Scene {
 
         if (gridX >= 0 && gridX < this.grid[0].length && 
             gridY >= 0 && gridY < this.grid.length) {
-            console.log(`Clicked grid position: ${gridX}, ${gridY}`);
-            // Aqui você pode adicionar a lógica de construção
+            this.placeBuilding(gridX, gridY, 'farmerHouse');
         }
     }
 }
