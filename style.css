@@ -68,7 +68,7 @@ h2::after {
 }
 
 .building-btn {
-    padding: 8px;
+    padding: 4px 8px;
     background: rgba(42, 42, 42, 0.85);
     border: 2px solid rgba(76, 175, 80, 0.3);
     color: #fff;
@@ -87,10 +87,10 @@ h2::after {
 }
 
 .building-btn img {
-    width: 32px;
-    height: 32px;
+    width: 24px;
+    height: 24px;
     object-fit: contain;
-    border-radius: 6px;
+    border-radius: 4px;
     background: rgba(0, 0, 0, 0.2);
     padding: 3px;
     transition: all 0.3s ease;
