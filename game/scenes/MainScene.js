@@ -77,16 +77,16 @@ export default class MainScene extends Phaser.Scene {
             const randomTree = treeTypes[Math.floor(Math.random() * treeTypes.length)];
             const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
 
-            const tree = this.add.sprite(
+            const tree = this.add.image(
                 this.cameras.main.centerX + tileX,
                 this.cameras.main.centerY + tileY - (this.tileHeight / 3),
                 randomTree
             );
 
             tree.setDepth(randomY + 1);
-            const scale = (this.tileWidth * 0.8) / Math.max(tree.width, 1);
+            const scale = (this.tileWidth * 1.2) / Math.max(tree.width, 1);
             tree.setScale(scale);
-            tree.setOrigin(0.5, 0.75);
+            tree.setOrigin(0.5, 1);
 
             this.buildingGrid[key] = {
                 sprite: tree,
