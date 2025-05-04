@@ -7,6 +7,7 @@ class MainScene extends Phaser.Scene {
         this.minZoom = 0.3;
         this.maxZoom = 3;
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        this.selectedBuilding = null;
     }
 
     preload() {
@@ -34,205 +35,30 @@ class MainScene extends Phaser.Scene {
     create() {
         // Configuração das câmeras
         this.mainCamera = this.cameras.main;
+        
+        // Criar câmera UI separada
         this.uiCamera = this.cameras.add(0, 0, 800, 600);
         this.uiCamera.setScroll(0, 0);
-        this.uiCamera.ignore([]);
-
+        this.uiCamera.setBackgroundColor('rgba(0,0,0,0)');
+        
+        // Container para elementos do jogo
+        this.gameContainer = this.add.container(0, 0);
+        
         // Container para UI
         this.uiContainer = this.add.container(0, 0);
-        this.isPanelVisible = true;
         
-        this.createIsometricGrid(5, 5);
+        // Configurar câmeras
+        this.mainCamera.ignore(this.uiContainer);
+        this.uiCamera.ignore(this.gameContainer);
+        
+        this.createIsometricGrid(10, 10);
         this.createBuildingPanel();
         
-        // Configuração de interação
-        this.isDragging = false;
-        this.touchStartTime = 0;
-        
         this.setupInputEvents();
-        this.setupInitialBuildings();
         this.setupFarmerAnimation();
     }
 
-    setupInputEvents() {
-        this.input.on('pointerdown', (pointer) => {
-            if (this.isMobile) {
-                this.touchStartTime = Date.now();
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            } else if (pointer.rightButtonDown()) {
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            } else {
-                this.handleClick(pointer);
-            }
-        });
-
-        this.input.on('pointermove', (pointer) => {
-            if (this.isDragging && !(this.input.pointer1?.isDown && this.input.pointer2?.isDown)) {
-                const deltaX = pointer.x - this.dragStartX;
-                const deltaY = pointer.y - this.dragStartY;
-                
-                this.cameras.main.scrollX -= deltaX;
-                this.cameras.main.scrollY -= deltaY;
-                
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            }
-        });
-
-        this.input.on('pointerup', (pointer) => {
-            if (this.isMobile) {
-                const touchDuration = Date.now() - this.touchStartTime;
-                const dragDistance = Phaser.Math.Distance.Between(
-                    this.dragStartX, 
-                    this.dragStartY, 
-                    pointer.x, 
-                    pointer.y
-                );
-                
-                if (touchDuration < 200 && dragDistance < 10) {
-                    this.handleClick(pointer);
-                }
-            }
-            this.isDragging = false;
-        });
-
-        if (!this.isMobile) {
-            this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
-                const zoom = this.cameras.main.zoom;
-                const newZoom = zoom - (deltaY * (window.innerWidth < 768 ? 0.0005 : 0.001));
-                this.cameras.main.setZoom(
-                    Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
-                );
-            });
-        }
-
-        // Suporte para pinça no mobile
-        this.input.addPointer(1);
-        let prevDist = 0;
-        let lastZoomTime = 0;
-        
-        this.input.on('pointermove', (pointer) => {
-            const now = Date.now();
-            
-            if (this.input.pointer1?.isDown && this.input.pointer2?.isDown) {
-                const dx = this.input.pointer1.x - this.input.pointer2.x;
-                const dy = this.input.pointer1.y - this.input.pointer2.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-                
-                if (prevDist > 0 && (now - lastZoomTime > 16)) {
-                    const delta = dist - prevDist;
-                    const zoom = this.cameras.main.zoom;
-                    const sensitivity = window.innerWidth < 768 ? 0.002 : 0.001;
-                    const newZoom = zoom + (delta * sensitivity);
-                    this.cameras.main.setZoom(
-                        Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
-                    );
-                    lastZoomTime = now;
-                }
-                prevDist = dist;
-            }
-        });
-
-        this.input.on('pointerup', () => {
-            prevDist = 0;
-        });
-    }
-
-    setupInitialBuildings() {
-        this.placeBuilding(0, 0, 'farmerHouse');
-        this.placeBuilding(4, 0, 'cowHouse');
-        this.placeBuilding(0, 4, 'chickenHouse');
-        this.placeBuilding(4, 4, 'pigHouse');
-        this.placeBuilding(2, 2, 'minerHouse');
-    }
-
-    setupFarmerAnimation() {
-        this.anims.create({
-            key: 'walk_down',
-            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1
-        });
-
-        this.farmer = this.add.sprite(
-            this.cameras.main.centerX,
-            this.cameras.main.centerY - 50,
-            'farmer'
-        );
-        
-        this.farmer.setScale(2);
-        this.farmer.setDepth(1);
-        this.farmer.play('walk_down');
-
-        this.tweens.add({
-            targets: this.farmer,
-            x: this.farmer.x + 100,
-            y: this.farmer.y + 50,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1
-        });
-    }
-
-    createIsometricGrid(width, height) {
-        this.grid = [];
-        const gridWidth = 10;
-        const gridHeight = 10;
-        
-        for (let y = 0; y < gridHeight; y++) {
-            this.grid[y] = [];
-            for (let x = 0; x < gridWidth; x++) {
-                const tileX = (x - y) * this.tileWidth;
-                const tileY = (x + y) * (this.tileHeight / 2);
-
-                const tile = this.add.image(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY,
-                    'tile_grass'
-                );
-                
-                tile.displayWidth = this.tileWidth;
-                tile.displayHeight = this.tileHeight;
-                tile.setOrigin(0.5, 0.75);
-                
-                tile.setInteractive();
-                tile.data = { gridX: x, gridY: y };
-                tile.on('rightdown', (event) => {
-                    event.event.preventDefault();
-                });
-                this.grid[y][x] = tile;
-            }
-        }
-    }
-
     createBuildingPanel() {
-        this.buildingPanel = this.add.container(0, 0);
-        this.uiContainer.add(this.buildingPanel);
-
-        // Botão de expandir/ocultar
-        const toggleButton = this.add.graphics();
-        toggleButton.fillStyle(0x2c3e50, 1);
-        toggleButton.fillRect(10, 10, 30, 30);
-        toggleButton.setInteractive(new Phaser.Geom.Rectangle(10, 10, 30, 30), Phaser.Geom.Rectangle.Contains);
-        this.uiContainer.add(toggleButton);
-
-        // Ícone do botão
-        const toggleIcon = this.add.text(20, 15, '>', { 
-            fontSize: '20px',
-            fill: '#fff'
-        });
-        this.uiContainer.add(toggleIcon);
-
-        toggleButton.on('pointerdown', () => {
-            this.isPanelVisible = !this.isPanelVisible;
-            this.buildingPanel.setVisible(this.isPanelVisible);
-            toggleIcon.setText(this.isPanelVisible ? '<' : '>');
-        });
-
         const buildings = [
             { key: 'farmerHouse', name: 'Casa do Fazendeiro' },
             { key: 'cowHouse', name: 'Estábulo' },
@@ -245,37 +71,70 @@ class MainScene extends Phaser.Scene {
         const panelWidth = 200;
         const panelHeight = 400;
         
+        // Criar container do painel
+        this.buildingPanel = this.add.container(10, 10);
+        this.uiContainer.add(this.buildingPanel);
+        
+        // Background do painel
         const panel = this.add.graphics();
-        panel.fillStyle(0x2c3e50, 0.8);
-        panel.fillRect(10, 10, panelWidth, panelHeight);
-        this.uiContainer.add(panel);
+        panel.fillStyle(0x2c3e50, 0.9);
+        panel.fillRect(0, 0, panelWidth, panelHeight);
+        this.buildingPanel.add(panel);
 
-        const title = this.add.text(20, 20, 'Estruturas', { 
-            fontSize: '20px', 
+        // Botão de toggle
+        const toggleButton = this.add.graphics();
+        toggleButton.fillStyle(0x34495e, 1);
+        toggleButton.fillRect(panelWidth + 10, 0, 30, 30);
+        toggleButton.setInteractive(new Phaser.Geom.Rectangle(0, 0, 30, 30), Phaser.Geom.Rectangle.Contains);
+        
+        const toggleIcon = this.add.text(panelWidth + 20, 5, '<', { 
+            fontSize: '20px',
             fill: '#fff' 
         });
-        this.uiContainer.add(title);
+        
+        this.buildingPanel.add(toggleButton);
+        this.buildingPanel.add(toggleIcon);
 
+        toggleButton.on('pointerdown', () => {
+            this.buildingPanel.visible = !this.buildingPanel.visible;
+            toggleIcon.setText(this.buildingPanel.visible ? '<' : '>');
+        });
+
+        // Título
+        const title = this.add.text(10, 10, 'Estruturas', { 
+            fontSize: '20px', 
+            fill: '#fff',
+            fontFamily: 'Arial'
+        });
+        this.buildingPanel.add(title);
+
+        // Lista de buildings
         buildings.forEach((building, index) => {
-            const y = 60 + (index * 55);
+            const y = 50 + (index * 55);
             
+            // Background do botão
             const button = this.add.graphics();
             button.fillStyle(0x34495e, 0.8);
-            button.fillRect(20, y, panelWidth - 20, 45);
-            button.setInteractive(new Phaser.Geom.Rectangle(20, y, panelWidth - 20, 45), Phaser.Geom.Rectangle.Contains);
-            this.buildingPanel.add(button);
-
-            const text = this.add.text(30, y + 12, building.name, { 
+            button.fillRect(10, y, panelWidth - 20, 45);
+            button.setInteractive(new Phaser.Geom.Rectangle(10, y, panelWidth - 20, 45), Phaser.Geom.Rectangle.Contains);
+            
+            // Nome da estrutura
+            const text = this.add.text(20, y + 12, building.name, { 
                 fontSize: '16px', 
-                fill: '#fff' 
+                fill: '#fff',
+                fontFamily: 'Arial'
             });
+            
+            // Thumbnail
+            const thumbnail = this.add.image(panelWidth - 35, y + 22, building.key);
+            const scale = 40 / thumbnail.height;
+            thumbnail.setScale(scale);
+            
+            this.buildingPanel.add(button);
             this.buildingPanel.add(text);
-
-            const thumbnail = this.add.image(panelWidth - 40, y + 22, building.key);
-            const scaleRatio = 40 / thumbnail.height;
-            thumbnail.setScale(scaleRatio);
             this.buildingPanel.add(thumbnail);
 
+            // Interatividade
             button.on('pointerdown', () => {
                 this.selectedBuilding = building.key;
             });
@@ -283,18 +142,137 @@ class MainScene extends Phaser.Scene {
             button.on('pointerover', () => {
                 button.clear();
                 button.fillStyle(0x3498db, 0.8);
-                button.fillRect(20, y, panelWidth - 20, 45);
+                button.fillRect(10, y, panelWidth - 20, 45);
             });
 
             button.on('pointerout', () => {
                 button.clear();
                 button.fillStyle(0x34495e, 0.8);
-                button.fillRect(20, y, panelWidth - 20, 45);
+                button.fillRect(10, y, panelWidth - 20, 45);
             });
         });
+    }
 
-        this.uiCamera.ignore(this.children.list);
-        this.uiCamera.ignore([this.grid]);
+    createIsometricGrid(width, height) {
+        this.grid = [];
+        
+        for (let y = 0; y < height; y++) {
+            this.grid[y] = [];
+            for (let x = 0; x < width; x++) {
+                const tileX = (x - y) * this.tileWidth;
+                const tileY = (x + y) * (this.tileHeight / 2);
+
+                const tile = this.add.image(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY,
+                    'tile_grass'
+                );
+                
+                tile.displayWidth = this.tileWidth * 2;
+                tile.displayHeight = this.tileHeight * 2;
+                tile.setOrigin(0.5, 0.75);
+                
+                tile.setInteractive();
+                tile.data = { gridX: x, gridY: y };
+                
+                this.gameContainer.add(tile);
+                this.grid[y][x] = tile;
+            }
+        }
+    }
+
+    setupInputEvents() {
+        this.input.on('pointerdown', (pointer) => {
+            if (this.isMobile) {
+                if (!this.isPointerOverUI(pointer)) {
+                    this.touchStartTime = Date.now();
+                    this.isDragging = true;
+                    this.dragStartX = pointer.x;
+                    this.dragStartY = pointer.y;
+                }
+            } else if (pointer.rightButtonDown()) {
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            } else if (!this.isPointerOverUI(pointer)) {
+                this.handleClick(pointer);
+            }
+        });
+
+        this.input.on('pointermove', (pointer) => {
+            if (this.isDragging && !this.isPointerOverUI(pointer)) {
+                const deltaX = pointer.x - this.dragStartX;
+                const deltaY = pointer.y - this.dragStartY;
+                
+                this.mainCamera.scrollX -= deltaX;
+                this.mainCamera.scrollY -= deltaY;
+                
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            }
+        });
+
+        this.input.on('pointerup', () => {
+            this.isDragging = false;
+        });
+
+        // Zoom com roda do mouse
+        this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+            if (!this.isPointerOverUI(pointer)) {
+                const zoom = this.mainCamera.zoom;
+                const newZoom = zoom - (deltaY * 0.001);
+                this.mainCamera.setZoom(
+                    Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+                );
+            }
+        });
+
+        // Zoom com pinça no mobile
+        if (this.isMobile) {
+            this.input.addPointer(1);
+            let prevDist = 0;
+            
+            this.input.on('pointermove', (pointer) => {
+                if (this.input.pointer1?.isDown && this.input.pointer2?.isDown) {
+                    const dx = this.input.pointer1.x - this.input.pointer2.x;
+                    const dy = this.input.pointer1.y - this.input.pointer2.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (prevDist > 0) {
+                        const delta = dist - prevDist;
+                        const zoom = this.mainCamera.zoom;
+                        const newZoom = zoom + (delta * 0.002);
+                        this.mainCamera.setZoom(
+                            Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+                        );
+                    }
+                    prevDist = dist;
+                }
+            });
+
+            this.input.on('pointerup', () => {
+                prevDist = 0;
+            });
+        }
+    }
+
+    isPointerOverUI(pointer) {
+        return this.buildingPanel.getBounds().contains(pointer.x, pointer.y);
+    }
+
+    setupFarmerAnimation() {
+        this.anims.create({
+            key: 'walk_down',
+            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
+            frameRate: 8,
+            repeat: -1
+        });
+
+        this.farmer = this.add.sprite(400, 300, 'farmer');
+        this.farmer.setScale(2);
+        this.farmer.setDepth(1);
+        this.farmer.play('walk_down');
+        this.gameContainer.add(this.farmer);
     }
 
     placeBuilding(x, y, buildingKey) {
@@ -303,29 +281,30 @@ class MainScene extends Phaser.Scene {
 
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.tileHeight / 4),
+            this.cameras.main.centerY + tileY - (this.tileHeight / 2),
             buildingKey
         );
         
         building.setDepth(y + 1);
-        const scale = (this.tileWidth * 0.8) / building.width;
+        const scale = (this.tileWidth * 1.5) / building.width;
         building.setScale(scale);
         
+        this.gameContainer.add(building);
         return building;
     }
 
     handleClick(pointer) {
-        const worldX = pointer.x - this.cameras.main.centerX;
-        const worldY = pointer.y - this.cameras.main.centerY;
+        if (!this.selectedBuilding) return;
 
-        const gridX = Math.round((worldX / this.tileWidth + worldY / this.tileHeight));
-        const gridY = Math.round((worldY / this.tileHeight - worldX / this.tileWidth));
+        const worldX = pointer.x + this.mainCamera.scrollX - this.cameras.main.centerX;
+        const worldY = pointer.y + this.mainCamera.scrollY - this.cameras.main.centerY;
+
+        const gridX = Math.round((worldX / this.tileWidth + worldY / this.tileHeight) / 2);
+        const gridY = Math.round((worldY / this.tileHeight - worldX / this.tileWidth) / 2);
 
         if (gridX >= 0 && gridX < this.grid[0].length && 
             gridY >= 0 && gridY < this.grid.length) {
-            if (this.selectedBuilding) {
-                this.placeBuilding(gridX, gridY, this.selectedBuilding);
-            }
+            this.placeBuilding(gridX, gridY, this.selectedBuilding);
         }
     }
 }
