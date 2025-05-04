@@ -2,8 +2,8 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         // Ajusta o tamanho dos tiles baseado no dispositivo
-        this.tileWidth = window.innerWidth < 768 ? 48 : 64;
-        this.tileHeight = window.innerWidth < 768 ? 24 : 32;
+        this.tileWidth = window.innerWidth < 768 ? 64 : 96;
+        this.tileHeight = window.innerWidth < 768 ? 32 : 48;
         this.minZoom = window.innerWidth < 768 ? 0.3 : 0.5;
         this.maxZoom = window.innerWidth < 768 ? 1.5 : 2;
         
@@ -149,14 +149,14 @@ export default class MainScene extends Phaser.Scene {
         for (let y = 0; y < height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < width; x++) {
-                const tileX = (x - y) * this.tileWidth / 2;
-                const tileY = (x + y) * this.tileHeight / 2;
+                const tileX = (x - y) * (this.tileWidth / 2);
+                const tileY = (x + y) * (this.tileHeight / 2);
 
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
                     'tile'
-                );
+                ).setScale(1.2);
 
                 tile.setInteractive();
                 tile.data = { gridX: x, gridY: y };
