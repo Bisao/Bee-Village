@@ -140,14 +140,26 @@ export default class MainScene extends Phaser.Scene {
 
     // Mobile controls
     if ('ontouchstart' in window) {
-        const simulateKey = (key) => {
-            this.handleKeyDown({ key: key.toLowerCase() });
+        const buttons = {
+            'mobile-up': 'W',
+            'mobile-down': 'S', 
+            'mobile-left': 'A',
+            'mobile-right': 'D'
         };
 
-        document.querySelector('.mobile-up').addEventListener('touchstart', () => simulateKey('W'));
-        document.querySelector('.mobile-down').addEventListener('touchstart', () => simulateKey('S'));
-        document.querySelector('.mobile-left').addEventListener('touchstart', () => simulateKey('A'));
-        document.querySelector('.mobile-right').addEventListener('touchstart', () => simulateKey('D'));
+        Object.entries(buttons).forEach(([className, key]) => {
+            const button = document.querySelector(`.${className}`);
+            if (button) {
+                button.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    this.keys[key.toLowerCase()].isDown = true;
+                });
+                button.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    this.keys[key.toLowerCase()].isDown = false;
+                });
+            }
+        });
     }
 
 

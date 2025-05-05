@@ -68,9 +68,12 @@ export default class InputManager {
     handlePointerDown(pointer) {
         if (this.isMobile) {
             this.touchStartTime = Date.now();
-            this.isDragging = true;
-            this.dragStartX = pointer.x;
-            this.dragStartY = pointer.y;
+            // Only start dragging if we're not over a UI element
+            if (!pointer.event.target.closest('#controls-panel, #side-panel, .topbar')) {
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            }
         } else if (pointer.rightButtonDown()) {
             if (this.scene.selectedBuilding) {
                 this.scene.cancelBuildingSelection();

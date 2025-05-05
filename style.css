@@ -559,6 +559,54 @@ html, body {
 @media (max-width: 768px) {
     #controls-panel {
         display: flex !important;
+        bottom: 20px;
+        left: 20px;
+        z-index: 1000;
+    }
+
+    .topbar {
+        padding: 5px;
+    }
+
+    .topbar h1 {
+        font-size: 1.2rem;
+    }
+
+    #side-panel {
+        right: 10px;
+        top: 70px;
+        max-width: 60px;
+    }
+
+    .building-btn {
+        width: 50px;
+        height: 50px;
+    }
+
+    .building-btn img {
+        width: 40px;
+        height: 40px;
+    }
+
+    .building-list {
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    #controls-panel {
+        bottom: 10px;
+        left: 10px;
+    }
+
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+
+    .controls-grid {
+        gap: 12px;
     }
 }
 
