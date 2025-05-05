@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply initial theme
     applyThemeChanges(currentTheme, false);
     document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
-    
+
     // Show theme icon immediately
     const themeIcon = document.querySelector('.theme-icon');
     if (themeIcon) {
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle play button
     let isTransitioning = false;
-    document.getElementById('play-button').addEventListener('click', () => {
+    document.getElementById('play-button')?.addEventListener('click', () => {
         if (isTransitioning) return;
         isTransitioning = true;
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle settings button
-    document.getElementById('settings-button').addEventListener('click', () => {
+    document.getElementById('settings-button')?.addEventListener('click', () => {
         if (isTransitioning) return;
         moveBeeToButton('settings');
         setTimeout(() => {
@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Handle back button
-    document.querySelector('.back-button').addEventListener('click', () => {
-        document.getElementById('settings-panel').classList.remove('visible');
+    document.querySelector('.back-button')?.addEventListener('click', () => {
+        document.getElementById('settings-panel')?.classList.remove('visible');
         const beeIcon = document.querySelector('.theme-icon');
         if (beeIcon) {
             beeIcon.className = 'theme-icon play visible';
@@ -130,18 +130,21 @@ function startGameWithLoading() {
     const progressBar = document.querySelector('.loading-progress');
     const loadingInterval = setInterval(() => {
         loadingProgress += 2;
-        progressBar.style.width = `${loadingProgress}%`;
+        if (progressBar) {
+            progressBar.style.width = `${loadingProgress}%`;
+        }
 
         if (loadingProgress >= 100) {
             clearInterval(loadingInterval);
             try {
                 window.game = new Phaser.Game(config);
 
-                // Wait for game to load
                 window.game.events.once('ready', () => {
                     setTimeout(() => {
-                        document.getElementById('loading-screen').style.display = 'none';
-                        document.getElementById('start-screen').style.display = 'none';
+                        const loadingScreen = document.getElementById('loading-screen');
+                        const startScreen = document.getElementById('start-screen');
+                        if (loadingScreen) loadingScreen.style.display = 'none';
+                        if (startScreen) startScreen.style.display = 'none';
                     }, 500);
                 });
             } catch (error) {
@@ -165,3 +168,5 @@ if (isMobile && window.game) {
         }, 100);
     });
 }
+
+export default config;

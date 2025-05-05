@@ -1,5 +1,5 @@
-import Grid from './components/Grid.js';
-import InputManager from './components/InputManager.js';
+import Grid from '../scenes/components/Grid.js';
+import InputManager from '../scenes/components/InputManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -160,8 +160,6 @@ export default class MainScene extends Phaser.Scene {
         this.load.start();
     }
 
-    
-
     update() {
         if (!this.farmer || this.farmer.isMoving) return;
 
@@ -275,7 +273,6 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-
     updatePreview = (pointer) => {
         if (!this.selectedBuilding) {
             if (this.previewBuilding) {
@@ -384,8 +381,6 @@ export default class MainScene extends Phaser.Scene {
             const [key, filename] = building.split('|');
             this.load.image(key, `game/assets/buildings/${filename}.png`);
         });
-
-
     }
 
     setupUIHandlers() {
