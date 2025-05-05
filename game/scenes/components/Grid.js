@@ -61,6 +61,7 @@ export default class Grid {
         tile.data = { gridX: x, gridY: y };
 
         this.grid[y][x] = tile;
+        return tile;
     }
 
     getRandomTile(x, y) {
