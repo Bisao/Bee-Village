@@ -29,18 +29,14 @@ export default class Grid {
     }
     
     isInViewport(x, y) {
-        const camera = this.scene.cameras.main;
-        const {tileX, tileY} = this.gridToIso(x, y);
-        const worldX = this.scene.cameras.main.centerX + tileX;
-        const worldY = this.scene.cameras.main.centerY + tileY;
-        
-        return camera.worldView.contains(worldX, worldY);
+        return true; // Show all tiles for now
     }
     
     updateVisibleTiles() {
         this.grid.flat().forEach(tile => {
-            const visible = this.isInViewport(tile.data.gridX, tile.data.gridY);
-            tile.setVisible(visible);
+            if (tile) {
+                tile.setVisible(true);
+            }
         });
     }
 
