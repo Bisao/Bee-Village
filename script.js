@@ -6,6 +6,11 @@ document.addEventListener('DOMContentLoaded', function() {
     menuButton.addEventListener('click', () => {
         settingsPanel.classList.add('visible');
     });
+
+    // Close settings when clicking back button
+    document.querySelector('.back-button').addEventListener('click', () => {
+        settingsPanel.classList.remove('visible');
+    });
 });
 
 <!DOCTYPE html>
