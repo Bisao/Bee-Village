@@ -416,20 +416,18 @@ export default class MainScene extends Phaser.Scene {
         try {
             const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
             const hoveredTile = this.grid.grid.flat().find(tile => {
-                // Use uma área de colisão mais precisa para o tile isométrico
+                // Aumenta a área de detecção do tile
                 const tileCenter = new Phaser.Geom.Point(tile.x, tile.y);
-                const distance = Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, tile.x, tile.y);
+                
+                // Usa um retângulo maior para detecção
+                const hitArea = new Phaser.Geom.Rectangle(
+                    tile.x - tile.displayWidth * 0.75,
+                    tile.y - tile.displayHeight * 0.75,
+                    tile.displayWidth * 1.5,
+                    tile.displayHeight * 1.5
+                );
 
-                // Define uma área de colisão mais precisa baseada na forma do tile
-                const isoWidth = tile.displayWidth * 0.5;
-                const isoHeight = tile.displayHeight * 0.5;
-
-                // Calcula a distância relativa ao centro do tile
-                const dx = Math.abs(worldPoint.x - tile.x) / isoWidth;
-                const dy = Math.abs(worldPoint.y - tile.y) / isoHeight;
-
-                // Verifica se o ponto está dentro da área do tile isométrico
-                return (dx + dy) <= 1;
+                return hitArea.contains(worldPoint.x, worldPoint.y);
             });
 
             if (hoveredTile && hoveredTile.data) {
