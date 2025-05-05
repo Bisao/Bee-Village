@@ -505,7 +505,7 @@ export default class MainScene extends Phaser.Scene {
             }
 
             // Configurar a estrutura
-            const scale = this.grid.tileWidth / building.width;
+            const scale = (this.grid.tileWidth * 1.2) / building.width;
             building.setScale(scale);
             building.setOrigin(0.5, 0.75);
             building.setDepth(gridY + 1);
