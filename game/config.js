@@ -85,6 +85,25 @@ document.querySelector('.back-button').addEventListener('click', () => {
     beeIcon.className = 'bee-icon play visible';
 });
 
+// Theme switching
+const themeButtons = document.querySelectorAll('.theme-btn');
+themeButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const theme = button.dataset.theme;
+        document.documentElement.setAttribute('data-theme', theme);
+        themeButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        
+        // Save theme preference
+        localStorage.setItem('selectedTheme', theme);
+    });
+});
+
+// Load saved theme
+const savedTheme = localStorage.getItem('selectedTheme') || 'bee';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
+
 document.getElementById('settings-button').addEventListener('click', () => {
     moveBeeToButton('settings');
     setTimeout(() => {

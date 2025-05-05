@@ -449,9 +449,60 @@ html, body {
     -webkit-appearance: none;
     width: 15px;
     height: 15px;
-    background: #FFD700;
+    background: var(--primary-color, #FFD700);
     border-radius: 50%;
     cursor: pointer;
+}
+
+/* Theme Variables */
+:root {
+    --primary-color: #FFD700;
+    --secondary-color: #2b2b2b;
+    --accent-color: rgba(255, 215, 0, 0.3);
+}
+
+:root[data-theme="bee"] {
+    --primary-color: #FFD700;
+    --secondary-color: #2b2b2b;
+    --accent-color: rgba(255, 215, 0, 0.3);
+}
+
+:root[data-theme="pig"] {
+    --primary-color: #FFC0CB;
+    --secondary-color: #2b2b2b;
+    --accent-color: rgba(255, 192, 203, 0.3);
+}
+
+:root[data-theme="cow"] {
+    --primary-color: #F5F5F5;
+    --secondary-color: #2b2b2b;
+    --accent-color: rgba(245, 245, 245, 0.3);
+}
+
+.theme-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.theme-btn {
+    background: var(--accent-color);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-btn:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.theme-btn.selected {
+    background: var(--primary-color);
+    color: var(--secondary-color);
 }
 
 /* Mobile */
