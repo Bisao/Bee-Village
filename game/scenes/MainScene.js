@@ -92,15 +92,31 @@ export default class MainScene extends Phaser.Scene {
     }
 
     moveFarmerToNextTile() {
+        if (!this.farmer.currentDirection) {
+            this.farmer.currentDirection = { x: 1, y: 0 }; // Começa movendo para direita
+        }
+
         const availableDirections = this.getAvailableDirections();
-        
         if (availableDirections.length === 0) return;
 
-        const randomDir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
-        const newX = this.farmer.gridX + randomDir.x;
-        const newY = this.farmer.gridY + randomDir.y;
+        // Tenta manter a direção atual se possível
+        let nextDirection = availableDirections.find(dir => 
+            dir.x === this.farmer.currentDirection.x && 
+            dir.y === this.farmer.currentDirection.y
+        );
 
+        // Se não puder continuar na mesma direção, escolhe uma direção similar
+        if (!nextDirection) {
+            nextDirection = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+            // Atualiza a sequência de sprites baseado na nova direção
+            this.updateFarmerAnimation(nextDirection);
+        }
+
+        const newX = this.farmer.gridX + nextDirection.x;
+        const newY = this.farmer.gridY + nextDirection.y;
         const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+
+        this.farmer.currentDirection = nextDirection;
 
         this.tweens.add({
             targets: this.farmer,
@@ -113,6 +129,35 @@ export default class MainScene extends Phaser.Scene {
                 this.farmer.setDepth(newY + 1);
             }
         });
+    }
+
+    updateFarmerAnimation(direction) {
+        // Define as sequências de sprites baseado na direção
+        let sequence;
+        if (direction.x > 0) { // Direita
+            sequence = [1, 2, 3, 4];
+        } else if (direction.x < 0) { // Esquerda
+            sequence = [5, 6, 7, 8];
+        } else if (direction.y > 0) { // Baixo
+            sequence = [9, 10, 11, 12];
+        } else { // Cima
+            sequence = [1, 2, 3, 4].reverse();
+        }
+
+        // Cria os frames da animação
+        const frames = sequence.map(num => ({ key: `farmer${num}` }));
+
+        // Atualiza a animação existente
+        this.anims.remove('farmer_walk');
+        this.anims.create({
+            key: 'farmer_walk',
+            frames: frames,
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Reinicia a animação
+        this.farmer.play('farmer_walk');
     }
 
     updatePreview = (pointer) => {
