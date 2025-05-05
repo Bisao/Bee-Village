@@ -23,15 +23,27 @@ const config = {
 
 let game;
 
+const beeIcon = document.querySelector('.bee-icon');
+
+function moveBeeToButton(buttonType) {
+    beeIcon.style.left = '10px';
+    beeIcon.className = `bee-icon ${buttonType}`;
+}
+
 document.getElementById('play-button').addEventListener('click', () => {
-    document.getElementById('start-screen').style.display = 'none';
-    document.getElementById('loading-screen').style.display = 'flex';
-    game = new Phaser.Game(config);
+    moveBeeToButton('play');
+    setTimeout(() => {
+        document.getElementById('start-screen').style.display = 'none';
+        document.getElementById('loading-screen').style.display = 'flex';
+        game = new Phaser.Game(config);
+    }, 3000);
 });
 
 document.getElementById('settings-button').addEventListener('click', () => {
-    // Adicionar lógica de configurações aqui
-    alert('Configurações em desenvolvimento');
+    moveBeeToButton('settings');
+    setTimeout(() => {
+        alert('Configurações em desenvolvimento');
+    }, 3000);
 });
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);

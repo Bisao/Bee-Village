@@ -123,12 +123,29 @@ html, body {
     z-index: 9999;
 }
 
-.start-screen::before {
-    content: '🐝';
+.bee-icon {
     position: absolute;
     font-size: 3em;
-    animation: beeFloat 3s ease-in-out infinite;
-    opacity: 0.5;
+    transition: all 0.5s ease-in-out;
+    left: -50px;
+}
+
+.bee-icon.play {
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.bee-icon.settings {
+    top: calc(50% + 60px);
+    transform: translateY(-50%);
+}
+
+@keyframes beeFloat {
+    0% { transform: translateX(0) rotate(-2deg); }
+    25% { transform: translateX(4px) rotate(2deg); }
+    50% { transform: translateX(0) rotate(-1deg); }
+    75% { transform: translateX(-4px) rotate(1deg); }
+    100% { transform: translateX(0) rotate(-2deg); }
 }
 
 .start-screen h1 {
