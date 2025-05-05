@@ -697,18 +697,17 @@ html, body {
     position: absolute;
     font-size: 1.5em;
     transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    right: -30px;
+    right: 15px;
     opacity: 0;
 }
 
 .theme-icon.visible {
     opacity: 1;
-    right: 10px;
+    right: 15px;
 }
 
 .theme-icon.play {
-    top: 50%;
-    transform: translateY(-50%);
+    top: 26px;
 }
 
 .theme-icon.settings {
