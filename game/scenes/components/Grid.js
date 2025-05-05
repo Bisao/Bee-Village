@@ -11,12 +11,37 @@ export default class Grid {
     }
 
     create() {
+        this.visibleTiles = new Set();
         for (let y = 0; y < this.height; y++) {
             this.grid[y] = [];
             for (let x = 0; x < this.width; x++) {
-                this.createTile(x, y);
+                const tile = this.createTile(x, y);
+                if (this.isInViewport(x, y)) {
+                    this.visibleTiles.add(tile);
+                    tile.setVisible(true);
+                } else {
+                    tile.setVisible(false);
+                }
             }
         }
+        
+        this.scene.cameras.main.on('camerascroll', () => this.updateVisibleTiles());
+    }
+    
+    isInViewport(x, y) {
+        const camera = this.scene.cameras.main;
+        const {tileX, tileY} = this.gridToIso(x, y);
+        const worldX = this.scene.cameras.main.centerX + tileX;
+        const worldY = this.scene.cameras.main.centerY + tileY;
+        
+        return camera.worldView.contains(worldX, worldY);
+    }
+    
+    updateVisibleTiles() {
+        this.grid.flat().forEach(tile => {
+            const visible = this.isInViewport(tile.data.gridX, tile.data.gridY);
+            tile.setVisible(visible);
+        });
     }
 
     createTile(x, y) {

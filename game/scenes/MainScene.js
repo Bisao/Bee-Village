@@ -288,7 +288,15 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
+    /**
+     * Carrega todos os assets do jogo
+     * @method loadAssets
+     * @private
+     */
     loadAssets() {
+        // Cache de texturas para otimização
+        if (this.textures.exists('tile_grass')) return;
+        
         // Load tiles
         const tiles = [
             'tile_grass',
