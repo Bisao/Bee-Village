@@ -468,62 +468,81 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(gridX, gridY) {
-        if (!this.selectedBuilding) {
-            console.log('No building selected');
-            return;
+        try {
+            // Validações iniciais
+            if (!this.selectedBuilding) {
+                console.log('No building selected');
+                return;
+            }
+
+            if (!this.grid.isValidPosition(gridX, gridY)) {
+                this.showFeedback('Posição inválida', false);
+                return;
+            }
+
+            const key = `${gridX},${gridY}`;
+            if (this.grid.buildingGrid[key]) {
+                this.showFeedback('Posição já ocupada', false);
+                return;
+            }
+
+            // Calcula posição no mundo
+            const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+            const worldX = this.cameras.main.centerX + tileX;
+            const worldY = this.cameras.main.centerY + tileY;
+
+            // Criar a estrutura
+            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
+            if (!building) {
+                throw new Error('Failed to create building sprite');
+            }
+
+            // Configurar a estrutura
+            const tileScale = 1.2;
+            const scale = (this.grid.tileWidth * tileScale) / Math.max(building.width, 1);
+            building.setScale(scale);
+            building.setOrigin(0.5, 1);
+            building.setDepth(gridY + 1);
+
+            // Registrar no grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+
+            // Efeito de partículas
+            const emitter = this.add.particles(worldX, worldY, 'tile_grass', {
+                speed: 100,
+                scale: { start: 0.5, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 800,
+                blendMode: 'ADD',
+                quantity: 10
+            });
+
+            // Feedback visual
+            this.showFeedback('Estrutura construída!', true);
+            
+            // Limpar seleção
+            this.clearBuildingSelection();
+            
+            // Notificar outros sistemas
+            this.events.emit('buildingPlaced', {
+                gridX,
+                gridY,
+                buildingType: this.selectedBuilding
+            });
+
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.showFeedback('Erro ao construir estrutura', false);
         }
+    }
 
-        if (!this.grid.isValidPosition(gridX, gridY)) {
-            this.showFeedback('Posição inválida', false);
-            return;
-        }
-
-        const key = `${gridX},${gridY}`;
-        if (this.grid.buildingGrid[key]) {
-            this.showFeedback('Posição já ocupada', false);
-            return;
-        }
-
-        const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
-
-        // Efeito de partículas ao construir
-        const emitter = this.add.particles(0, 0, 'tile_grass', {
-            speed: 100,
-            scale: { start: 0.5, end: 0 },
-            alpha: { start: 1, end: 0 },
-            lifespan: 800,
-            blendMode: 'ADD'
-        });
-
-        const worldX = this.cameras.main.centerX + tileX;
-        const worldY = this.cameras.main.centerY + tileY;
-
-        emitter.setPosition(worldX, worldY);
-        emitter.explode(10);
-
-        // Criar a estrutura
-        const building = this.add.sprite(
-            worldX,
-            worldY,
-            this.selectedBuilding
-        );
-
-        // Ajustar escala e origem
-        const tileScale = 1.2;
-        const scale = (this.grid.tileWidth * tileScale) / building.width;
-        building.setScale(scale);
-        building.setOrigin(0.5, 1);
-        building.setDepth(gridY + 1);
-
-        // Registrar no grid
-        this.grid.buildingGrid[key] = {
-            sprite: building,
-            type: 'building',
-            gridX: gridX,
-            gridY: gridY
-        };
-
-        // Reset selection after placing
+    clearBuildingSelection() {
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(b => b.classList.remove('selected'));
         this.selectedBuilding = null;
@@ -531,7 +550,7 @@ export default class MainScene extends Phaser.Scene {
             this.previewBuilding.destroy();
             this.previewBuilding = null;
         }
-        this.events.emit('buildingPlaced');
+    }
     }
 
     isValidGridPosition(x, y) {
