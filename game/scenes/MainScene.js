@@ -249,29 +249,34 @@ export default class MainScene extends Phaser.Scene {
 
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         const hoveredTile = this.grid.grid.flat().find(tile => {
-            const bounds = tile.getBounds();
+            const bounds = new Phaser.Geom.Rectangle(
+                tile.x - tile.displayWidth / 2,
+                tile.y - tile.displayHeight / 2,
+                tile.displayWidth,
+                tile.displayHeight
+            );
             return bounds.contains(worldPoint.x, worldPoint.y);
         });
 
         if (hoveredTile) {
             const gridPosition = hoveredTile.data;
             const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
+            const worldX = this.cameras.main.centerX + tileX;
+            const worldY = this.cameras.main.centerY + tileY;
 
             if (!this.previewBuilding) {
-                this.previewBuilding = this.add.image(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+                this.previewBuilding = this.add.sprite(
+                    worldX,
+                    worldY,
                     this.selectedBuilding
                 );
-                const scale = this.grid.tileWidth / Math.max(this.previewBuilding.width, 1);
-                this.previewBuilding.setScale(scale * 1.2);
-                this.previewBuilding.setOrigin(0.5, 0.8);
+                const tileScale = 1.2;
+                const scale = (this.grid.tileWidth * tileScale) / this.previewBuilding.width;
+                this.previewBuilding.setScale(scale);
+                this.previewBuilding.setOrigin(0.5, 1);
                 this.previewBuilding.setAlpha(0.6);
             } else {
-                this.previewBuilding.setPosition(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4)
-                );
+                this.previewBuilding.setPosition(worldX, worldY);
             }
             this.previewBuilding.setDepth(gridPosition.gridY + 1);
         }
@@ -463,7 +468,12 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(gridX, gridY) {
-        if (!this.selectedBuilding || !this.isValidGridPosition(gridX, gridY)) {
+        if (!this.selectedBuilding) {
+            console.log('No building selected');
+            return;
+        }
+
+        if (!this.grid.isValidPosition(gridX, gridY)) {
             this.showFeedback('Posição inválida', false);
             return;
         }
@@ -491,17 +501,21 @@ export default class MainScene extends Phaser.Scene {
         emitter.setPosition(worldX, worldY);
         emitter.explode(10);
 
-        const building = this.add.image(
+        // Criar a estrutura
+        const building = this.add.sprite(
             worldX,
-            worldY - (this.grid.tileHeight / 4),
+            worldY,
             this.selectedBuilding
         );
 
-        building.setDepth(gridY + 1);
-        const scale = (this.grid.tileWidth * 1.2) / Math.max(building.width, 1);
+        // Ajustar escala e origem
+        const tileScale = 1.2;
+        const scale = (this.grid.tileWidth * tileScale) / building.width;
         building.setScale(scale);
-        building.setOrigin(0.5, 0.8);
+        building.setOrigin(0.5, 1);
+        building.setDepth(gridY + 1);
 
+        // Registrar no grid
         this.grid.buildingGrid[key] = {
             sprite: building,
             type: 'building',
