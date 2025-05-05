@@ -174,11 +174,10 @@ html, body {
 #controls-panel {
     position: fixed;
     bottom: 30px;
-    left: 30%;
-    transform: translateX(-50%);
+    left: 30px;
     background: rgba(15, 15, 15, 0.8);
-    padding: 20px;
-    border-radius: 18px;
+    padding: 25px;
+    border-radius: 20px;
     border: 2px solid #4CAF50;
     backdrop-filter: blur(5px);
     z-index: 1000;
@@ -189,12 +188,12 @@ html, body {
     grid-template-areas:
         ". up ."
         "left down right";
-    gap: 15px;
+    gap: 18px;
 }
 
 .control-btn {
-    width: 85px;
-    height: 85px;
+    width: 95px;
+    height: 95px;
     background: rgba(76, 175, 80, 0.2);
     border: 2px solid #4CAF50;
     border-radius: 18px;
