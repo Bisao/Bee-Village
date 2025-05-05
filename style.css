@@ -133,15 +133,15 @@ html, body {
 
 .bee-icon {
     position: absolute;
-    font-size: 2em;
+    font-size: 2.5em;
     transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    right: -25px;
+    right: -35px;
     opacity: 0;
 }
 
 .bee-icon.visible {
     opacity: 1;
-    right: -30px;
+    right: -40px;
 }
 
 .bee-icon.play {
