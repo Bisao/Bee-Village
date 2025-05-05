@@ -139,14 +139,58 @@ html, body {
 
 /* Mobile */
 @media (max-width: 768px) {
+    .topbar {
+        height: 40px;
+        padding: 0 8px;
+    }
+
+    .topbar h1 {
+        font-size: 1em;
+    }
+
+    .menu-button {
+        padding: 4px 8px;
+        font-size: 16px;
+    }
+
     #side-panel {
         bottom: 16px;
         top: auto;
-        width: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 90%;
         min-width: auto;
         flex-direction: row;
-        max-height: 90px;
+        max-height: 80px;
+        border-radius: 16px;
     }
+
+    .building-list {
+        display: flex;
+        flex-direction: row;
+        gap: 8px;
+        padding: 4px;
+        overflow-x: auto;
+    }
+
+    .building-btn {
+        min-width: 60px;
+        width: 60px;
+        height: 60px;
+    }
+
+    .building-btn .tooltip {
+        left: 50%;
+        bottom: 100%;
+        top: auto;
+        transform: translateX(-50%);
+        margin-bottom: 8px;
+    }
+
+    .building-btn:hover .tooltip {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
 
     .building-list {
         display: flex;

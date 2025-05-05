@@ -66,15 +66,11 @@ export default class InputManager {
     }
 
     handlePointerDown(pointer) {
-        if (this.isMobile) {
-            this.touchStartTime = Date.now();
+        if (pointer.rightButtonDown() || this.isMobile) {
             this.isDragging = true;
             this.dragStartX = pointer.x;
             this.dragStartY = pointer.y;
-        } else if (pointer.rightButtonDown()) {
-            this.isDragging = true;
-            this.dragStartX = pointer.x;
-            this.dragStartY = pointer.y;
+            this.lastZoomDistance = 0;
         }
     }
 
