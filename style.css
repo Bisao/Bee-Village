@@ -135,13 +135,13 @@ html, body {
     position: absolute;
     font-size: 1.5em;
     transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    right: 10px;
+    right: 30px;
     opacity: 0;
 }
 
 .bee-icon.visible {
     opacity: 1;
-    right: 7px;
+    right: 27px;
 }
 
 .bee-icon.play {
@@ -248,7 +248,10 @@ html, body {
 }
 
 .loading-container {
-    margin-top: 180px;
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%);
     width: 80%;
     max-width: 300px;
     text-align: center;
