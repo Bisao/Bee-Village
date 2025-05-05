@@ -174,29 +174,39 @@ document.querySelector('.topbar h1 .flower').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:first-child').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
 
-// Inicializar tema e configurações
-const initializeTheme = () => {
-    const currentTheme = localStorage.getItem('selectedTheme') || 'cow';
-    let currentEmoji = currentTheme === 'pig' ? '🐖' : '🐄';
+// Inicializar tema antes do carregamento do DOM
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('selectedTheme') || 'cow';
+    let savedEmoji = '🐄';
     
-    // Aplicar tema ao documento
-    document.documentElement.setAttribute('data-theme', currentTheme);
+    if (savedTheme === 'pig') {
+        savedEmoji = '🐖';
+    } else if (savedTheme === 'cow') {
+        savedEmoji = '🐄';
+    }
+    
+    // Aplicar tema imediatamente
+    document.documentElement.setAttribute('data-theme', savedTheme);
     document.documentElement.classList.add('theme-loaded');
     
     // Atualizar emojis na interface
-    document.querySelectorAll('.bee').forEach(element => {
-        element.textContent = currentEmoji;
+    const beeElements = document.querySelectorAll('.bee');
+    beeElements.forEach(element => {
+        element.textContent = savedEmoji;
     });
     
-    // Selecionar botão do tema atual
-    document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
-    
-    // Aplicar mudanças do tema
-    applyThemeChanges(currentTheme, true);
-};
+    // Forçar aplicação do tema
+    requestAnimationFrame(() => {
+        applyThemeChanges(savedTheme, true);
+    });
+});
+document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
 
-// Carregar tema quando o DOM estiver pronto
-document.addEventListener('DOMContentLoaded', initializeTheme);
+// Aplicar tema ao documento
+applyThemeChanges(savedTheme, false);
+
+// Adicionar classe para prevenir flash de tema padrão
+document.documentElement.classList.add('theme-loaded');
 
 document.getElementById('settings-button').addEventListener('click', () => {
     moveBeeToButton('settings');
