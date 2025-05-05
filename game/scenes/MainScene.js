@@ -119,8 +119,8 @@ export default class MainScene extends Phaser.Scene {
 
         // Load farmer sprite
         const numFrames = 12;
-        const spriteWidth = 64;
-        const spriteHeight = 64;
+        const spriteWidth = 32;
+        const spriteHeight = 32;
         
         for (let i = 0; i < numFrames; i++) {
             this.load.image(`farmer${i}`, `attached_assets/Farmer_${i + 1}.png`);
