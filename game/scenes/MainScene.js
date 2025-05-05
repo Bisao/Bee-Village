@@ -16,11 +16,6 @@ export default class MainScene extends Phaser.Scene {
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
 
-        // Define zoom inicial diferente para mobile e desktop
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const initialZoom = isMobile ? 0.8 : 1.2;
-        this.cameras.main.setZoom(initialZoom);
-
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
