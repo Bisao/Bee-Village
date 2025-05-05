@@ -48,6 +48,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // Apply initial theme
     applyThemeChanges(currentTheme, false);
     document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
+    
+    // Show theme icon immediately
+    const themeIcon = document.querySelector('.theme-icon');
+    if (themeIcon) {
+        themeIcon.className = 'theme-icon play visible';
+    }
 
     // Setup theme buttons
     const themeButtons = document.querySelectorAll('.theme-btn');
