@@ -66,12 +66,18 @@ export default class InputManager {
     }
 
     handlePointerDown(pointer) {
-        if (this.isMobile) {
+        if (pointer.rightButtonDown()) {
+            if (this.scene.selectedBuilding) {
+                this.scene.cancelBuildingSelection();
+                const buttons = document.querySelectorAll('.building-btn');
+                buttons.forEach(b => b.classList.remove('selected'));
+            } else {
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            }
+        } else if (this.isMobile) {
             this.touchStartTime = Date.now();
-            this.isDragging = true;
-            this.dragStartX = pointer.x;
-            this.dragStartY = pointer.y;
-        } else if (pointer.rightButtonDown()) {
             this.isDragging = true;
             this.dragStartX = pointer.x;
             this.dragStartY = pointer.y;

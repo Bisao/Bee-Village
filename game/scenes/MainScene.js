@@ -220,7 +220,7 @@ export default class MainScene extends Phaser.Scene {
         }
     }
     handleClick(pointer) {
-        if (!this.selectedBuilding) return;
+        if (!this.selectedBuilding || pointer.rightButtonDown()) return;
         
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         const hoveredTile = this.grid.grid.flat().find(tile => {
