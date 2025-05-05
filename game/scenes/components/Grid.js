@@ -23,9 +23,12 @@ export default class Grid {
         const {tileX, tileY} = this.gridToIso(x, y);
         const randomTile = this.getRandomTile(x, y);
         
+        const centerOffsetX = -(this.width * this.tileWidth) / 2;
+        const centerOffsetY = -(this.height * this.tileHeight) / 4;
+        
         const tile = this.scene.add.image(
-            this.scene.cameras.main.centerX + tileX,
-            this.scene.cameras.main.centerY + tileY,
+            this.scene.cameras.main.centerX + tileX + centerOffsetX,
+            this.scene.cameras.main.centerY + tileY + centerOffsetY,
             randomTile
         );
 
