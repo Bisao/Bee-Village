@@ -57,12 +57,23 @@ document.addEventListener('DOMContentLoaded', function() {
 
     menuButton.addEventListener('click', () => {
         settingsPanel.style.display = 'flex';
-        settingsPanel.classList.add('visible');
+        requestAnimationFrame(() => {
+            settingsPanel.classList.add('visible');
+        });
     });
 
     backButton.addEventListener('click', () => {
-        settingsPanel.style.display = 'none';
         settingsPanel.classList.remove('visible');
+        setTimeout(() => {
+            settingsPanel.style.display = 'none';
+        }, 300);
+    });
+
+    // Fechar o painel quando clicar fora dele
+    document.addEventListener('click', (e) => {
+        if (!settingsPanel.contains(e.target) && !menuButton.contains(e.target) && settingsPanel.classList.contains('visible')) {
+            backButton.click();
+        }
     });
 
     // Handle theme selection
