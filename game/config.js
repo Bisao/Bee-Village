@@ -200,10 +200,11 @@ document.addEventListener('DOMContentLoaded', () => {
         applyThemeChanges(savedTheme, true);
     });
 });
-document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
+const currentTheme = localStorage.getItem('selectedTheme') || 'cow';
+document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
 
 // Aplicar tema ao documento
-applyThemeChanges(savedTheme, false);
+applyThemeChanges(currentTheme, false);
 
 // Adicionar classe para prevenir flash de tema padrão
 document.documentElement.classList.add('theme-loaded');
