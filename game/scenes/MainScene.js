@@ -42,17 +42,77 @@ export default class MainScene extends Phaser.Scene {
                 repeat: -1
             });
 
+            // Posição inicial no centro do grid
+            const startX = Math.floor(this.grid.width / 2);
+            const startY = Math.floor(this.grid.height / 2);
+            const {tileX, tileY} = this.grid.gridToIso(startX, startY);
+
             this.farmer = this.add.sprite(
-                this.cameras.main.centerX,
-                this.cameras.main.centerY - 32,
+                this.cameras.main.centerX + tileX,
+                this.cameras.main.centerY + tileY - 32,
                 'farmer1'
             );
+            
+            this.farmer.gridX = startX;
+            this.farmer.gridY = startY;
             this.farmer.setScale(0.8);
             this.farmer.play('farmer_walk');
-            this.farmer.setDepth(1000);
+            this.farmer.setDepth(startY + 1);
+
+            // Inicia o movimento
+            this.time.addEvent({
+                delay: 2000,
+                callback: this.moveFarmerToNextTile,
+                callbackScope: this,
+                loop: true
+            });
         });
 
         this.load.start();
+    }
+
+    isTileOccupied(x, y) {
+        const key = `${x},${y}`;
+        return this.grid.buildingGrid[key] !== undefined;
+    }
+
+    getAvailableDirections() {
+        const directions = [
+            { x: 1, y: 0 },   // direita
+            { x: -1, y: 0 },  // esquerda
+            { x: 0, y: 1 },   // baixo
+            { x: 0, y: -1 }   // cima
+        ];
+
+        return directions.filter(dir => {
+            const newX = this.farmer.gridX + dir.x;
+            const newY = this.farmer.gridY + dir.y;
+            return this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY);
+        });
+    }
+
+    moveFarmerToNextTile() {
+        const availableDirections = this.getAvailableDirections();
+        
+        if (availableDirections.length === 0) return;
+
+        const randomDir = availableDirections[Math.floor(Math.random() * availableDirections.length)];
+        const newX = this.farmer.gridX + randomDir.x;
+        const newY = this.farmer.gridY + randomDir.y;
+
+        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+
+        this.tweens.add({
+            targets: this.farmer,
+            x: this.cameras.main.centerX + tileX,
+            y: this.cameras.main.centerY + tileY - 32,
+            duration: 1000,
+            onComplete: () => {
+                this.farmer.gridX = newX;
+                this.farmer.gridY = newY;
+                this.farmer.setDepth(newY + 1);
+            }
+        });
     }
 
     updatePreview = (pointer) => {
