@@ -524,16 +524,20 @@ export default class MainScene extends Phaser.Scene {
             };
 
             // Efeito de partículas
-            const particles = this.add.particles(worldX, worldY, 'tile_grass');
-            const emitter = particles.createEmitter({
+            const particles = this.add.particles(0, 0, 'tile_grass', {
+                x: worldX,
+                y: worldY,
                 speed: 150,
                 scale: { start: 0.3, end: 0 },
                 alpha: { start: 0.8, end: 0 },
                 lifespan: 400,
                 blendMode: 'ADD',
-                quantity: 6
+                quantity: 6,
+                emitting: false
             });
 
+            particles.start();
+            
             // Destruir o sistema de partículas após 500ms
             this.time.delayedCall(500, () => {
                 particles.destroy();
