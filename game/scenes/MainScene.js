@@ -156,7 +156,62 @@ export default class MainScene extends Phaser.Scene {
         this.load.start();
     }
 
+    create() {
+        if (!this.textures.exists('tile_grass')) {
+            return; // Wait for assets to load
+        }
+        this.grid = new Grid(this, 10, 10);
+        this.inputManager = new InputManager(this);
+        this.keys = this.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
+        this.grid.create();
+        this.inputManager.init();
+        this.setupUIHandlers();
+
+        this.input.on('pointerdown', this.handleClick, this);
+        this.input.on('pointermove', this.updatePreview, this);
+
+        this.placeEnvironmentObjects();
+        this.createFarmer();
+    }
+
+    update() {
+        if (!this.farmer || this.farmer.isMoving) return;
+
+        let direction = null;
+        let animKey = null;
+
+        if (this.keys.w.isDown) {
+            direction = { x: 0, y: -1 };
+            animKey = 'farmer_up';
+        } else if (this.keys.s.isDown) {
+            direction = { x: 0, y: 1 };
+            animKey = 'farmer_down';
+        } else if (this.keys.a.isDown) {
+            direction = { x: -1, y: 0 };
+            animKey = 'farmer_left';
+        } else if (this.keys.d.isDown) {
+            direction = { x: 1, y: 0 };
+            animKey = 'farmer_right';
+        }
+
+        if (direction) {
+            const newX = this.farmer.gridX + direction.x;
+            const newY = this.farmer.gridY + direction.y;
+
+            if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+                this.moveFarmer(direction, animKey);
+            }
+        }
+    }
+
     handleKeyDown(event) {
+        // This method is now only used for mobile controls
         if (this.farmer.isMoving) return;
 
         let direction = null;
