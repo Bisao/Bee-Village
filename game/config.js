@@ -109,7 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle back button
     document.querySelector('.back-button').addEventListener('click', () => {
         document.getElementById('settings-panel').classList.remove('visible');
-        beeIcon.className = 'bee-icon play visible';
+        const beeIcon = document.querySelector('.theme-icon');
+        if (beeIcon) {
+            beeIcon.className = 'theme-icon play visible';
+        }
     });
 });
 
