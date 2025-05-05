@@ -174,40 +174,29 @@ document.querySelector('.topbar h1 .flower').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:first-child').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
 
-// Inicializar tema antes do carregamento do DOM
-document.addEventListener('DOMContentLoaded', () => {
-    const savedTheme = localStorage.getItem('selectedTheme') || 'cow';
-    let savedEmoji = '🐄';
+// Inicializar tema e configurações
+const initializeTheme = () => {
+    const currentTheme = localStorage.getItem('selectedTheme') || 'cow';
+    let currentEmoji = currentTheme === 'pig' ? '🐖' : '🐄';
     
-    if (savedTheme === 'pig') {
-        savedEmoji = '🐖';
-    } else if (savedTheme === 'cow') {
-        savedEmoji = '🐄';
-    }
-    
-    // Aplicar tema imediatamente
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    // Aplicar tema ao documento
+    document.documentElement.setAttribute('data-theme', currentTheme);
     document.documentElement.classList.add('theme-loaded');
     
     // Atualizar emojis na interface
-    const beeElements = document.querySelectorAll('.bee');
-    beeElements.forEach(element => {
-        element.textContent = savedEmoji;
+    document.querySelectorAll('.bee').forEach(element => {
+        element.textContent = currentEmoji;
     });
     
-    // Forçar aplicação do tema
-    requestAnimationFrame(() => {
-        applyThemeChanges(savedTheme, true);
-    });
-});
-const currentTheme = localStorage.getItem('selectedTheme') || 'cow';
-document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
+    // Selecionar botão do tema atual
+    document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
+    
+    // Aplicar mudanças do tema
+    applyThemeChanges(currentTheme, true);
+};
 
-// Aplicar tema ao documento
-applyThemeChanges(currentTheme, false);
-
-// Adicionar classe para prevenir flash de tema padrão
-document.documentElement.classList.add('theme-loaded');
+// Carregar tema quando o DOM estiver pronto
+document.addEventListener('DOMContentLoaded', initializeTheme);
 
 document.getElementById('settings-button').addEventListener('click', () => {
     moveBeeToButton('settings');
