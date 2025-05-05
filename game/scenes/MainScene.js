@@ -44,28 +44,48 @@ export default class MainScene extends Phaser.Scene {
 
             this.anims.create({
                 key: 'farmer_up',
-                frames: this.anims.generateFrameNames('farmer', {start: 1, end: 4, zeroPad: 2, prefix: 'farmer'}),
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
                 frameRate: 8,
                 repeat: -1
             });
 
             this.anims.create({
                 key: 'farmer_down',
-                frames: this.anims.generateFrameNames('farmer', {start: 9, end: 12, zeroPad: 2, prefix: 'farmer'}),
+                frames: [
+                    { key: 'farmer9' },
+                    { key: 'farmer10' },
+                    { key: 'farmer11' },
+                    { key: 'farmer12' }
+                ],
                 frameRate: 8,
                 repeat: -1
             });
 
             this.anims.create({
                 key: 'farmer_left',
-                frames: this.anims.generateFrameNames('farmer', {start: 5, end: 8, zeroPad: 2, prefix: 'farmer'}),
+                frames: [
+                    { key: 'farmer5' },
+                    { key: 'farmer6' },
+                    { key: 'farmer7' },
+                    { key: 'farmer8' }
+                ],
                 frameRate: 8,
                 repeat: -1
             });
 
             this.anims.create({
                 key: 'farmer_right',
-                frames: this.anims.generateFrameNames('farmer', {start: 1, end: 4, zeroPad: 2, prefix: 'farmer'}),
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
                 frameRate: 8,
                 repeat: -1
             });
