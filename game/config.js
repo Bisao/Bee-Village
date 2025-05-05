@@ -5,7 +5,7 @@ const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
-    backgroundColor: '#1e4d7b', // Sea blue color
+    backgroundColor: '#2b2b2b', // Dark background for contrast
     scene: MainScene,
     scale: {
         mode: Phaser.Scale.RESIZE,

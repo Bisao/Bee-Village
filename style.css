@@ -21,14 +21,14 @@ html, body {
     align-items: center;
     padding: 0 16px;
     z-index: 1000;
-    border-bottom: 2px solid #4CAF50;
+    border-bottom: 2px solid #FFD700;
 }
 
 .menu-button {
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 6px;
-    color: #4CAF50;
+    color: #FFD700;
     font-size: 20px;
     cursor: pointer;
     padding: 6px 10px;
@@ -38,8 +38,8 @@ html, body {
 
 .menu-button:hover {
     transform: scale(1.05);
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4CAF50;
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
 }
 
 .structure-button {
@@ -47,8 +47,8 @@ html, body {
     right: 16px;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 6px;
     cursor: pointer;
     padding: 6px;
@@ -62,8 +62,8 @@ html, body {
 
 .structure-button:hover {
     transform: translateY(-50%) scale(1.05);
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4CAF50;
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
 }
 
 .structure-button img {
@@ -76,8 +76,8 @@ html, body {
     position: fixed;
     top: 12px;
     right: 70px;
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    background: rgba(255, 215, 0, 0.1);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     border-radius: 6px;
     width: 40px;
     height: 40px;
@@ -86,14 +86,14 @@ html, body {
     justify-content: center;
     cursor: pointer;
     font-size: 24px;
-    color: #4CAF50;
+    color: #FFD700;
     transition: all 0.3s ease;
 }
 
 .fullscreen-button:hover {
     transform: scale(1.05);
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4CAF50;
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
 }
 
 .topbar h1 {
@@ -116,7 +116,7 @@ html, body {
     backdrop-filter: blur(10px);
     padding: 10px;
     border-radius: 12px;
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -141,7 +141,7 @@ html, body {
     aspect-ratio: 1;
     padding: 4px;
     background: rgba(42, 42, 42, 0.85);
-    border: 2px solid rgba(76, 175, 80, 0.3);
+    border: 2px solid rgba(255, 215, 0, 0.3);
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -172,11 +172,11 @@ html, body {
     opacity: 0;
     pointer-events: none;
     transition: all 0.3s ease;
-    border: 1px solid rgba(76, 175, 80, 0.3);
+    border: 1px solid rgba(255, 215, 0, 0.3);
 }
 
 .building-btn:hover {
-    border-color: #4CAF50;
+    border-color: #FFD700;
     transform: translateX(-2px);
 }
 
@@ -186,9 +186,9 @@ html, body {
 }
 
 .building-btn.selected {
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4CAF50;
-    box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
+    background: rgba(255, 215, 0, 0.2);
+    border-color: #FFD700;
+    box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
 /* Mobile */
@@ -235,7 +235,7 @@ html, body {
     background: rgba(15, 15, 15, 0.8);
     padding: 15px;
     border-radius: 20px;
-    border: 2px solid #4CAF50;
+    border: 2px solid #FFD700;
     backdrop-filter: blur(5px);
     z-index: 1000;
     display: block;
@@ -252,8 +252,8 @@ html, body {
 .control-btn {
     width: 51px;
     height: 51px;
-    background: rgba(76, 175, 80, 0.2);
-    border: 2px solid #4CAF50;
+    background: rgba(255, 215, 0, 0.2);
+    border: 2px solid #FFD700;
     border-radius: 12px;
     font-size: 28px;
     color: #fff;
@@ -266,7 +266,7 @@ html, body {
 }
 
 .control-btn:active {
-    background: rgba(76, 175, 80, 0.4);
+    background: rgba(255, 215, 0, 0.4);
     transform: scale(0.95);
 }
 
@@ -277,6 +277,6 @@ html, body {
 
 @media (hover: hover) {
     .control-btn:hover {
-        background: rgba(76, 175, 80, 0.3);
+        background: rgba(255, 215, 0, 0.3);
     }
 }
