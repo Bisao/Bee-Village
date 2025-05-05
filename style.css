@@ -191,6 +191,32 @@ html, body {
     box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
 }
 
+@keyframes beeHover {
+    0% { transform: translateY(0) rotate(5deg); }
+    25% { transform: translateY(-5px) rotate(-5deg); }
+    50% { transform: translateY(0) rotate(5deg); }
+    75% { transform: translateY(5px) rotate(-5deg); }
+    100% { transform: translateY(0) rotate(5deg); }
+}
+
+@keyframes flowerBloom {
+    0% { transform: scale(1) rotate(0deg); }
+    25% { transform: scale(1.1) rotate(5deg); }
+    50% { transform: scale(1) rotate(0deg); }
+    75% { transform: scale(1.1) rotate(-5deg); }
+    100% { transform: scale(1) rotate(0deg); }
+}
+
+.start-screen h1 span:first-child {
+    display: inline-block;
+    animation: flowerBloom 3s ease-in-out infinite;
+}
+
+.start-screen h1 span:last-child {
+    display: inline-block;
+    animation: beeHover 2s ease-in-out infinite;
+}
+
 @keyframes titlePulse {
     0% { transform: scale(1); }
     50% { transform: scale(1.05); }
