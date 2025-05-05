@@ -14,13 +14,6 @@ export default class InputManager {
     }
 
     setupInputHandlers() {
-        // Prevent context menu on right click
-        this.scene.game.canvas.addEventListener('contextmenu', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        }, false);
-        
         this.scene.input.on('pointerdown', this.handlePointerDown, this);
         this.scene.input.on('pointermove', this.handlePointerMove, this);
         this.scene.input.on('pointerup', this.handlePointerUp, this);
@@ -68,11 +61,15 @@ export default class InputManager {
     }
 
     handlePointerDown(pointer) {
-        if (pointer.rightButtonDown() || this.isMobile) {
+        if (this.isMobile) {
+            this.touchStartTime = Date.now();
             this.isDragging = true;
             this.dragStartX = pointer.x;
             this.dragStartY = pointer.y;
-            this.lastZoomDistance = 0;
+        } else if (pointer.rightButtonDown()) {
+            this.isDragging = true;
+            this.dragStartX = pointer.x;
+            this.dragStartY = pointer.y;
         }
     }
 
