@@ -186,41 +186,52 @@ export default class MainScene extends Phaser.Scene {
     }
 
     moveFarmerToNextTile() {
-        const randomDir = Math.floor(Math.random() * 4);
-        const directions = [
-            { x: 1, y: 0 }, // direita
-            { x: -1, y: 0 }, // esquerda
-            { x: 0, y: 1 }, // baixo
-            { x: 0, y: -1 } // cima
-        ];
+        let attempts = 0;
+        const maxAttempts = 10;
+        let validMove = false;
 
-        const currentPos = {
-            x: Math.round((this.farmer.x - this.cameras.main.centerX + (this.grid.width * this.grid.tileWidth) / 2) / this.grid.tileWidth),
-            y: Math.round((this.farmer.y - this.cameras.main.centerY + (this.grid.height * this.grid.tileHeight) / 4) / (this.grid.tileHeight / 2))
-        };
+        while (!validMove && attempts < maxAttempts) {
+            const randomDir = Math.floor(Math.random() * 4);
+            const directions = [
+                { x: 1, y: 0 }, // direita
+                { x: -1, y: 0 }, // esquerda
+                { x: 0, y: 1 }, // baixo
+                { x: 0, y: -1 } // cima
+            ];
 
-        const newPos = {
-            x: currentPos.x + directions[randomDir].x,
-            y: currentPos.y + directions[randomDir].y
-        };
+            const currentPos = {
+                x: Math.round((this.farmer.x - this.cameras.main.centerX + (this.grid.width * this.grid.tileWidth) / 2) / this.grid.tileWidth),
+                y: Math.round((this.farmer.y - this.cameras.main.centerY + (this.grid.height * this.grid.tileHeight) / 4) / (this.grid.tileHeight / 2))
+            };
 
-        if (this.grid.isValidPosition(newPos.x, newPos.y)) {
-            const { tileX, tileY } = this.grid.gridToIso(newPos.x, newPos.y);
-            const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
-            const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
+            const newPos = {
+                x: currentPos.x + directions[randomDir].x,
+                y: currentPos.y + directions[randomDir].y
+            };
 
-            this.tweens.add({
-                targets: this.farmer,
-                x: this.cameras.main.centerX + tileX + centerOffsetX,
-                y: this.cameras.main.centerY + tileY + centerOffsetY - 20,
-                duration: 1000,
-                onComplete: () => {
-                    this.farmer.setDepth(newPos.y + 1);
-                    this.moveFarmerToNextTile();
-                }
-            });
-        } else {
-            this.moveFarmerToNextTile();
+            if (this.grid.isValidPosition(newPos.x, newPos.y)) {
+                validMove = true;
+                const { tileX, tileY } = this.grid.gridToIso(newPos.x, newPos.y);
+                const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
+                const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
+
+                this.tweens.add({
+                    targets: this.farmer,
+                    x: this.cameras.main.centerX + tileX + centerOffsetX,
+                    y: this.cameras.main.centerY + tileY + centerOffsetY - 20,
+                    duration: 1000,
+                    onComplete: () => {
+                        this.farmer.setDepth(newPos.y + 1);
+                        this.moveFarmerToNextTile();
+                    }
+                });
+            }
+            attempts++;
+        }
+
+        if (!validMove) {
+            // Se não encontrar movimento válido, tenta novamente após 1 segundo
+            setTimeout(() => this.moveFarmerToNextTile(), 1000);
         }
     }
 
