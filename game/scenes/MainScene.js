@@ -500,4 +500,16 @@ export default class MainScene extends Phaser.Scene {
             this.previewBuilding = null;
         }
     }
+
+    saveGame() {
+        const gameState = {
+            buildingGrid: this.grid.buildingGrid,
+            farmerPosition: {
+                x: this.farmer.gridX,
+                y: this.farmer.gridY
+            }
+        };
+        localStorage.setItem('gameState', JSON.stringify(gameState));
+        this.showFeedback('Game saved!', true);
+    }
 }
