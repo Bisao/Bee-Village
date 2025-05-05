@@ -8,6 +8,9 @@ export default class MainScene extends Phaser.Scene {
         this.selectedBuilding = null;
         this.buildingGrid = {};
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        
+        // Disable context menu
+        window.addEventListener('contextmenu', e => e.preventDefault());
     }
 
     preload() {
