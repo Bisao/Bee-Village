@@ -105,6 +105,12 @@ function applyThemeChanges(theme, save = false) {
     const selectedButton = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
     const selectedEmoji = selectedButton.dataset.emoji;
     
+    // Atualizar emoji do bee
+    const beeElements = document.querySelectorAll('.bee');
+    beeElements.forEach(element => {
+        element.textContent = selectedEmoji;
+    });
+    
     document.documentElement.setAttribute('data-theme', theme);
     
     // Update emojis
@@ -171,11 +177,23 @@ document.querySelector('.start-screen h1 span:last-child').textContent = savedEm
 // Inicializar tema antes do carregamento do DOM
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('selectedTheme') || 'cow';
-    const savedEmoji = localStorage.getItem('selectedEmoji') || '🐄';
+    let savedEmoji = '🐄';
+    
+    if (savedTheme === 'pig') {
+        savedEmoji = '🐖';
+    } else if (savedTheme === 'cow') {
+        savedEmoji = '🐄';
+    }
     
     // Aplicar tema imediatamente
     document.documentElement.setAttribute('data-theme', savedTheme);
     document.documentElement.classList.add('theme-loaded');
+    
+    // Atualizar emojis na interface
+    const beeElements = document.querySelectorAll('.bee');
+    beeElements.forEach(element => {
+        element.textContent = savedEmoji;
+    });
     
     // Forçar aplicação do tema
     requestAnimationFrame(() => {
