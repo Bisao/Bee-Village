@@ -690,7 +690,7 @@ html, body {
 
 .theme-icon.visible {
     opacity: 1;
-    right: -30px;
+    right: -5px;
 }
 
 .theme-icon.play {
