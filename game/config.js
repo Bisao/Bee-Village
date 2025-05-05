@@ -21,7 +21,18 @@ const config = {
     }
 };
 
-const game = new Phaser.Game(config);
+let game;
+
+document.getElementById('play-button').addEventListener('click', () => {
+    document.getElementById('start-screen').style.display = 'none';
+    document.getElementById('loading-screen').style.display = 'flex';
+    game = new Phaser.Game(config);
+});
+
+document.getElementById('settings-button').addEventListener('click', () => {
+    // Adicionar lógica de configurações aqui
+    alert('Configurações em desenvolvimento');
+});
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
