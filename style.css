@@ -172,7 +172,6 @@ html, body {
     }
 }
 #controls-panel {
-    display: none;
     position: fixed;
     bottom: 30px;
     left: 30px;
@@ -182,12 +181,7 @@ html, body {
     border: 2px solid #4CAF50;
     backdrop-filter: blur(5px);
     z-index: 1000;
-}
-
-@media (max-width: 768px) {
-    #controls-panel {
-        display: block;
-    }
+    display: block;
 }
 
 .controls-grid {
