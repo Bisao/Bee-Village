@@ -6,14 +6,18 @@
 #side-panel {
   display: none; /* Initially hidden */
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center the panel */
   width: 300px;
-  height: 100%;
+  height: auto; /* Adjust height automatically */
   background-color: #f0f0f0;
   /* Add more styles as needed */
   flex-direction: column;
   align-items: center;
+  padding: 20px; /* Add padding for better look */
+  border-radius: 5px; /* Add rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
 }
 
 #toggleStructures {
@@ -55,16 +59,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const settingsPanel = document.getElementById('settings-panel');
     const backButton = document.querySelector('.back-button');
 
-    menuButton.addEventListener('click', (e) => {
-        e.stopPropagation();
+    menuButton.addEventListener('click', () => {
         settingsPanel.style.display = 'flex';
-        requestAnimationFrame(() => {
-            settingsPanel.classList.add('visible');
-        });
+        settingsPanel.classList.add('visible');
     });
 
-    backButton.addEventListener('click', (e) => {
-        e.stopPropagation();
+    backButton.addEventListener('click', () => {
         settingsPanel.classList.remove('visible');
         setTimeout(() => {
             settingsPanel.style.display = 'none';
@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', function() {
         document.documentElement.setAttribute('data-theme', previewTheme);
         applyThemeBtn.classList.remove('visible');
     });
+
 
     // Side panel toggle functionality
     const structuresBtn = document.getElementById('toggleStructures');
