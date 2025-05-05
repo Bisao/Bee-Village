@@ -57,8 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
     structuresBtn.addEventListener('click', () => {
         if (sidePanel.style.display === 'none' || sidePanel.style.display === '') {
             sidePanel.style.display = 'flex';
+            structuresBtn.classList.add('active');
         } else {
             sidePanel.style.display = 'none';
+            structuresBtn.classList.remove('active');
         }
     });
 });
