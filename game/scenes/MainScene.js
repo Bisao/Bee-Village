@@ -446,7 +446,12 @@ export default class MainScene extends Phaser.Scene {
                     return;
                 }
 
-                this.placeBuilding(gridPosition.gridX, gridPosition.gridY);
+                // Usa a posição exata do preview para posicionar a estrutura
+                const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
+                const worldX = this.cameras.main.centerX + tileX;
+                const worldY = this.cameras.main.centerY + tileY;
+
+                this.placeBuilding(gridPosition.gridX, gridPosition.gridY, worldX, worldY);
                 console.log('Building placed at:', gridPosition.gridX, gridPosition.gridY);
             }
         } catch (error) {
@@ -478,7 +483,7 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    placeBuilding(gridX, gridY) {
+    placeBuilding(gridX, gridY, worldX, worldY) {
         try {
             // Validações iniciais
             if (!this.selectedBuilding) {
@@ -497,10 +502,7 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-            // Calcula posição no mundo
-            const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
-            const worldX = this.cameras.main.centerX + tileX;
-            const worldY = this.cameras.main.centerY + tileY;
+            // Usa as coordenadas exatas passadas como parâmetro
 
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
