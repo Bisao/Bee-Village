@@ -121,6 +121,14 @@ html, body {
     align-items: center;
     justify-content: center;
     z-index: 9999;
+    padding: 20px;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+
+.start-screen > * {
+    margin: 10px 0;
+    position: relative;
 }
 
 .bee-icon {
@@ -162,19 +170,21 @@ html, body {
 
 .start-screen h1 {
     color: #FFD700;
-    font-size: 2.5em;
-    margin-bottom: 40px;
+    font-size: min(2.5em, 8vw);
+    margin-bottom: 30px;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
     animation: titlePulse 2s ease-in-out infinite;
+    text-align: center;
+    width: 100%;
 }
 
 .start-screen button {
     background: #FFD700;
     color: #2b2b2b;
     border: 2px solid #FFF;
-    padding: 15px 40px;
-    margin: 10px;
-    font-size: 1.2em;
+    padding: 12px 30px;
+    margin: 8px;
+    font-size: min(1.2em, 5vw);
     border-radius: 25px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -182,6 +192,7 @@ html, body {
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2);
+    max-width: 90vw;
 }
 
 .start-screen button:hover {
