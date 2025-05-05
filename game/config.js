@@ -24,8 +24,11 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-window.addEventListener('click', function() {
-    if (!game.scale.isFullscreen) {
-        game.scale.startFullscreen();
-    }
-}, { once: true });
+if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    window.addEventListener('touchstart', function startGame() {
+        if (game.scale && typeof game.scale.startFullscreen === 'function') {
+            game.scale.startFullscreen();
+        }
+        window.removeEventListener('touchstart', startGame);
+    });
+}

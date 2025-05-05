@@ -6,7 +6,6 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
-        this.scale.startFullscreen();
     }
 
     preload() {
