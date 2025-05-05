@@ -119,8 +119,7 @@ export default class MainScene extends Phaser.Scene {
             this.farmer.setDepth(startY + 1);
             
             // Faz a câmera seguir o fazendeiro
-            this.cameras.main.startFollow(this.farmer, true);
-            this.cameras.main.setFollowOffset(-this.cameras.main.centerX, -this.cameras.main.centerY);
+            this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
 
             // Adiciona controles WASD
             this.keys = this.input.keyboard.addKeys({
