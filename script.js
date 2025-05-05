@@ -55,14 +55,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const settingsPanel = document.getElementById('settings-panel');
     const backButton = document.querySelector('.back-button');
 
-    menuButton.addEventListener('click', () => {
+    menuButton.addEventListener('click', (e) => {
+        e.stopPropagation();
         settingsPanel.style.display = 'flex';
         requestAnimationFrame(() => {
             settingsPanel.classList.add('visible');
         });
     });
 
-    backButton.addEventListener('click', () => {
+    backButton.addEventListener('click', (e) => {
+        e.stopPropagation();
         settingsPanel.classList.remove('visible');
         setTimeout(() => {
             settingsPanel.style.display = 'none';
@@ -71,7 +73,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Fechar o painel quando clicar fora dele
     document.addEventListener('click', (e) => {
-        if (!settingsPanel.contains(e.target) && !menuButton.contains(e.target) && settingsPanel.classList.contains('visible')) {
+        if (settingsPanel.classList.contains('visible') && 
+            !settingsPanel.contains(e.target) && 
+            !menuButton.contains(e.target)) {
             backButton.click();
         }
     });
