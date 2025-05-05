@@ -88,8 +88,9 @@ document.querySelector('.back-button').addEventListener('click', () => {
 document.getElementById('settings-button').addEventListener('click', () => {
     moveBeeToButton('settings');
     setTimeout(() => {
-        alert('Configurações em desenvolvimento');
-    }, 3000);
+        document.getElementById('settings-panel').classList.add('visible');
+        isTransitioning = false;
+    }, 1000);
 });
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
