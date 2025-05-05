@@ -551,7 +551,6 @@ export default class MainScene extends Phaser.Scene {
             this.previewBuilding = null;
         }
     }
-    }
 
     isValidGridPosition(x, y) {
         return this.grid.isValidPosition(x, y);
