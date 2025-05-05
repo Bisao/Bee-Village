@@ -101,6 +101,11 @@ export default class MainScene extends Phaser.Scene {
             const startY = Math.floor(this.grid.height / 2);
             const {tileX, tileY} = this.grid.gridToIso(startX, startY);
 
+            // Load farmer sprite textures
+            for (let i = 1; i <= 12; i++) {
+                this.load.image(`farmer${i}`, `/attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+            }
+
             this.farmer = this.add.sprite(
                 this.cameras.main.centerX + tileX,
                 this.cameras.main.centerY + tileY - 16,
