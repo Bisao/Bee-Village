@@ -72,9 +72,15 @@ export default class InputManager {
             this.dragStartX = pointer.x;
             this.dragStartY = pointer.y;
         } else if (pointer.rightButtonDown()) {
-            this.isDragging = true;
-            this.dragStartX = pointer.x;
-            this.dragStartY = pointer.y;
+            if (this.scene.selectedBuilding) {
+                this.scene.cancelBuildingSelection();
+                const buttons = document.querySelectorAll('.building-btn');
+                buttons.forEach(b => b.classList.remove('selected'));
+            } else {
+                this.isDragging = true;
+                this.dragStartX = pointer.x;
+                this.dragStartY = pointer.y;
+            }
         }
     }
 
