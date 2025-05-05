@@ -49,32 +49,6 @@ html, body {
     font-weight: 600;
 }
 
-.grid-selector {
-    margin-left: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.grid-selector label {
-    color: #fff;
-    font-size: 0.9em;
-}
-
-.grid-selector select {
-    background: rgba(76, 175, 80, 0.1);
-    border: 1px solid rgba(76, 175, 80, 0.3);
-    border-radius: 4px;
-    color: #4CAF50;
-    padding: 4px 8px;
-    cursor: pointer;
-}
-
-.grid-selector select:hover {
-    background: rgba(76, 175, 80, 0.2);
-    border-color: #4CAF50;
-}
-
 /* Painel de Estruturas */
 #side-panel {
     position: absolute;

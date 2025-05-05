@@ -69,20 +69,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        const gridSizeSelect = document.getElementById('gridSize');
-        const size = parseInt(gridSizeSelect.value);
-        this.createIsometricGrid(size, size);
-        
-        gridSizeSelect.addEventListener('change', () => {
-            const newSize = parseInt(gridSizeSelect.value);
-            this.grid.forEach(row => {
-                row.forEach(tile => tile.destroy());
-            });
-            this.clearBuildingsAndTrees();
-            this.createIsometricGrid(newSize, newSize);
-            this.placeTrees();
-        });
-        
+        this.createIsometricGrid(10, 10);
         this.setupUIHandlers();
         this.setupInputHandlers();
         this.createFarmerCharacter();
@@ -413,15 +400,6 @@ export default class MainScene extends Phaser.Scene {
             yoyo: true,
             repeat: -1
         });
-    }
-
-    clearBuildingsAndTrees() {
-        Object.values(this.buildingGrid).forEach(item => {
-            if (item.sprite) {
-                item.sprite.destroy();
-            }
-        });
-        this.buildingGrid = {};
     }
 
     isValidGridPosition(x, y) {
