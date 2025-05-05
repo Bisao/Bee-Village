@@ -75,7 +75,12 @@ export default class MainScene extends Phaser.Scene {
         
         gridSizeSelect.addEventListener('change', () => {
             const newSize = parseInt(gridSizeSelect.value);
-            this.scene.restart();
+            this.grid.forEach(row => {
+                row.forEach(tile => tile.destroy());
+            });
+            this.clearBuildingsAndTrees();
+            this.createIsometricGrid(newSize, newSize);
+            this.placeTrees();
         });
         
         this.setupUIHandlers();
@@ -408,6 +413,15 @@ export default class MainScene extends Phaser.Scene {
             yoyo: true,
             repeat: -1
         });
+    }
+
+    clearBuildingsAndTrees() {
+        Object.values(this.buildingGrid).forEach(item => {
+            if (item.sprite) {
+                item.sprite.destroy();
+            }
+        });
+        this.buildingGrid = {};
     }
 
     isValidGridPosition(x, y) {
