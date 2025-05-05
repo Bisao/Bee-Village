@@ -126,8 +126,14 @@ html, body {
 .bee-icon {
     position: absolute;
     font-size: 3em;
-    transition: all 0.5s ease-in-out;
-    left: -50px;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    right: -50px;
+    opacity: 0;
+}
+
+.bee-icon.visible {
+    opacity: 1;
+    right: -60px;
 }
 
 .bee-icon.play {
@@ -138,6 +144,12 @@ html, body {
 .bee-icon.settings {
     top: calc(50% + 60px);
     transform: translateY(-50%);
+}
+
+@keyframes flyToButton {
+    0% { transform: translateY(-50%) rotate(0deg); }
+    50% { transform: translateY(-50%) translateX(-20px) rotate(-20deg); }
+    100% { transform: translateY(-50%) rotate(0deg); }
 }
 
 @keyframes beeFloat {

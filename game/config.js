@@ -25,9 +25,16 @@ let game;
 
 const beeIcon = document.querySelector('.bee-icon');
 
+// Show bee when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+        beeIcon.className = 'bee-icon play visible';
+    }, 100);
+});
+
 function moveBeeToButton(buttonType) {
-    beeIcon.style.left = '10px';
-    beeIcon.className = `bee-icon ${buttonType}`;
+    beeIcon.style.animation = 'flyToButton 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+    beeIcon.className = `bee-icon ${buttonType} visible`;
 }
 
 document.getElementById('play-button').addEventListener('click', () => {
