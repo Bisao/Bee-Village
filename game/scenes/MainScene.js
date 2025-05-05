@@ -453,8 +453,8 @@ export default class MainScene extends Phaser.Scene {
 
     showFeedback(message, success = true) {
         const text = this.add.text(
-            this.input.x, 
-            this.input.y - 50,
+            this.cameras.main.centerX,
+            this.cameras.main.centerY - 100,
             message,
             { 
                 fontSize: '16px',
