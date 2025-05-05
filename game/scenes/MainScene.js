@@ -405,7 +405,12 @@ export default class MainScene extends Phaser.Scene {
         try {
             const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
             const hoveredTile = this.grid.grid.flat().find(tile => {
-                const bounds = tile.getBounds();
+                const bounds = new Phaser.Geom.Rectangle(
+                    tile.x - tile.displayWidth / 2,
+                    tile.y - tile.displayHeight / 2,
+                    tile.displayWidth,
+                    tile.displayHeight
+                );
                 return bounds.contains(worldPoint.x, worldPoint.y);
             });
 
@@ -420,12 +425,13 @@ export default class MainScene extends Phaser.Scene {
                 }
 
                 // Check if position is valid
-                if (!this.isValidGridPosition(gridPosition.gridX, gridPosition.gridY)) {
+                if (!this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY)) {
                     this.showFeedback('Posição inválida', false);
                     return;
                 }
 
                 this.placeBuilding(gridPosition.gridX, gridPosition.gridY);
+                console.log('Building placed at:', gridPosition.gridX, gridPosition.gridY);
             }
         } catch (error) {
             console.error('Error placing building:', error);
