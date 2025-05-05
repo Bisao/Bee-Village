@@ -69,7 +69,15 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        this.createIsometricGrid(10, 10);
+        const gridSizeSelect = document.getElementById('gridSize');
+        const size = parseInt(gridSizeSelect.value);
+        this.createIsometricGrid(size, size);
+        
+        gridSizeSelect.addEventListener('change', () => {
+            const newSize = parseInt(gridSizeSelect.value);
+            this.scene.restart();
+        });
+        
         this.setupUIHandlers();
         this.setupInputHandlers();
         this.createFarmerCharacter();
