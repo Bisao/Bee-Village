@@ -1,4 +1,3 @@
-
 import MainScene from './scenes/MainScene.js';
 
 const config = {
@@ -43,16 +42,16 @@ document.getElementById('play-button').addEventListener('click', () => {
     if (isTransitioning) return;
     isTransitioning = true;
     let loadingProgress = 0;
-    
+
     moveBeeToButton('play');
     setTimeout(() => {
         document.getElementById('loading-screen').style.display = 'flex';
-        
+
         const progressBar = document.querySelector('.loading-progress');
         const loadingInterval = setInterval(() => {
             loadingProgress += 2;
             progressBar.style.width = `${loadingProgress}%`;
-            
+
             if (loadingProgress >= 100) {
                 clearInterval(loadingInterval);
                 try {
@@ -81,7 +80,7 @@ document.getElementById('play-button').addEventListener('click', () => {
 document.getElementById('settings-button').addEventListener('click', () => {
     if (isTransitioning) return;
     isTransitioning = true;
-    
+
     moveBeeToButton('settings');
     setTimeout(() => {
         document.getElementById('settings-panel').classList.add('visible');
@@ -104,16 +103,16 @@ let previewTheme = localStorage.getItem('selectedTheme') || 'bee';
 function applyThemeChanges(theme, save = false) {
     const selectedButton = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
     const selectedEmoji = selectedButton.dataset.emoji;
-    
+
     document.documentElement.setAttribute('data-theme', theme);
-    
+
     // Update emojis
     const flowerElements = [
         '.topbar h1 .flower',
         '.start-screen h1 span:first-child',
         '.start-screen h1 span:last-child'
     ];
-    
+
     flowerElements.forEach(selector => {
         const element = document.querySelector(selector);
         if (element) element.textContent = selectedEmoji;
@@ -125,7 +124,7 @@ function applyThemeChanges(theme, save = false) {
     if (save) {
         localStorage.setItem('selectedTheme', theme);
         localStorage.setItem('selectedEmoji', selectedEmoji);
-        
+
         // Force a repaint on saved theme
         requestAnimationFrame(() => {
             document.body.style.transition = 'background-color 0.3s ease';
@@ -148,7 +147,7 @@ themeButtons.forEach(button => {
 applyThemeBtn.addEventListener('click', () => {
     applyThemeChanges(previewTheme, true);
     applyThemeBtn.classList.remove('visible');
-    
+
     // Update UI elements with new theme
     document.querySelectorAll('[class*="button"], [class*="btn"], .topbar, .loading-overlay, #side-panel, .settings-panel').forEach(element => {
         element.style.setProperty('--primary-color', getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
@@ -162,16 +161,24 @@ applyThemeBtn.addEventListener('click', () => {
     document.querySelector('.start-screen h1 span:last-child').textContent = selectedEmoji;
 });
 
-// Load saved emoji
-const savedEmoji = localStorage.getItem('selectedEmoji') || '🐝';
-document.querySelector('.topbar h1 .flower').textContent = savedEmoji;
-document.querySelector('.start-screen h1 span:first-child').textContent = savedEmoji;
-document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
+// Initialize theme and emoji
+const initializeThemeAndEmoji = () => {
+    const currentTheme = localStorage.getItem('selectedTheme') || 'bee';
+    const themeButton = document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`);
+    const currentEmoji = themeButton?.dataset.emoji || '🐝';
 
-// Load saved theme
-const savedTheme = localStorage.getItem('selectedTheme') || 'bee';
-document.documentElement.setAttribute('data-theme', savedTheme);
-document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
+    // Update emojis in the interface
+    document.querySelector('.start-screen h1 span:first-child').textContent = currentEmoji;
+    document.querySelector('.start-screen h1 span:last-child').textContent = currentEmoji;
+
+    // Apply theme
+    document.documentElement.setAttribute('data-theme', currentTheme);
+    themeButton?.classList.add('selected');
+    applyThemeChanges(currentTheme, false);
+};
+
+// Initialize when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeThemeAndEmoji);
 
 document.getElementById('settings-button').addEventListener('click', () => {
     moveBeeToButton('settings');
@@ -187,7 +194,7 @@ if (isMobile) {
     game.scale.on('resize', () => {
         game.scale.resize(window.innerWidth, window.innerHeight);
     });
-    
+
     window.addEventListener('orientationchange', () => {
         setTimeout(() => {
             game.scale.resize(window.innerWidth, window.innerHeight);
