@@ -87,15 +87,29 @@ document.querySelector('.back-button').addEventListener('click', () => {
 
 // Theme switching
 const themeButtons = document.querySelectorAll('.theme-btn');
+const applyThemeBtn = document.getElementById('apply-theme');
+let selectedTheme = localStorage.getItem('selectedTheme') || 'bee';
+
 themeButtons.forEach(button => {
     button.addEventListener('click', () => {
         const theme = button.dataset.theme;
-        document.documentElement.setAttribute('data-theme', theme);
+        selectedTheme = theme;
         themeButtons.forEach(btn => btn.classList.remove('selected'));
         button.classList.add('selected');
-        
-        // Save theme preference
-        localStorage.setItem('selectedTheme', theme);
+        applyThemeBtn.classList.add('visible');
+    });
+});
+
+applyThemeBtn.addEventListener('click', () => {
+    document.documentElement.setAttribute('data-theme', selectedTheme);
+    localStorage.setItem('selectedTheme', selectedTheme);
+    applyThemeBtn.classList.remove('visible');
+    
+    // Update UI elements with new theme
+    document.querySelectorAll('[class*="button"], [class*="btn"]').forEach(element => {
+        element.style.setProperty('--primary-color', getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
+        element.style.setProperty('--secondary-color', getComputedStyle(document.documentElement).getPropertyValue('--secondary-color'));
+        element.style.setProperty('--accent-color', getComputedStyle(document.documentElement).getPropertyValue('--accent-color'));
     });
 });
 

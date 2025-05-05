@@ -505,6 +505,31 @@ html, body {
     color: var(--secondary-color);
 }
 
+.apply-theme-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    display: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.apply-theme-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.apply-theme-btn.visible {
+    display: block;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
     #side-panel {
