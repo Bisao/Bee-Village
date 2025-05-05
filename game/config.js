@@ -11,8 +11,7 @@ const config = {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: window.innerWidth,
-        height: window.innerHeight,
-        fullscreenTarget: 'game-ui'
+        height: window.innerHeight
     },
     physics: {
         default: 'arcade',
