@@ -128,11 +128,27 @@ export default class MainScene extends Phaser.Scene {
                 const hasAdjacentFlowers = (x, y) => {
                     const neighbors = [
                         [x-1, y], [x+1, y],
-                        [x, y-1], [x, y+1]
+                        [x, y-1], [x, y+1],
+                        [x-1, y-1], [x+1, y-1],
+                        [x-1, y+1], [x+1, y+1]
                     ];
                     return neighbors.some(([nx, ny]) => 
                         this.grid[ny]?.[nx]?.texture.key.includes('flower')
                     );
+                };
+
+                const getFlowerCount = (radius = 2) => {
+                    let count = 0;
+                    for (let dy = -radius; dy <= radius; dy++) {
+                        for (let dx = -radius; dx <= radius; dx++) {
+                            const nx = x + dx;
+                            const ny = y + dy;
+                            if (this.grid[ny]?.[nx]?.texture.key.includes('flower')) {
+                                count++;
+                            }
+                        }
+                    }
+                    return count;
                 };
 
                 const tileTypes = [
@@ -145,7 +161,10 @@ export default class MainScene extends Phaser.Scene {
                 ];
 
                 let randomTile;
-                if (!hasAdjacentFlowers(x, y) && Math.random() < 0.07) {
+                const flowerCount = getFlowerCount();
+                const maxFlowersInArea = 3;
+                
+                if (!hasAdjacentFlowers(x, y) && flowerCount < maxFlowersInArea && Math.random() < 0.10) {
                     randomTile = Math.random() < 0.5 ? 'tile_grass_2_flowers' : 'tile_grass_3_flower';
                 } else {
                     randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
