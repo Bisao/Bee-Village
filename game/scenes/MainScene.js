@@ -19,9 +19,6 @@ export default class MainScene extends Phaser.Scene {
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
-        
-        // Centraliza a câmera na origem
-        this.cameras.main.centerOn(0, 0);
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
@@ -51,8 +48,8 @@ export default class MainScene extends Phaser.Scene {
 
             if (!this.previewBuilding) {
                 this.previewBuilding = this.add.image(
-                    this.cameras.main.centerX + tileX + (-(this.grid.width * this.grid.tileWidth) / 2),
-                    this.cameras.main.centerY + tileY + (-(this.grid.height * this.grid.tileHeight) / 4) - (this.grid.tileHeight / 4),
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
                     this.selectedBuilding
                 );
                 const scale = this.grid.tileWidth / Math.max(this.previewBuilding.width, 1);
@@ -120,18 +117,13 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(key, `game/assets/buildings/${filename}.png`);
         });
 
-        // Load farmer sprite frames
-        for (let i = 1; i <= 12; i++) {
-            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
-        }
+        this.load.spritesheet('farmer', 'game/assets/sprites/Farmer.png', {
+            frameWidth: 32,
+            frameHeight: 48
+        });
     }
 
     setupUIHandlers() {
-        const centerMapBtn = document.getElementById('centerMap');
-        centerMapBtn.addEventListener('click', () => {
-            this.cameras.main.centerOn(0, 0);
-        });
-
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -149,90 +141,29 @@ export default class MainScene extends Phaser.Scene {
     createFarmerCharacter() {
         this.anims.create({
             key: 'walk_down',
-            frames: [
-                { key: 'farmer1' },
-                { key: 'farmer2' },
-                { key: 'farmer3' },
-                { key: 'farmer4' },
-                { key: 'farmer5' },
-                { key: 'farmer6' },
-                { key: 'farmer7' },
-                { key: 'farmer8' },
-                { key: 'farmer9' },
-                { key: 'farmer10' },
-                { key: 'farmer11' },
-                { key: 'farmer12' }
-            ],
+            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
             frameRate: 8,
             repeat: -1
         });
 
-        const startGridPos = { x: 5, y: 5 };
-        const { tileX, tileY } = this.grid.gridToIso(startGridPos.x, startGridPos.y);
-        const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
-        const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
-
         this.farmer = this.add.sprite(
-            this.cameras.main.centerX + tileX + centerOffsetX,
-            this.cameras.main.centerY + tileY + centerOffsetY - 20,
+            this.cameras.main.centerX,
+            this.cameras.main.centerY - 50,
             'farmer'
         );
 
-        this.farmer.setScale(2);
-        this.farmer.setDepth(startGridPos.y + 1);
+        this.farmer.setScale(3);
+        this.farmer.setDepth(1);
         this.farmer.play('walk_down');
 
-        this.moveFarmerToNextTile();
-    }
-
-    moveFarmerToNextTile() {
-        let attempts = 0;
-        const maxAttempts = 10;
-        let validMove = false;
-
-        while (!validMove && attempts < maxAttempts) {
-            const randomDir = Math.floor(Math.random() * 4);
-            const directions = [
-                { x: 1, y: 0 }, // direita
-                { x: -1, y: 0 }, // esquerda
-                { x: 0, y: 1 }, // baixo
-                { x: 0, y: -1 } // cima
-            ];
-
-            const currentPos = {
-                x: Math.round((this.farmer.x - this.cameras.main.centerX + (this.grid.width * this.grid.tileWidth) / 2) / this.grid.tileWidth),
-                y: Math.round((this.farmer.y - this.cameras.main.centerY + (this.grid.height * this.grid.tileHeight) / 4) / (this.grid.tileHeight / 2))
-            };
-
-            const newPos = {
-                x: currentPos.x + directions[randomDir].x,
-                y: currentPos.y + directions[randomDir].y
-            };
-
-            if (this.grid.isValidPosition(newPos.x, newPos.y)) {
-                validMove = true;
-                const { tileX, tileY } = this.grid.gridToIso(newPos.x, newPos.y);
-                const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
-                const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
-
-                this.tweens.add({
-                    targets: this.farmer,
-                    x: this.cameras.main.centerX + tileX + centerOffsetX,
-                    y: this.cameras.main.centerY + tileY + centerOffsetY - 20,
-                    duration: 1000,
-                    onComplete: () => {
-                        this.farmer.setDepth(newPos.y + 1);
-                        this.moveFarmerToNextTile();
-                    }
-                });
-            }
-            attempts++;
-        }
-
-        if (!validMove) {
-            // Se não encontrar movimento válido, tenta novamente após 1 segundo
-            setTimeout(() => this.moveFarmerToNextTile(), 1000);
-        }
+        this.tweens.add({
+            targets: this.farmer,
+            x: this.farmer.x + 100,
+            y: this.farmer.y + 50,
+            duration: 2000,
+            yoyo: true,
+            repeat: -1
+        });
     }
 
     placeEnvironmentObjects() {
@@ -263,12 +194,9 @@ export default class MainScene extends Phaser.Scene {
                 const randomType = types[Math.floor(Math.random() * types.length)];
                 const {tileX, tileY} = this.grid.gridToIso(randomX, randomY);
 
-                const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
-                const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
-                
                 const object = this.add.image(
-                    this.cameras.main.centerX + tileX + centerOffsetX,
-                    this.cameras.main.centerY + tileY + centerOffsetY - (this.grid.tileHeight / 4),
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
                     randomType
                 );
 
