@@ -125,16 +125,32 @@ export default class MainScene extends Phaser.Scene {
                 const tileX = (x - y) * (this.tileWidth - 0.5);
                 const tileY = (x + y) * (this.tileHeight / 2 - 0.5);
 
+                const hasAdjacentFlowers = (x, y) => {
+                    const neighbors = [
+                        [x-1, y], [x+1, y],
+                        [x, y-1], [x, y+1]
+                    ];
+                    return neighbors.some(([nx, ny]) => 
+                        this.grid[ny]?.[nx]?.texture.key.includes('flower')
+                    );
+                };
+
                 const tileTypes = [
                     'tile_grass',
                     'tile_grass',
+                    'tile_grass',
                     'tile_grass_2',
                     'tile_grass_2',
-                    'tile_grass_2_flowers',
-                    'tile_grass_3_flower'
+                    'tile_grass_2'
                 ];
 
-                const randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
+                let randomTile;
+                if (!hasAdjacentFlowers(x, y) && Math.random() < 0.15) {
+                    randomTile = Math.random() < 0.5 ? 'tile_grass_2_flowers' : 'tile_grass_3_flower';
+                } else {
+                    randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
+                }
+                
                 const tile = this.add.image(
                     this.cameras.main.centerX + tileX,
                     this.cameras.main.centerY + tileY,
