@@ -171,12 +171,14 @@ export default class MainScene extends Phaser.Scene {
 
         this.farmer = this.add.sprite(
             this.cameras.main.centerX + tileX + centerOffsetX,
-            this.cameras.main.centerY + tileY + centerOffsetY - 20,
+            this.cameras.main.centerY + tileY + centerOffsetY,
             'farmer'
         );
 
-        const scale = this.grid.tileWidth / this.farmer.width;
-        this.farmer.setScale(scale);
+        // Ajusta a escala para corresponder ao tamanho do tile
+        const scaleX = this.grid.tileWidth / this.farmer.width;
+        const scaleY = this.grid.tileHeight / this.farmer.height;
+        this.farmer.setScale(scaleX, scaleY);
         this.farmer.setDepth(startGridPos.y + 1);
         this.farmer.play('walk_right');
 
