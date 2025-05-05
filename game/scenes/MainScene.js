@@ -117,9 +117,17 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(key, `game/assets/buildings/${filename}.png`);
         });
 
-        this.load.spritesheet('farmer', 'game/assets/sprites/Farmer.png', {
-            frameWidth: 32,
-            frameHeight: 48
+        // Load farmer sprite
+        const numFrames = 12;
+        const spriteWidth = 64;
+        const spriteHeight = 64;
+        
+        for (let i = 0; i < numFrames; i++) {
+            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i + 1}.png`);
+        }
+        this.load.spritesheet('farmer', 'attached_assets/Farmer_1.png', {
+            frameWidth: spriteWidth,
+            frameHeight: spriteHeight
         });
     }
 
@@ -139,30 +147,63 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createFarmerCharacter() {
-        this.anims.create({
-            key: 'walk_down',
-            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
-            frameRate: 8,
-            repeat: -1
+        // Criar animações para cada direção
+        const animationConfigs = [
+            { key: 'walk_right', frames: [0, 1, 2] },
+            { key: 'walk_left', frames: [3, 4, 5] },
+            { key: 'walk_down', frames: [6, 7, 8] },
+            { key: 'walk_up', frames: [9, 10, 11] }
+        ];
+
+        animationConfigs.forEach(config => {
+            this.anims.create({
+                key: config.key,
+                frames: config.frames.map(frame => ({ key: 'farmer', frame })),
+                frameRate: 8,
+                repeat: -1
+            });
         });
 
+        const startGridPos = { x: 5, y: 5 };
+        const { tileX, tileY } = this.grid.gridToIso(startGridPos.x, startGridPos.y);
+        const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
+        const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
+
         this.farmer = this.add.sprite(
-            this.cameras.main.centerX,
-            this.cameras.main.centerY - 50,
+            this.cameras.main.centerX + tileX + centerOffsetX,
+            this.cameras.main.centerY + tileY + centerOffsetY - 20,
             'farmer'
         );
 
-        this.farmer.setScale(3);
-        this.farmer.setDepth(1);
-        this.farmer.play('walk_down');
+        this.farmer.setScale(2);
+        this.farmer.setDepth(startGridPos.y + 1);
+        this.farmer.play('walk_right');
+
+        this.moveFarmerRandomly();
+    }
+
+    moveFarmerRandomly() {
+        const directions = ['right', 'left', 'down', 'up'];
+        const randomDir = directions[Math.floor(Math.random() * directions.length)];
+        const duration = 2000;
+        
+        const movement = {
+            right: { x: 100, y: 0 },
+            left: { x: -100, y: 0 },
+            down: { x: 0, y: 50 },
+            up: { x: 0, y: -50 }
+        };
+
+        this.farmer.play(`walk_${randomDir}`);
 
         this.tweens.add({
             targets: this.farmer,
-            x: this.farmer.x + 100,
-            y: this.farmer.y + 50,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1
+            x: this.farmer.x + movement[randomDir].x,
+            y: this.farmer.y + movement[randomDir].y,
+            duration: duration,
+            onComplete: () => {
+                this.moveFarmerRandomly();
+            }
         });
     }
 
