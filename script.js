@@ -6,18 +6,14 @@
 #side-panel {
   display: none; /* Initially hidden */
   position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%); /* Center the panel */
+  top: 0;
+  right: 0;
   width: 300px;
-  height: auto; /* Adjust height automatically */
+  height: 100%;
   background-color: #f0f0f0;
   /* Add more styles as needed */
   flex-direction: column;
   align-items: center;
-  padding: 20px; /* Add padding for better look */
-  border-radius: 5px; /* Add rounded corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
 }
 
 #toggleStructures {
@@ -55,52 +51,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    const menuButton = document.getElementById('menuButton');
-    const settingsPanel = document.getElementById('settings-panel');
-    const backButton = document.querySelector('.back-button');
-
-    menuButton.addEventListener('click', () => {
-        settingsPanel.style.display = 'flex';
-        settingsPanel.classList.add('visible');
-    });
-
-    backButton.addEventListener('click', () => {
-        settingsPanel.classList.remove('visible');
-        setTimeout(() => {
-            settingsPanel.style.display = 'none';
-        }, 300);
-    });
-
-    // Fechar o painel quando clicar fora dele
-    document.addEventListener('click', (e) => {
-        if (settingsPanel.classList.contains('visible') && 
-            !settingsPanel.contains(e.target) && 
-            !menuButton.contains(e.target)) {
-            backButton.click();
-        }
-    });
-
-    // Handle theme selection
-    const themeButtons = document.querySelectorAll('.theme-btn');
-    const applyThemeBtn = document.getElementById('apply-theme');
-    let previewTheme = 'bee';
-
-    themeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            themeButtons.forEach(btn => btn.classList.remove('selected'));
-            button.classList.add('selected');
-            previewTheme = button.dataset.theme;
-            applyThemeBtn.classList.add('visible');
-        });
-    });
-
-    applyThemeBtn.addEventListener('click', () => {
-        document.documentElement.setAttribute('data-theme', previewTheme);
-        applyThemeBtn.classList.remove('visible');
-    });
-
-
-    // Side panel toggle functionality
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 

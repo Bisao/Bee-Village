@@ -398,11 +398,10 @@ html, body {
 /* Settings Panel */
 .settings-panel {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 80%;
-    max-width: 500px;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: var(--panel-background);
     backdrop-filter: blur(10px);
     display: none;
@@ -410,40 +409,6 @@ html, body {
     z-index: 10000;
     padding: 20px;
     box-sizing: border-box;
-    border-radius: 12px;
-    border: 2px solid var(--primary-color);
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s ease;
-}
-
-.settings-panel.visible {
-    display: flex;
-    opacity: 1;
-    pointer-events: all;
-}
-
-.settings-panel::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
-}
-
-.settings-panel::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
 }
 
 .settings-panel.visible {
