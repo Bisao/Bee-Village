@@ -19,10 +19,10 @@ export default class MainScene extends Phaser.Scene {
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
-        
+
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
-        
+
         this.createFarmerCharacter();
         this.placeEnvironmentObjects();
     }
@@ -45,7 +45,7 @@ export default class MainScene extends Phaser.Scene {
         if (hoveredTile) {
             const gridPosition = hoveredTile.data;
             const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
-            
+
             if (!this.previewBuilding) {
                 this.previewBuilding = this.add.image(
                     this.cameras.main.centerX + tileX,
@@ -221,7 +221,7 @@ export default class MainScene extends Phaser.Scene {
     }
     handleClick(pointer) {
         if (!this.selectedBuilding) return;
-        
+
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         const hoveredTile = this.grid.grid.flat().find(tile => {
             const bounds = tile.getBounds();
@@ -236,7 +236,7 @@ export default class MainScene extends Phaser.Scene {
 
     placeBuilding(gridX, gridY) {
         if (!this.selectedBuilding || !this.isValidGridPosition(gridX, gridY)) return;
-        
+
         const key = `${gridX},${gridY}`;
         if (this.grid.buildingGrid[key]) return;
 
@@ -262,5 +262,13 @@ export default class MainScene extends Phaser.Scene {
 
     isValidGridPosition(x, y) {
         return this.grid.isValidPosition(x, y);
+    }
+
+    cancelBuildingSelection() {
+        this.selectedBuilding = null;
+        if (this.previewBuilding) {
+            this.previewBuilding.destroy();
+            this.previewBuilding = null;
+        }
     }
 }
