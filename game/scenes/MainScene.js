@@ -107,8 +107,6 @@ export default class MainScene extends Phaser.Scene {
                 repeat: -1
             });
 
-
-            // Posição inicial no centro do grid
             const startX = Math.floor(this.grid.width / 2);
             const startY = Math.floor(this.grid.height / 2);
             const {tileX, tileY} = this.grid.gridToIso(startX, startY);
@@ -122,13 +120,10 @@ export default class MainScene extends Phaser.Scene {
             this.farmer.gridX = startX;
             this.farmer.gridY = startY;
             this.farmer.setScale(0.8);
-            //this.farmer.play('farmer_walk');
             this.farmer.setDepth(startY + 1);
 
-            // Faz a câmera seguir o fazendeiro
             this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
 
-            // Adiciona controles WASD
             this.keys = this.input.keyboard.addKeys({
                 w: Phaser.Input.Keyboard.KeyCodes.W,
                 a: Phaser.Input.Keyboard.KeyCodes.A,
@@ -138,59 +133,34 @@ export default class MainScene extends Phaser.Scene {
 
             this.input.keyboard.on('keydown', this.handleKeyDown, this);
 
-    // Mobile controls
-    if ('ontouchstart' in window) {
-        const buttons = {
-            'mobile-up': 'W',
-            'mobile-down': 'S', 
-            'mobile-left': 'A',
-            'mobile-right': 'D'
-        };
+            if ('ontouchstart' in window) {
+                const buttons = {
+                    'mobile-up': 'W',
+                    'mobile-down': 'S', 
+                    'mobile-left': 'A',
+                    'mobile-right': 'D'
+                };
 
-        Object.entries(buttons).forEach(([className, key]) => {
-            const button = document.querySelector(`.${className}`);
-            if (button) {
-                button.addEventListener('touchstart', (e) => {
-                    e.preventDefault();
-                    this.keys[key.toLowerCase()].isDown = true;
-                });
-                button.addEventListener('touchend', (e) => {
-                    e.preventDefault();
-                    this.keys[key.toLowerCase()].isDown = false;
+                Object.entries(buttons).forEach(([className, key]) => {
+                    const button = document.querySelector(`.${className}`);
+                    if (button) {
+                        button.addEventListener('touchstart', (e) => {
+                            e.preventDefault();
+                            this.keys[key.toLowerCase()].isDown = true;
+                        });
+                        button.addEventListener('touchend', (e) => {
+                            e.preventDefault();
+                            this.keys[key.toLowerCase()].isDown = false;
+                        });
+                    }
                 });
             }
-        });
-    }
-
-
         });
 
         this.load.start();
     }
 
-    create() {
-        if (!this.textures.exists('tile_grass')) {
-            return; // Wait for assets to load
-        }
-        this.grid = new Grid(this, 10, 10);
-        this.inputManager = new InputManager(this);
-        this.keys = this.input.keyboard.addKeys({
-            w: Phaser.Input.Keyboard.KeyCodes.W,
-            a: Phaser.Input.Keyboard.KeyCodes.A,
-            s: Phaser.Input.Keyboard.KeyCodes.S,
-            d: Phaser.Input.Keyboard.KeyCodes.D
-        });
-
-        this.grid.create();
-        this.inputManager.init();
-        this.setupUIHandlers();
-
-        this.input.on('pointerdown', this.handleClick, this);
-        this.input.on('pointermove', this.updatePreview, this);
-
-        this.placeEnvironmentObjects();
-        this.createFarmer();
-    }
+    
 
     update() {
         if (!this.farmer || this.farmer.isMoving) return;
