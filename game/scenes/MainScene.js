@@ -51,8 +51,8 @@ export default class MainScene extends Phaser.Scene {
 
             if (!this.previewBuilding) {
                 this.previewBuilding = this.add.image(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+                    this.cameras.main.centerX + tileX + (-(this.grid.width * this.grid.tileWidth) / 2),
+                    this.cameras.main.centerY + tileY + (-(this.grid.height * this.grid.tileHeight) / 4) - (this.grid.tileHeight / 4),
                     this.selectedBuilding
                 );
                 const scale = this.grid.tileWidth / Math.max(this.previewBuilding.width, 1);
@@ -202,9 +202,12 @@ export default class MainScene extends Phaser.Scene {
                 const randomType = types[Math.floor(Math.random() * types.length)];
                 const {tileX, tileY} = this.grid.gridToIso(randomX, randomY);
 
+                const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
+                const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
+                
                 const object = this.add.image(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+                    this.cameras.main.centerX + tileX + centerOffsetX,
+                    this.cameras.main.centerY + tileY + centerOffsetY - (this.grid.tileHeight / 4),
                     randomType
                 );
 
