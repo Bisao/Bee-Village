@@ -468,7 +468,7 @@ export default class MainScene extends Phaser.Scene {
             targets: text,
             alpha: 0,
             y: text.y - 20,
-            duration: 1000,
+            duration: 5000,
             ease: 'Power2',
             onComplete: () => text.destroy()
         });
