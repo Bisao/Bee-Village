@@ -5,6 +5,7 @@ export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
+        this.previewBuilding = null;
     }
 
     preload() {
@@ -20,9 +21,49 @@ export default class MainScene extends Phaser.Scene {
         this.setupUIHandlers();
         
         this.input.on('pointerdown', this.handleClick, this);
+        this.input.on('pointermove', this.updatePreview, this);
         
         this.createFarmerCharacter();
         this.placeEnvironmentObjects();
+    }
+
+    updatePreview = (pointer) => {
+        if (!this.selectedBuilding) {
+            if (this.previewBuilding) {
+                this.previewBuilding.destroy();
+                this.previewBuilding = null;
+            }
+            return;
+        }
+
+        const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const hoveredTile = this.grid.grid.flat().find(tile => {
+            const bounds = tile.getBounds();
+            return bounds.contains(worldPoint.x, worldPoint.y);
+        });
+
+        if (hoveredTile) {
+            const gridPosition = hoveredTile.data;
+            const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
+            
+            if (!this.previewBuilding) {
+                this.previewBuilding = this.add.image(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+                    this.selectedBuilding
+                );
+                const scale = this.grid.tileWidth / Math.max(this.previewBuilding.width, 1);
+                this.previewBuilding.setScale(scale * 1.2);
+                this.previewBuilding.setOrigin(0.5, 0.8);
+                this.previewBuilding.setAlpha(0.6);
+            } else {
+                this.previewBuilding.setPosition(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4)
+                );
+            }
+            this.previewBuilding.setDepth(gridPosition.gridY + 1);
+        }
     }
 
     loadAssets() {
@@ -89,6 +130,10 @@ export default class MainScene extends Phaser.Scene {
                 buttons.forEach(b => b.classList.remove('selected'));
                 btn.classList.add('selected');
                 this.selectedBuilding = btn.dataset.building;
+                if (this.previewBuilding) {
+                    this.previewBuilding.destroy();
+                    this.previewBuilding = null;
+                }
             });
         });
     }
