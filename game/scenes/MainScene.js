@@ -201,7 +201,9 @@ export default class MainScene extends Phaser.Scene {
 
     isTileOccupied(x, y) {
         const key = `${x},${y}`;
-        return this.grid.buildingGrid[key] !== undefined;
+        const object = this.grid.buildingGrid[key];
+        // Retorna true apenas se houver uma construção no tile
+        return object && object.type === 'building';
     }
 
     getAvailableDirections() {
