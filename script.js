@@ -1,18 +1,3 @@
-
-document.addEventListener('DOMContentLoaded', function() {
-    const menuButton = document.getElementById('menuButton');
-    const settingsPanel = document.getElementById('settings-panel');
-    
-    menuButton.addEventListener('click', () => {
-        settingsPanel.classList.add('visible');
-    });
-
-    // Close settings when clicking back button
-    document.querySelector('.back-button').addEventListener('click', () => {
-        settingsPanel.classList.remove('visible');
-    });
-});
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -66,6 +51,38 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById('menuButton');
+    const settingsPanel = document.getElementById('settings-panel');
+    const backButton = document.querySelector('.back-button');
+
+    menuButton.addEventListener('click', () => {
+        settingsPanel.classList.add('visible');
+    });
+
+    backButton.addEventListener('click', () => {
+        settingsPanel.classList.remove('visible');
+    });
+
+    // Handle theme selection
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    const applyThemeBtn = document.getElementById('apply-theme');
+    let previewTheme = 'bee';
+
+    themeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            themeButtons.forEach(btn => btn.classList.remove('selected'));
+            button.classList.add('selected');
+            previewTheme = button.dataset.theme;
+            applyThemeBtn.classList.add('visible');
+        });
+    });
+
+    applyThemeBtn.addEventListener('click', () => {
+        document.documentElement.setAttribute('data-theme', previewTheme);
+        applyThemeBtn.classList.remove('visible');
+    });
+
+    //Original side panel toggle functionality
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
