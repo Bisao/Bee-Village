@@ -371,6 +371,89 @@ html, body {
     box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
 }
 
+/* Settings Panel */
+.settings-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    display: none;
+    flex-direction: column;
+    z-index: 10000;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.settings-panel.visible {
+    display: flex;
+}
+
+.settings-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.back-button {
+    background: transparent;
+    border: none;
+    color: #FFD700;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 10px;
+    margin-right: 15px;
+    transition: transform 0.3s ease;
+}
+
+.back-button:hover {
+    transform: scale(1.1);
+}
+
+.settings-header h2 {
+    color: #FFD700;
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.settings-content {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: white;
+    padding: 10px 0;
+}
+
+.setting-item label {
+    font-size: 1.1em;
+}
+
+.setting-item input[type="range"] {
+    width: 200px;
+    height: 5px;
+    -webkit-appearance: none;
+    background: rgba(255, 215, 0, 0.3);
+    border-radius: 5px;
+    outline: none;
+}
+
+.setting-item input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 15px;
+    height: 15px;
+    background: #FFD700;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
     #side-panel {

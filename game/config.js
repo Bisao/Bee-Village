@@ -75,9 +75,14 @@ document.getElementById('settings-button').addEventListener('click', () => {
     
     moveBeeToButton('settings');
     setTimeout(() => {
-        alert('Configurações em desenvolvimento');
+        document.getElementById('settings-panel').classList.add('visible');
         isTransitioning = false;
-    }, 3000);
+    }, 1000);
+});
+
+document.querySelector('.back-button').addEventListener('click', () => {
+    document.getElementById('settings-panel').classList.remove('visible');
+    beeIcon.className = 'bee-icon play visible';
 });
 
 document.getElementById('settings-button').addEventListener('click', () => {
