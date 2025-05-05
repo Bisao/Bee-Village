@@ -258,6 +258,15 @@ export default class MainScene extends Phaser.Scene {
             gridX: gridX,
             gridY: gridY
         };
+
+        // Reset selection after placing
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(b => b.classList.remove('selected'));
+        this.selectedBuilding = null;
+        if (this.previewBuilding) {
+            this.previewBuilding.destroy();
+            this.previewBuilding = null;
+        }
     }
 
     isValidGridPosition(x, y) {
