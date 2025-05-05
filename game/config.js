@@ -37,12 +37,28 @@ function moveBeeToButton(buttonType) {
     beeIcon.className = `bee-icon ${buttonType} visible`;
 }
 
+let isTransitioning = false;
+
 document.getElementById('play-button').addEventListener('click', () => {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    
     moveBeeToButton('play');
     setTimeout(() => {
         document.getElementById('start-screen').style.display = 'none';
         document.getElementById('loading-screen').style.display = 'flex';
         game = new Phaser.Game(config);
+    }, 3000);
+});
+
+document.getElementById('settings-button').addEventListener('click', () => {
+    if (isTransitioning) return;
+    isTransitioning = true;
+    
+    moveBeeToButton('settings');
+    setTimeout(() => {
+        alert('Configurações em desenvolvimento');
+        isTransitioning = false;
     }, 3000);
 });
 
