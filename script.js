@@ -1,3 +1,13 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+    const menuButton = document.getElementById('menuButton');
+    const settingsPanel = document.getElementById('settings-panel');
+    
+    menuButton.addEventListener('click', () => {
+        settingsPanel.classList.add('visible');
+    });
+});
+
 <!DOCTYPE html>
 <html>
 <head>
