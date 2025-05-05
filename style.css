@@ -96,11 +96,24 @@ html, body {
     border-color: #FFD700;
 }
 
+@keyframes beeFloat {
+    0% { transform: translate(0, 0); }
+    25% { transform: translate(3px, -3px); }
+    50% { transform: translate(0, 0); }
+    75% { transform: translate(-3px, -3px); }
+    100% { transform: translate(0, 0); }
+}
+
 .topbar h1 {
     color: #fff;
     margin: 0 0 0 15px;
     font-size: 1.2em;
     font-weight: 600;
+}
+
+.topbar h1 span {
+    display: inline-block;
+    animation: beeFloat 2s ease-in-out infinite;
 }
 
 /* Painel de Estruturas */
