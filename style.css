@@ -457,6 +457,15 @@ html, body {
 
 /* Theme Variables */
 :root {
+  /* Prevenir flash de tema padrão */
+  transition: none;
+}
+
+:root.theme-loaded {
+  transition: all 0.3s ease;
+}
+
+:root {
   /* Cores Base */
   --color-black: #1a1a1a;
   --color-white: #FFFFFF;
