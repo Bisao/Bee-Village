@@ -24,6 +24,35 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointermove', this.updatePreview, this);
 
         this.placeEnvironmentObjects();
+        this.createFarmer();
+    }
+
+    createFarmer() {
+        const frames = [];
+        for (let i = 1; i <= 12; i++) {
+            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+            frames.push({ key: `farmer${i}` });
+        }
+
+        this.load.once('complete', () => {
+            this.anims.create({
+                key: 'farmer_walk',
+                frames: frames,
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.farmer = this.add.sprite(
+                this.cameras.main.centerX,
+                this.cameras.main.centerY - 32,
+                'farmer1'
+            );
+            this.farmer.setScale(0.8);
+            this.farmer.play('farmer_walk');
+            this.farmer.setDepth(1000);
+        });
+
+        this.load.start();
     }
 
     updatePreview = (pointer) => {
