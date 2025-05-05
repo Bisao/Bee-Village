@@ -274,14 +274,16 @@ export default class MainScene extends Phaser.Scene {
                     worldY,
                     this.selectedBuilding
                 );
-                const tileScale = 1.2;
+                const tileScale = 1.4;
                 const scale = (this.grid.tileWidth * tileScale) / this.previewBuilding.width;
                 this.previewBuilding.setScale(scale);
-                this.previewBuilding.setOrigin(0.5, 1);
+                this.previewBuilding.setOrigin(0.5, 0.75);
                 this.previewBuilding.setAlpha(0.6);
             } else {
                 this.previewBuilding.setPosition(worldX, worldY);
             }
+            // Atualiza a profundidade do preview para garantir que ele fique visível
+            this.previewBuilding.setDepth(1000);
             this.previewBuilding.setDepth(gridPosition.gridY + 1);
         }
     }
@@ -620,32 +622,6 @@ export default class MainScene extends Phaser.Scene {
         } catch (error) {
             console.error('Error saving game:', error);
         }
-    }
-
-    create() {
-        if (!this.textures.exists('tile_grass')) {
-            return;
-        }
-
-        this.grid = new Grid(this, 10, 10);
-        this.inputManager = new InputManager(this);
-
-        this.grid.create();
-        this.inputManager.init();
-        this.setupUIHandlers();
-
-        this.input.on('pointerdown', this.handleClick, this);
-        this.input.on('pointermove', this.updatePreview, this);
-
-        this.placeEnvironmentObjects();
-        this.createFarmer();
-
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const initialZoom = isMobile ? 0.8 : 1.5;
-        this.cameras.main.setZoom(initialZoom);
-
-        // Add auto-save interval (every 2 minutes)
-        setInterval(() => this.autoSave(), 120000);
     }
 
     clearTileHighlights() {
