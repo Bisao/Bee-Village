@@ -83,10 +83,11 @@ html, body {
 }
 
 .topbar h1 {
-    color: #fff;
+    color: #FFD700;
     margin: 0 0 0 15px;
     font-size: 1.2em;
     font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .topbar h1 span {
