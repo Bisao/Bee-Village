@@ -169,8 +169,8 @@ document.querySelector('.start-screen h1 span:first-child').textContent = savedE
 document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
 
 // Aplicar tema imediatamente
-const savedTheme = localStorage.getItem('selectedTheme') || 'bee';
-const savedEmoji = localStorage.getItem('selectedEmoji') || '🐝';
+const savedTheme = localStorage.getItem('selectedTheme') || 'pig';
+const savedEmoji = localStorage.getItem('selectedEmoji') || '🐖';
 
 // Aplicar tema antes do carregamento da página
 document.documentElement.setAttribute('data-theme', savedTheme);
