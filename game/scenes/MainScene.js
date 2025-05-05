@@ -413,15 +413,15 @@ export default class MainScene extends Phaser.Scene {
                 // Use uma área de colisão mais precisa para o tile isométrico
                 const tileCenter = new Phaser.Geom.Point(tile.x, tile.y);
                 const distance = Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, tile.x, tile.y);
-                
+
                 // Define uma área de colisão mais precisa baseada na forma do tile
                 const isoWidth = tile.displayWidth * 0.5;
                 const isoHeight = tile.displayHeight * 0.5;
-                
+
                 // Calcula a distância relativa ao centro do tile
                 const dx = Math.abs(worldPoint.x - tile.x) / isoWidth;
                 const dy = Math.abs(worldPoint.y - tile.y) / isoHeight;
-                
+
                 // Verifica se o ponto está dentro da área do tile isométrico
                 return (dx + dy) <= 1;
             });
@@ -499,7 +499,7 @@ export default class MainScene extends Phaser.Scene {
             const worldY = this.cameras.main.centerY + tileY;
 
             // Criar a estrutura
-            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
+            const building = this.add.sprite(worldX, worldY - (this.grid.tileHeight / 4), this.selectedBuilding);
             if (!building) {
                 throw new Error('Failed to create building sprite');
             }
@@ -532,10 +532,10 @@ export default class MainScene extends Phaser.Scene {
 
             // Feedback visual
             this.showFeedback('Estrutura construída!', true);
-            
+
             // Limpar seleção
             this.clearBuildingSelection();
-            
+
             // Notificar outros sistemas
             this.events.emit('buildingPlaced', {
                 gridX,
@@ -635,9 +635,78 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeBuilding(gridX, gridY) {
-        // Existing building placement code...
+        try {
+            // Validações iniciais
+            if (!this.selectedBuilding) {
+                console.log('No building selected');
+                return;
+            }
 
-        this.events.emit('buildingPlaced');
+            if (!this.grid.isValidPosition(gridX, gridY)) {
+                this.showFeedback('Posição inválida', false);
+                return;
+            }
+
+            const key = `${gridX},${gridY}`;
+            if (this.grid.buildingGrid[key]) {
+                this.showFeedback('Posição já ocupada', false);
+                return;
+            }
+
+            // Calcula posição no mundo
+            const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+            const worldX = this.cameras.main.centerX + tileX;
+            const worldY = this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4);
+
+            // Criar a estrutura
+            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
+            if (!building) {
+                throw new Error('Failed to create building sprite');
+            }
+
+            // Configurar a estrutura
+            const tileScale = 1.2;
+            const scale = (this.grid.tileWidth * tileScale) / Math.max(building.width, 1);
+            building.setScale(scale);
+            building.setOrigin(0.5, 1);
+            building.setDepth(gridY + 1);
+
+            // Registrar no grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+
+            // Efeito de partículas
+            const emitter = this.add.particles(worldX, worldY, 'tile_grass', {
+                speed: 100,
+                scale: { start: 0.5, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 800,
+                blendMode: 'ADD',
+                quantity: 10
+            });
+
+            // Feedback visual
+            this.showFeedback('Estrutura construída!', true);
+
+            // Limpar seleção
+            this.clearBuildingSelection();
+
+            // Notificar outros sistemas
+            this.events.emit('buildingPlaced', {
+                gridX,
+                gridY,
+                buildingType: this.selectedBuilding
+            });
+
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.showFeedback('Erro ao construir estrutura', false);
+        }
     }
 
 
