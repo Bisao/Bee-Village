@@ -1,3 +1,4 @@
+
 export default class InputManager {
     constructor(scene) {
         this.scene = scene;
@@ -34,42 +35,50 @@ export default class InputManager {
 
     setupPinchZoom() {
         this.scene.input.addPointer(1);
+        
+        if (this.isMobile) {
+            let prevDist = 0;
+            
+            this.scene.input.on('pointermove', (pointer) => {
+                if (this.scene.input.pointer1.isDown && this.scene.input.pointer2.isDown) {
+                    const dist = Phaser.Math.Distance.Between(
+                        this.scene.input.pointer1.x,
+                        this.scene.input.pointer1.y,
+                        this.scene.input.pointer2.x,
+                        this.scene.input.pointer2.y
+                    );
+                    
+                    if (prevDist) {
+                        const diff = prevDist - dist;
+                        const zoom = this.scene.cameras.main.zoom;
+                        const newZoom = zoom - (diff * 0.0005);
+                        this.scene.cameras.main.setZoom(
+                            Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
+                        );
+                    }
+                    
+                    prevDist = dist;
+                }
+            });
+        }
     }
 
     handlePointerDown(pointer) {
-        if (this.isMobile) {
-            this.touchStartTime = Date.now();
-            if (!pointer.event.target.closest('#controls-panel, #side-panel, .topbar')) {
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            }
-        } else if (pointer.rightButtonDown()) {
-            if (this.scene.selectedBuilding) {
-                this.scene.cancelBuildingSelection();
-                const buttons = document.querySelectorAll('.building-btn');
-                buttons.forEach(b => b.classList.remove('selected'));
-            } else {
-                this.isDragging = true;
-                this.dragStartX = pointer.x;
-                this.dragStartY = pointer.y;
-            }
+        if (pointer.rightButtonDown()) {
+            this.isDragging = true;
+            this.scene.game.canvas.style.cursor = 'grabbing';
         }
     }
 
     handlePointerMove(pointer) {
-        const twoFingersDown = this.scene.input.pointer1.isDown && this.scene.input.pointer2.isDown;
-        if (this.isDragging && !twoFingersDown) {
-            const deltaX = pointer.x - this.dragStartX;
-            const deltaY = pointer.y - this.dragStartY;
-            this.scene.cameras.main.scrollX -= deltaX;
-            this.scene.cameras.main.scrollY -= deltaY;
-            this.dragStartX = pointer.x;
-            this.dragStartY = pointer.y;
+        if (this.isDragging) {
+            this.scene.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) / this.scene.cameras.main.zoom;
+            this.scene.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) / this.scene.cameras.main.zoom;
         }
     }
 
     handlePointerUp() {
         this.isDragging = false;
+        this.scene.game.canvas.style.cursor = 'default';
     }
 }
