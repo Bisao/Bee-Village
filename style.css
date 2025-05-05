@@ -36,11 +36,6 @@ html, body {
     transition: all 0.3s ease;
 }
 
-#centerMap {
-    margin-left: auto;
-    font-size: 24px;
-}
-
 .menu-button:hover {
     transform: scale(1.05);
     background: rgba(76, 175, 80, 0.2);
