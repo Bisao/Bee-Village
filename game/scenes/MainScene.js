@@ -573,6 +573,13 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
+            // Se for uma casa de fazendeiro, cria um NPC
+            if (this.selectedBuilding === 'farmerHouse') {
+                this.createNPCFarmer(gridX, gridY, worldX, worldY);
+            }
+
+            // Usa as coordenadas exatas passadas como parâmetro
+
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
             if (!building) {
@@ -580,64 +587,6 @@ export default class MainScene extends Phaser.Scene {
             }
 
             // Configurar a estrutura
-            const scale = (this.grid.tileWidth * 1.4) / building.width;
-            building.setScale(scale);
-            building.setOrigin(0.5, 0.75);
-            building.setDepth(gridY + 1);
-
-            // Registrar no grid
-            this.grid.buildingGrid[key] = {
-                sprite: building,
-                type: 'building',
-                buildingType: this.selectedBuilding,
-                gridX: gridX,
-                gridY: gridY
-            };
-
-            // Se for uma casa de fazendeiro, cria um NPC
-            if (this.selectedBuilding === 'farmerHouse') {
-                this.createNPCFarmer(gridX, gridY, worldX, worldY);
-            }
-
-            // Efeito de partículas
-            const particles = this.add.particles(0, 0, 'tile_grass', {
-                x: worldX,
-                y: worldY,
-                speed: 150,
-                scale: { start: 0.3, end: 0 },
-                alpha: { start: 0.8, end: 0 },
-                lifespan: 400,
-                blendMode: 'ADD',
-                quantity: 6,
-                emitting: false
-            });
-
-            particles.start();
-            
-            // Destruir o sistema de partículas após 500ms
-            this.time.delayedCall(500, () => {
-                particles.destroy();
-            });
-
-            // Feedback visual
-            this.showFeedback('Estrutura construída!', true);
-
-            // Limpar seleção e highlights
-            this.clearBuildingSelection();
-            this.clearTileHighlights();
-
-            // Notificar outros sistemas
-            this.events.emit('buildingPlaced', {
-                gridX,
-                gridY,
-                buildingType: this.selectedBuilding
-            });
-
-        } catch (error) {
-            console.error('Error placing building:', error);
-            this.showFeedback('Erro ao construir estrutura', false);
-        }
-    }
 
     createNPCFarmer(homeX, homeY, worldX, worldY) {
         const npc = this.add.sprite(worldX, worldY - 16, 'farmer1');
@@ -850,7 +799,55 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-            } catch (error) {
+            const scale = (this.grid.tileWidth * 1.4) / building.width;
+            building.setScale(scale);
+            building.setOrigin(0.5, 0.75);
+            building.setDepth(gridY + 1);
+
+            // Registrar no grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+
+            // Efeito de partículas
+            const particles = this.add.particles(0, 0, 'tile_grass', {
+                x: worldX,
+                y: worldY,
+                speed: 150,
+                scale: { start: 0.3, end: 0 },
+                alpha: { start: 0.8, end: 0 },
+                lifespan: 400,
+                blendMode: 'ADD',
+                quantity: 6,
+                emitting: false
+            });
+
+            particles.start();
+            
+            // Destruir o sistema de partículas após 500ms
+            this.time.delayedCall(500, () => {
+                particles.destroy();
+            });
+
+            // Feedback visual
+            this.showFeedback('Estrutura construída!', true);
+
+            // Limpar seleção e highlights
+            this.clearBuildingSelection();
+            this.clearTileHighlights();
+
+            // Notificar outros sistemas
+            this.events.emit('buildingPlaced', {
+                gridX,
+                gridY,
+                buildingType: this.selectedBuilding
+            });
+
+        } catch (error) {
             console.error('Error placing building:', error);
             this.showFeedback('Erro ao construir estrutura', false);
         }
