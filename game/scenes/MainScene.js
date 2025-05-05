@@ -120,10 +120,10 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(key, `game/assets/buildings/${filename}.png`);
         });
 
-        this.load.spritesheet('farmer', 'game/assets/sprites/Farmer.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        });
+        // Load farmer sprite frames
+        for (let i = 1; i <= 12; i++) {
+            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        }
     }
 
     setupUIHandlers() {
@@ -149,7 +149,20 @@ export default class MainScene extends Phaser.Scene {
     createFarmerCharacter() {
         this.anims.create({
             key: 'walk_down',
-            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
+            frames: [
+                { key: 'farmer1' },
+                { key: 'farmer2' },
+                { key: 'farmer3' },
+                { key: 'farmer4' },
+                { key: 'farmer5' },
+                { key: 'farmer6' },
+                { key: 'farmer7' },
+                { key: 'farmer8' },
+                { key: 'farmer9' },
+                { key: 'farmer10' },
+                { key: 'farmer11' },
+                { key: 'farmer12' }
+            ],
             frameRate: 8,
             repeat: -1
         });
