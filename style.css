@@ -142,11 +142,11 @@ html, body {
     #side-panel {
         right: 16px;
         top: 80px;
-        width: 72px;
-        min-width: 72px;
+        width: 43px;
+        min-width: 43px;
         flex-direction: column;
         max-height: calc(100vh - 120px);
-        padding: 7px;
+        padding: 4px;
     }
 
     .building-list {
@@ -196,11 +196,11 @@ html, body {
 }
 
 .control-btn {
-    width: 85px;
-    height: 85px;
+    width: 51px;
+    height: 51px;
     background: rgba(76, 175, 80, 0.2);
     border: 2px solid #4CAF50;
-    border-radius: 18px;
+    border-radius: 12px;
     font-size: 28px;
     color: #fff;
     touch-action: manipulation;
