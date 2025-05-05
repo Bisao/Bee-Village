@@ -392,7 +392,7 @@ export default class MainScene extends Phaser.Scene {
                 );
 
                 object.setDepth(randomY + 1);
-                const scale = (this.grid.tileWidth * (objectType === 'tree' ? 1.2 : 0.8)) / Math.max(object.width, 1);
+                const scale = (this.grid.tileWidth * (objectType === 'tree' ? 1.4 : 0.8)) / Math.max(object.width, 1);
                 object.setScale(scale);
                 object.setOrigin(0.5, 0.8);
 
