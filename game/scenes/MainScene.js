@@ -258,8 +258,7 @@ export default class MainScene extends Phaser.Scene {
             targets: this.farmer,
             x: this.cameras.main.centerX + tileX,
             y: this.cameras.main.centerY + tileY - 16,
-            duration: 300,
-            ease: 'Power2',
+            duration: 500,
             onComplete: () => {
                 this.farmer.gridX = newX;
                 this.farmer.gridY = newY;
