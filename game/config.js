@@ -55,11 +55,15 @@ document.getElementById('play-button').addEventListener('click', () => {
             
             if (loadingProgress >= 100) {
                 clearInterval(loadingInterval);
-                setTimeout(() => {
-                    document.getElementById('loading-screen').style.display = 'none';
-                    document.getElementById('start-screen').style.display = 'none';
-                    game = new Phaser.Game(config);
-                }, 2000);
+                game = new Phaser.Game(config);
+
+                // Wait for the game to actually load before hiding screens
+                game.events.once('ready', () => {
+                    setTimeout(() => {
+                        document.getElementById('loading-screen').style.display = 'none';
+                        document.getElementById('start-screen').style.display = 'none';
+                    }, 2000);
+                });
             }
         }, 50);
     }, 3000);

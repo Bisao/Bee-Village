@@ -10,9 +10,15 @@ export default class MainScene extends Phaser.Scene {
 
     preload() {
         this.loadAssets();
+        this.load.on('complete', () => {
+            this.game.events.emit('ready');
+        });
     }
 
     create() {
+        if (!this.textures.exists('tile_grass')) {
+            return; // Wait for assets to load
+        }
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
 
