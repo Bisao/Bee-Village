@@ -70,9 +70,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Show bee icon
-    const beeIcon = document.querySelector('.bee-icon');
     setTimeout(() => {
-        beeIcon.className = 'bee-icon play visible';
+        const beeIcon = document.querySelector('.bee-icon');
+        if (beeIcon) {
+            beeIcon.className = 'bee-icon play visible';
+        }
     }, 100);
 
     // Handle play button
