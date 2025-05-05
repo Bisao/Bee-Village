@@ -475,14 +475,14 @@ html, body {
   --theme-pig-primary: #FFC0CB;
   --theme-cow-primary: #F5F5F5;
 
-  /* Configuração Inicial */
-  --primary-color: var(--theme-pig-primary);
+  /* Configuração Base */
+  --primary-color: var(--theme-cow-primary);
   --secondary-color: var(--color-dark-gray);
-  --accent-color: rgba(255, 192, 203, 0.3);
-  --background-color: #1a1515;
-  --panel-background: rgba(15, 10, 10, 0.95);
-  --text-color: var(--theme-pig-primary);
-  --button-hover: #FFE4E8;
+  --accent-color: rgba(245, 245, 245, 0.3);
+  --background-color: #1a1a1c;
+  --panel-background: rgba(10, 10, 15, 0.95);
+  --text-color: var(--theme-cow-primary);
+  --button-hover: var(--theme-cow-primary);
   --button-text: var(--color-dark-gray);
 }
 
