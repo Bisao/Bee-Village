@@ -468,6 +468,14 @@ export default class MainScene extends Phaser.Scene {
             return;
         }
 
+        const key = `${gridX},${gridY}`;
+        if (this.grid.buildingGrid[key]) {
+            this.showFeedback('Posição já ocupada', false);
+            return;
+        }
+
+        const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+        
         // Efeito de partículas ao construir
         const emitter = this.add.particles(0, 0, 'tile_grass', {
             speed: 100,
@@ -477,26 +485,22 @@ export default class MainScene extends Phaser.Scene {
             blendMode: 'ADD'
         });
 
-        const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
         emitter.setPosition(
             this.cameras.main.centerX + tileX,
             this.cameras.main.centerY + tileY
         );
         emitter.explode(10);
 
-        const key = `${gridX},${gridY}`;
-        if (this.grid.buildingGrid[key]) return;
-
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+            this.cameras.main.centerY + tileY - (this.grid.tileHeight / 2),
             this.selectedBuilding
         );
 
         building.setDepth(gridY + 1);
-        const scale = this.grid.tileWidth / Math.max(building.width, 1);
-        building.setScale(scale * 1.2);
-        building.setOrigin(0.5, 0.8);
+        const scale = (this.grid.tileWidth * 1.2) / Math.max(building.width, 1);
+        building.setScale(scale);
+        building.setOrigin(0.5, 1);
 
         this.grid.buildingGrid[key] = {
             sprite: building,
