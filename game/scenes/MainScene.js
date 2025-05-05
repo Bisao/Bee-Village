@@ -258,14 +258,12 @@ export default class MainScene extends Phaser.Scene {
             targets: this.farmer,
             x: this.cameras.main.centerX + tileX,
             y: this.cameras.main.centerY + tileY - 16,
-            duration: 400,
-            ease: 'Cubic.easeInOut',
-            onStart: () => {
-                this.farmer.setDepth(newY + 1);
-            },
+            duration: 300,
+            ease: 'Power2',
             onComplete: () => {
                 this.farmer.gridX = newX;
                 this.farmer.gridY = newY;
+                this.farmer.setDepth(newY + 1);
                 this.farmer.isMoving = false;
                 this.farmer.stop();
                 this.events.emit('farmerMoved');
@@ -354,7 +352,7 @@ export default class MainScene extends Phaser.Scene {
     loadAssets() {
         // Cache de texturas para otimização
         if (this.textures.exists('tile_grass')) return;
-
+        
         // Load tiles
         const tiles = [
             'tile_grass',
@@ -484,7 +482,7 @@ export default class MainScene extends Phaser.Scene {
             const hoveredTile = this.grid.grid.flat().find(tile => {
                 // Aumenta a área de detecção do tile
                 const tileCenter = new Phaser.Geom.Point(tile.x, tile.y);
-
+                
                 // Usa um retângulo maior para detecção
                 const hitArea = new Phaser.Geom.Rectangle(
                     tile.x - tile.displayWidth * 0.75,
@@ -605,7 +603,7 @@ export default class MainScene extends Phaser.Scene {
             });
 
             particles.start();
-
+            
             // Destruir o sistema de partículas após 500ms
             this.time.delayedCall(500, () => {
                 particles.destroy();
@@ -700,7 +698,7 @@ export default class MainScene extends Phaser.Scene {
         this.grid.grid.flat().forEach(tile => {
             const gridPosition = tile.data;
             const key = `${gridPosition.gridX},${gridPosition.gridY}`;
-
+            
             if (this.grid.buildingGrid[key]) {
                 // Occupied tiles - Red tint
                 tile.setTint(0xFF0000);
