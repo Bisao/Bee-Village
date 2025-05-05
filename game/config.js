@@ -107,9 +107,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Helper functions
 function moveBeeToButton(buttonType) {
-    const beeIcon = document.querySelector('.bee-icon');
-    beeIcon.style.animation = 'flyToButton 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
-    beeIcon.className = `bee-icon ${buttonType} visible`;
+    const beeIcon = document.querySelector('.theme-icon');
+    if (beeIcon) {
+        beeIcon.style.animation = 'flyToButton 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+        beeIcon.className = `theme-icon ${buttonType} visible`;
+    }
 }
 
 function startGameWithLoading() {
