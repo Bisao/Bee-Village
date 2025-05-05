@@ -527,15 +527,28 @@ export default class MainScene extends Phaser.Scene {
             return;
         }
         
-        // Existing create code...
-        
+        this.grid = new Grid(this, 10, 10);
+        this.inputManager = new InputManager(this);
+
+        this.grid.create();
+        this.inputManager.init();
+        this.setupUIHandlers();
+
+        this.input.on('pointerdown', this.handleClick, this);
+        this.input.on('pointermove', this.updatePreview, this);
+
+        this.placeEnvironmentObjects();
+        this.createFarmer();
+
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const initialZoom = isMobile ? 0.8 : 1.5;
+        this.cameras.main.setZoom(initialZoom);
+
         // Add auto-save interval
-        setInterval(() => this.autoSave(), 30000); // Auto-save every 30 seconds
+        setInterval(() => this.autoSave(), 30000);
         
-        // Also save when placing buildings
+        // Set up auto-save events
         this.events.on('buildingPlaced', () => this.autoSave());
-        
-        // Save when farmer moves
         this.events.on('farmerMoved', () => this.autoSave());
     }
 
