@@ -501,6 +501,9 @@ export default class MainScene extends Phaser.Scene {
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY - (this.grid.tileHeight / 4), this.selectedBuilding);
             if (!building) {
+                throw new Error('Failed to create building sprite: sprite is null');
+            }
+            if (!building) {
                 throw new Error('Failed to create building sprite');
             }
 
