@@ -171,36 +171,51 @@ html, body {
         transform: translateX(-50%) translateY(-5px);
     }
 }
-.mobile-controls {
-    display: none;
+#controls-panel {
     position: fixed;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
+    background: rgba(15, 15, 15, 0.8);
+    padding: 15px;
+    border-radius: 15px;
+    border: 2px solid #4CAF50;
+    backdrop-filter: blur(5px);
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-areas:
+        ". up ."
+        "left down right";
     gap: 10px;
 }
 
-.mobile-controls button {
+.control-btn {
     width: 70px;
     height: 70px;
-    background: rgba(255, 255, 255, 0.6);
-    border: 2px solid rgba(0, 0, 0, 0.4);
+    background: rgba(76, 175, 80, 0.2);
+    border: 2px solid #4CAF50;
     border-radius: 15px;
     font-size: 24px;
+    color: #fff;
     touch-action: manipulation;
-    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-@media (pointer: coarse) {
-    .mobile-controls {
-        display: grid;
-        grid-template-areas:
-            ". up ."
-            "left down right";
+.control-btn:active {
+    background: rgba(76, 175, 80, 0.4);
+    transform: scale(0.95);
+}
+
+.mobile-up { grid-area: up; }
+.mobile-down { grid-area: down; }
+.mobile-left { grid-area: left; }
+.mobile-right { grid-area: right; }
+
+@media (hover: hover) {
+    .control-btn:hover {
+        background: rgba(76, 175, 80, 0.3);
     }
-    
-    .mobile-up { grid-area: up; }
-    .mobile-down { grid-area: down; }
-    .mobile-left { grid-area: left; }
-    .mobile-right { grid-area: right; }
 }
