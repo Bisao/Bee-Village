@@ -587,6 +587,24 @@ export default class MainScene extends Phaser.Scene {
             }
 
             // Configurar a estrutura
+            const scale = (this.grid.tileWidth * 1.4) / building.width;
+            building.setScale(scale);
+            building.setOrigin(0.5, 0.75);
+            building.setDepth(gridY + 1);
+
+            // Registrar no grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.showFeedback('Erro ao construir estrutura', false);
+        }
+    }
 
     createNPCFarmer(homeX, homeY, worldX, worldY) {
         const npc = this.add.sprite(worldX, worldY - 16, 'farmer1');
