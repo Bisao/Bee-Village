@@ -82,6 +82,16 @@ html, body {
     100% { transform: translate(0, 0) rotate(-2deg); }
 }
 
+.save-indicator {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin: 0 10px;
+}
+
+.save-indicator.saving {
+    opacity: 1;
+}
+
 .topbar h1 {
     color: var(--text-color);
     margin: 0 0 0 15px;

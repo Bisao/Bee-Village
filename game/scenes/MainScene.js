@@ -501,7 +501,9 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    saveGame() {
+    autoSave() {
+        if (!this.farmer) return;
+        
         const gameState = {
             buildingGrid: this.grid.buildingGrid,
             farmerPosition: {
@@ -509,7 +511,56 @@ export default class MainScene extends Phaser.Scene {
                 y: this.farmer.gridY
             }
         };
+        
+        const saveIndicator = document.querySelector('.save-indicator');
+        saveIndicator.classList.add('saving');
+        
         localStorage.setItem('gameState', JSON.stringify(gameState));
-        this.showFeedback('Game saved!', true);
+        
+        setTimeout(() => {
+            saveIndicator.classList.remove('saving');
+        }, 1000);
+    }
+
+    create() {
+        if (!this.textures.exists('tile_grass')) {
+            return;
+        }
+        
+        // Existing create code...
+        
+        // Add auto-save interval
+        setInterval(() => this.autoSave(), 30000); // Auto-save every 30 seconds
+        
+        // Also save when placing buildings
+        this.events.on('buildingPlaced', () => this.autoSave());
+        
+        // Save when farmer moves
+        this.events.on('farmerMoved', () => this.autoSave());
+    }
+
+    placeBuilding(gridX, gridY) {
+        // Existing building placement code...
+        
+        this.events.emit('buildingPlaced');
+    }
+
+    moveFarmer(direction, animKey) {
+        // Existing movement code...
+        
+        this.tweens.add({
+            targets: this.farmer,
+            x: this.cameras.main.centerX + tileX,
+            y: this.cameras.main.centerY + tileY - 16,
+            duration: 500,
+            onComplete: () => {
+                this.farmer.gridX = newX;
+                this.farmer.gridY = newY;
+                this.farmer.setDepth(newY + 1);
+                this.farmer.isMoving = false;
+                this.farmer.stop();
+                this.events.emit('farmerMoved');
+            }
+        });
     }
 }
