@@ -23,7 +23,6 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
 
-        this.createFarmerCharacter();
         this.placeEnvironmentObjects();
     }
 
@@ -67,12 +66,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     loadAssets() {
-        // Load farmer sprites
-        const numFrames = 12;
-        for (let i = 1; i <= numFrames; i++) {
-            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
-        }
-
         // Load tiles
         const tiles = [
             'tile_grass',
@@ -123,10 +116,7 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(key, `game/assets/buildings/${filename}.png`);
         });
 
-        this.load.spritesheet('farmer', 'game/assets/sprites/Farmer.png', {
-            frameWidth: 32,
-            frameHeight: 48
-        });
+        
     }
 
     setupUIHandlers() {
@@ -141,44 +131,6 @@ export default class MainScene extends Phaser.Scene {
                     this.previewBuilding = null;
                 }
             });
-        });
-    }
-
-    createFarmerCharacter() {
-        // Create animation
-        const frames = [];
-        for (let i = 1; i <= 12; i++) {
-            frames.push({ key: `farmer${i}` });
-        }
-
-        this.anims.create({
-            key: 'farmer_walk',
-            frames: frames,
-            frameRate: 8,
-            repeat: -1
-        });
-
-        // Create farmer sprite
-        this.farmer = this.add.sprite(
-            this.cameras.main.centerX,
-            this.cameras.main.centerY,
-            'farmer1'
-        );
-
-        // Scale to match tile size
-        const scale = this.grid.tileWidth / Math.max(this.farmer.width, 1);
-        this.farmer.setScale(scale);
-        this.farmer.setDepth(1);
-        this.farmer.play('farmer_walk');
-
-        // Add movement
-        this.tweens.add({
-            targets: this.farmer,
-            x: this.farmer.x + 100,
-            y: this.farmer.y + 50,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1
         });
     }
 
