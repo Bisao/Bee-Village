@@ -234,6 +234,7 @@ html, body {
     }
 }
 #controls-panel {
+    display: none;
     position: fixed;
     bottom: 16px;
     left: 16px;
@@ -243,7 +244,12 @@ html, body {
     border: 2px solid #FFD700;
     backdrop-filter: blur(5px);
     z-index: 1000;
-    display: block;
+}
+
+@media (max-width: 768px) {
+    #controls-panel {
+        display: block;
+    }
 }
 
 .controls-grid {
