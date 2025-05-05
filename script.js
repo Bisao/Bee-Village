@@ -54,15 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
-    structuresBtn.addEventListener('click', () => {
-        if (sidePanel.style.display === 'none' || sidePanel.style.display === '') {
-            sidePanel.style.display = 'flex';
-            structuresBtn.classList.add('active');
-        } else {
-            sidePanel.style.display = 'none';
-            structuresBtn.classList.remove('active');
-        }
-    });
+    if (structuresBtn && sidePanel) {
+        structuresBtn.addEventListener('click', () => {
+            const isHidden = sidePanel.style.display === 'none' || sidePanel.style.display === '';
+            sidePanel.style.display = isHidden ? 'flex' : 'none';
+            structuresBtn.classList.toggle('active', isHidden);
+        });
+    }
 });
 </script>
 
