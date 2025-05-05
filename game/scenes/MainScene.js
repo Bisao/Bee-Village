@@ -194,15 +194,15 @@ export default class MainScene extends Phaser.Scene {
     moveFarmer(direction, animKey) {
         const newX = this.farmer.gridX + direction.x;
         const newY = this.farmer.gridY + direction.y;
-        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+        const isoCoords = this.grid.gridToIso(newX, newY);
 
         this.farmer.isMoving = true;
         this.farmer.play(animKey);
 
         this.tweens.add({
             targets: this.farmer,
-            x: this.cameras.main.centerX + tileX,
-            y: this.cameras.main.centerY + tileY - 16,
+            x: this.cameras.main.centerX + isoCoords.tileX,
+            y: this.cameras.main.centerY + isoCoords.tileY - 16,
             duration: 500,
             onComplete: () => {
                 this.farmer.gridX = newX;
@@ -210,6 +210,7 @@ export default class MainScene extends Phaser.Scene {
                 this.farmer.setDepth(newY + 1);
                 this.farmer.isMoving = false;
                 this.farmer.stop();
+                this.events.emit('farmerMoved');
             }
         });
     }
@@ -487,6 +488,7 @@ export default class MainScene extends Phaser.Scene {
             this.previewBuilding.destroy();
             this.previewBuilding = null;
         }
+        this.events.emit('buildingPlaced');
     }
 
     isValidGridPosition(x, y) {
@@ -503,7 +505,7 @@ export default class MainScene extends Phaser.Scene {
 
     autoSave() {
         if (!this.farmer) return;
-        
+
         const gameState = {
             buildingGrid: this.grid.buildingGrid,
             farmerPosition: {
@@ -511,12 +513,12 @@ export default class MainScene extends Phaser.Scene {
                 y: this.farmer.gridY
             }
         };
-        
+
         const saveIndicator = document.querySelector('.save-indicator');
         saveIndicator.classList.add('saving');
-        
+
         localStorage.setItem('gameState', JSON.stringify(gameState));
-        
+
         setTimeout(() => {
             saveIndicator.classList.remove('saving');
         }, 1000);
@@ -526,7 +528,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return;
         }
-        
+
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
 
@@ -546,7 +548,7 @@ export default class MainScene extends Phaser.Scene {
 
         // Add auto-save interval
         setInterval(() => this.autoSave(), 30000);
-        
+
         // Set up auto-save events
         this.events.on('buildingPlaced', () => this.autoSave());
         this.events.on('farmerMoved', () => this.autoSave());
@@ -554,26 +556,9 @@ export default class MainScene extends Phaser.Scene {
 
     placeBuilding(gridX, gridY) {
         // Existing building placement code...
-        
+
         this.events.emit('buildingPlaced');
     }
 
-    moveFarmer(direction, animKey) {
-        // Existing movement code...
-        
-        this.tweens.add({
-            targets: this.farmer,
-            x: this.cameras.main.centerX + tileX,
-            y: this.cameras.main.centerY + tileY - 16,
-            duration: 500,
-            onComplete: () => {
-                this.farmer.gridX = newX;
-                this.farmer.gridY = newY;
-                this.farmer.setDepth(newY + 1);
-                this.farmer.isMoving = false;
-                this.farmer.stop();
-                this.events.emit('farmerMoved');
-            }
-        });
-    }
+    
 }
