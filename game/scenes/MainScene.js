@@ -164,7 +164,7 @@ export default class MainScene extends Phaser.Scene {
                 const flowerCount = getFlowerCount();
                 const maxFlowersInArea = 3;
                 
-                if (!hasAdjacentFlowers(x, y) && flowerCount < maxFlowersInArea && Math.random() < 0.10) {
+                if (!hasAdjacentFlowers(x, y) && flowerCount < maxFlowersInArea && Math.random() < 0.15) {
                     randomTile = Math.random() < 0.5 ? 'tile_grass_2_flowers' : 'tile_grass_3_flower';
                 } else {
                     randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
