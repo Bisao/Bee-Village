@@ -23,16 +23,16 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-const startFullscreen = () => {
-    if (game.scale && game.scale.isFullscreen === false) {
-        try {
-            game.scale.startFullscreen();
-        } catch (error) {
-            console.warn('Fullscreen not available:', error);
-        }
-    }
-};
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-    window.addEventListener('touchstart', startFullscreen, { once: true });
+if (isMobile) {
+    game.scale.on('resize', () => {
+        game.scale.resize(window.innerWidth, window.innerHeight);
+    });
+    
+    window.addEventListener('orientationchange', () => {
+        setTimeout(() => {
+            game.scale.resize(window.innerWidth, window.innerHeight);
+        }, 100);
+    });
 }

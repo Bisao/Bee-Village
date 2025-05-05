@@ -13,6 +13,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
+        document.getElementById('loading-screen').style.display = 'none';
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
 
@@ -106,11 +107,6 @@ export default class MainScene extends Phaser.Scene {
             const startX = Math.floor(this.grid.width / 2);
             const startY = Math.floor(this.grid.height / 2);
             const {tileX, tileY} = this.grid.gridToIso(startX, startY);
-
-            // Load farmer sprite textures
-            for (let i = 1; i <= 12; i++) {
-                this.load.image(`farmer${i}`, `/attached_assets/Farmer_${i}-ezgif.com-resize.png`);
-            }
 
             this.farmer = this.add.sprite(
                 this.cameras.main.centerX + tileX,
@@ -412,13 +408,34 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
+    showFeedback(message, success = true) {
+        const text = this.add.text(
+            this.input.x, 
+            this.input.y - 50,
+            message,
+            { 
+                fontSize: '16px',
+                fill: success ? '#4CAF50' : '#f44336',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: { x: 10, y: 5 }
+            }
+        ).setOrigin(0.5);
+        
+        this.tweens.add({
+            targets: text,
+            alpha: 0,
+            y: text.y - 20,
+            duration: 1000,
+            ease: 'Power2',
+            onComplete: () => text.destroy()
+        });
+    }
+
     placeBuilding(gridX, gridY) {
         if (!this.selectedBuilding || !this.isValidGridPosition(gridX, gridY)) {
             this.showFeedback('Invalid position', false);
             return;
         }
-        
-    showFeedback(message, success = true) {
         const text = this.add.text(
             this.input.x, 
             this.input.y - 50,
