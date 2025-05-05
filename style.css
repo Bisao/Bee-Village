@@ -458,20 +458,11 @@ html, body {
 /* Theme Variables */
 :root {
   /* Prevenir flash de tema padrão */
-  transition: none !important;
+  transition: none;
 }
 
 :root.theme-loaded {
-  transition: all 0.3s ease !important;
-}
-
-/* Esconder conteúdo até tema ser carregado */
-body {
-  visibility: hidden;
-}
-
-body.theme-loaded {
-  visibility: visible;
+  transition: all 0.3s ease;
 }
 
 :root {
@@ -481,18 +472,26 @@ body.theme-loaded {
   --color-dark-gray: #2b2b2b;
 
   /* Temas */
+  --theme-bee-primary: #FFD700;
   --theme-pig-primary: #FFC0CB;
   --theme-cow-primary: #F5F5F5;
 
-  /* Configuração Base */
-  --primary-color: var(--theme-cow-primary);
+  /* Configuração Padrão (Bee Theme) */
+  --primary-color: var(--theme-bee-primary);
   --secondary-color: var(--color-dark-gray);
-  --accent-color: rgba(245, 245, 245, 0.3);
-  --background-color: #1a1a1c;
-  --panel-background: rgba(10, 10, 15, 0.95);
-  --text-color: var(--theme-cow-primary);
-  --button-hover: var(--theme-cow-primary);
+  --accent-color: rgba(255, 215, 0, 0.3);
+  --background-color: var(--color-black);
+  --panel-background: rgba(15, 15, 15, 0.95);
+  --text-color: var(--theme-bee-primary);
+  --button-hover: var(--color-white);
   --button-text: var(--color-dark-gray);
+}
+
+/* Tema Abelha */
+[data-theme="bee"] {
+  --primary-color: var(--theme-bee-primary);
+  --accent-color: rgba(255, 215, 0, 0.3);
+  --text-color: var(--theme-bee-primary);
 }
 
 /* Tema Porco */
