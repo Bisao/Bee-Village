@@ -97,13 +97,31 @@ function applyThemeChanges(theme, save = false) {
     const selectedEmoji = selectedButton.dataset.emoji;
     
     document.documentElement.setAttribute('data-theme', theme);
-    document.querySelector('.topbar h1 .flower').textContent = selectedEmoji;
-    document.querySelector('.start-screen h1 span:first-child').textContent = selectedEmoji;
-    document.querySelector('.start-screen h1 span:last-child').textContent = selectedEmoji;
+    
+    // Update emojis
+    const flowerElements = [
+        '.topbar h1 .flower',
+        '.start-screen h1 span:first-child',
+        '.start-screen h1 span:last-child'
+    ];
+    
+    flowerElements.forEach(selector => {
+        const element = document.querySelector(selector);
+        if (element) element.textContent = selectedEmoji;
+    });
+
+    // Update UI colors based on theme
+    document.body.style.background = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
 
     if (save) {
         localStorage.setItem('selectedTheme', theme);
         localStorage.setItem('selectedEmoji', selectedEmoji);
+        
+        // Force a repaint on saved theme
+        requestAnimationFrame(() => {
+            document.body.style.transition = 'background-color 0.3s ease';
+            document.body.style.backgroundColor = getComputedStyle(document.documentElement).getPropertyValue('--background-color');
+        });
     }
 }
 
