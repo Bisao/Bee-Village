@@ -18,7 +18,9 @@ export default class MainScene extends Phaser.Scene {
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
-
+        
+        this.input.on('pointerdown', this.handleClick, this);
+        
         this.createFarmerCharacter();
         this.placeEnvironmentObjects();
     }
@@ -172,5 +174,48 @@ export default class MainScene extends Phaser.Scene {
             }
         }
     }
-    //Removed functions: createIsometricGrid, setupInputHandlers, handlePointerDown, handlePointerMove, handlePointerUp, handleClick, placeBuilding, isValidGridPosition, gridToIso
+    handleClick(pointer) {
+        if (!this.selectedBuilding) return;
+        
+        const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const hoveredTile = this.grid.grid.flat().find(tile => {
+            const bounds = tile.getBounds();
+            return bounds.contains(worldPoint.x, worldPoint.y);
+        });
+
+        if (hoveredTile) {
+            const gridPosition = hoveredTile.data;
+            this.placeBuilding(gridPosition.gridX, gridPosition.gridY);
+        }
+    }
+
+    placeBuilding(gridX, gridY) {
+        if (!this.selectedBuilding || !this.isValidGridPosition(gridX, gridY)) return;
+        
+        const key = `${gridX},${gridY}`;
+        if (this.grid.buildingGrid[key]) return;
+
+        const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+        const building = this.add.image(
+            this.cameras.main.centerX + tileX,
+            this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+            this.selectedBuilding
+        );
+
+        building.setDepth(gridY + 1);
+        const scale = this.grid.tileWidth / Math.max(building.width, 1);
+        building.setScale(scale * 1.2);
+        building.setOrigin(0.5, 0.8);
+
+        this.grid.buildingGrid[key] = {
+            sprite: building,
+            type: 'building',
+            gridX: gridX,
+            gridY: gridY
+        };
+    }
+
+    isValidGridPosition(x, y) {
+        return this.grid.isValidPosition(x, y);
+    }
 }
