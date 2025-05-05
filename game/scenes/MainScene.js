@@ -25,10 +25,10 @@ export default class MainScene extends Phaser.Scene {
 
         // Load tree images
         const trees = [
-            { key: 'tree_simple', path: 'assets/trees/tree_simple.png' },
-            { key: 'tree_pine', path: 'assets/trees/tree_pine.png' },
-            { key: 'tree_fruit', path: 'assets/trees/tree_fruit.png' },
-            { key: 'tree_autumn', path: 'assets/trees/tree_autumn.png' }
+            { key: 'tree_simple', path: 'attached_assets/tree_simple.png' },
+            { key: 'tree_pine', path: 'attached_assets/tree_pine.png' },
+            { key: 'tree_fruit', path: 'attached_assets/tree_fruit.png' },
+            { key: 'tree_autumn', path: 'attached_assets/tree_autumn.png' }
         ];
 
         trees.forEach(tree => {
