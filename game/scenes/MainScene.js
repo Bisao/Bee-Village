@@ -28,9 +28,9 @@ export default class MainScene extends Phaser.Scene {
 
         // Load rock images
         const rocks = [
-            { key: 'rock_small', path: 'assets/rocks/rock_small.png' },
-            { key: 'rock_medium', path: 'assets/rocks/rock_medium.png' },
-            { key: 'rock_large', path: 'assets/rocks/rock_large.png' }
+            { key: 'rock_small', path: 'assets/rocks/small_rock.png' },
+            { key: 'rock_medium', path: 'assets/rocks/2_rock.png' },
+            { key: 'rock_large', path: 'assets/rocks/big_rock.png' }
         ];
 
         rocks.forEach(rock => {
