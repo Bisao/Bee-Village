@@ -90,10 +90,22 @@ html, body {
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
-.topbar h1 span {
+.topbar h1 .bee {
     display: inline-block;
     animation: beeFloat 3s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
     transform-origin: center;
+}
+
+.topbar h1 .flower {
+    display: inline-block;
+    animation: flowerSway 4s ease-in-out infinite;
+    transform-origin: bottom;
+}
+
+@keyframes flowerSway {
+    0% { transform: rotate(-5deg); }
+    50% { transform: rotate(5deg); }
+    100% { transform: rotate(-5deg); }
 }
 
 /* Painel de Estruturas */
