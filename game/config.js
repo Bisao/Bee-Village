@@ -168,12 +168,20 @@ document.querySelector('.topbar h1 .flower').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:first-child').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
 
-// Aplicar tema imediatamente
-const savedTheme = localStorage.getItem('selectedTheme') || 'pig';
-const savedEmoji = localStorage.getItem('selectedEmoji') || '🐖';
-
-// Aplicar tema antes do carregamento da página
-document.documentElement.setAttribute('data-theme', savedTheme);
+// Inicializar tema antes do carregamento do DOM
+document.addEventListener('DOMContentLoaded', () => {
+    const savedTheme = localStorage.getItem('selectedTheme') || 'cow';
+    const savedEmoji = localStorage.getItem('selectedEmoji') || '🐄';
+    
+    // Aplicar tema imediatamente
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    document.documentElement.classList.add('theme-loaded');
+    
+    // Forçar aplicação do tema
+    requestAnimationFrame(() => {
+        applyThemeChanges(savedTheme, true);
+    });
+});
 document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
 
 // Aplicar tema ao documento

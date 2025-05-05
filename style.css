@@ -458,11 +458,20 @@ html, body {
 /* Theme Variables */
 :root {
   /* Prevenir flash de tema padrão */
-  transition: none;
+  transition: none !important;
 }
 
 :root.theme-loaded {
-  transition: all 0.3s ease;
+  transition: all 0.3s ease !important;
+}
+
+/* Esconder conteúdo até tema ser carregado */
+body {
+  visibility: hidden;
+}
+
+body.theme-loaded {
+  visibility: visible;
 }
 
 :root {
