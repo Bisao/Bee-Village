@@ -492,18 +492,13 @@ export default class MainScene extends Phaser.Scene {
         try {
             const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
             const hoveredTile = this.grid.grid.flat().find(tile => {
-                // Aumenta a área de detecção do tile
-                const tileCenter = new Phaser.Geom.Point(tile.x, tile.y);
-                
-                // Usa um retângulo maior para detecção
-                const hitArea = new Phaser.Geom.Rectangle(
-                    tile.x - tile.displayWidth * 0.75,
-                    tile.y - tile.displayHeight * 0.75,
-                    tile.displayWidth * 1.5,
-                    tile.displayHeight * 1.5
+                const bounds = new Phaser.Geom.Rectangle(
+                    tile.x - tile.displayWidth / 2,
+                    tile.y - tile.displayHeight / 2,
+                    tile.displayWidth,
+                    tile.displayHeight
                 );
-
-                return hitArea.contains(worldPoint.x, worldPoint.y);
+                return bounds.contains(worldPoint.x, worldPoint.y);
             });
 
             if (hoveredTile && hoveredTile.data) {
