@@ -145,12 +145,12 @@ html, body {
 }
 
 .bee-icon.play {
-    top: 50%;
+    top: calc(50% - 10px);
     transform: translateY(-50%);
 }
 
 .bee-icon.settings {
-    top: calc(50% + 60px);
+    top: calc(50% + 10px);
     transform: translateY(-50%);
 }
 
