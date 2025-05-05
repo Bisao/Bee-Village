@@ -194,15 +194,15 @@ export default class MainScene extends Phaser.Scene {
     moveFarmer(direction, animKey) {
         const newX = this.farmer.gridX + direction.x;
         const newY = this.farmer.gridY + direction.y;
-        const isoCoords = this.grid.gridToIso(newX, newY);
+        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
 
         this.farmer.isMoving = true;
         this.farmer.play(animKey);
 
         this.tweens.add({
             targets: this.farmer,
-            x: this.cameras.main.centerX + isoCoords.tileX,
-            y: this.cameras.main.centerY + isoCoords.tileY - 16,
+            x: this.cameras.main.centerX + tileX,
+            y: this.cameras.main.centerY + tileY - 16,
             duration: 500,
             onComplete: () => {
                 this.farmer.gridX = newX;
@@ -422,7 +422,7 @@ export default class MainScene extends Phaser.Scene {
             if (hoveredTile && hoveredTile.data) {
                 const gridPosition = hoveredTile.data;
                 const key = `${gridPosition.gridX},${gridPosition.gridY}`;
-                
+
                 // Check if position is already occupied
                 if (this.grid.buildingGrid[key]) {
                     this.showFeedback('Posição já ocupada', false);
@@ -485,7 +485,7 @@ export default class MainScene extends Phaser.Scene {
         }
 
         const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
-        
+
         // Efeito de partículas ao construir
         const emitter = this.add.particles(0, 0, 'tile_grass', {
             speed: 100,
@@ -615,5 +615,5 @@ export default class MainScene extends Phaser.Scene {
         this.events.emit('buildingPlaced');
     }
 
-    
+
 }
