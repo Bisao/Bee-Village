@@ -680,8 +680,10 @@ html, body {
 }
 
 .control-btn {
-    width: 51px;
-    height: 51px;
+    width: 60px;
+    height: 60px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
     background: rgba(255, 215, 0, 0.2);
     border: 2px solid #FFD700;
     border-radius: 12px;

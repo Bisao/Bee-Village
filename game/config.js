@@ -55,7 +55,16 @@ document.getElementById('play-button').addEventListener('click', () => {
             
             if (loadingProgress >= 100) {
                 clearInterval(loadingInterval);
-                game = new Phaser.Game(config);
+                try {
+    game = new Phaser.Game(config);
+    window.addEventListener('error', (e) => {
+        console.error('Game Error:', e);
+        alert('Ops! Ocorreu um erro. Tente recarregar a página.');
+    });
+} catch (error) {
+    console.error('Initialization Error:', error);
+    alert('Não foi possível iniciar o jogo. Verifique se seu dispositivo é compatível.');
+}
 
                 // Wait for the game to actually load before hiding screens
                 game.events.once('ready', () => {

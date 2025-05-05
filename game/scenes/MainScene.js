@@ -41,7 +41,7 @@ export default class MainScene extends Phaser.Scene {
     createFarmer() {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
-        
+
         const frames = [];
         for (let i = 1; i <= 12; i++) {
             const key = `farmer${i}`;
@@ -124,7 +124,7 @@ export default class MainScene extends Phaser.Scene {
             this.farmer.setScale(0.8);
             //this.farmer.play('farmer_walk');
             this.farmer.setDepth(startY + 1);
-            
+
             // Faz a câmera seguir o fazendeiro
             this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
 
@@ -425,7 +425,7 @@ export default class MainScene extends Phaser.Scene {
                 padding: { x: 10, y: 5 }
             }
         ).setOrigin(0.5);
-        
+
         this.tweens.add({
             targets: text,
             alpha: 0,
@@ -438,14 +438,29 @@ export default class MainScene extends Phaser.Scene {
 
     placeBuilding(gridX, gridY) {
         if (!this.selectedBuilding || !this.isValidGridPosition(gridX, gridY)) {
-            this.showFeedback('Invalid position', false);
+            this.showFeedback('Posição inválida', false);
             return;
         }
+
+        // Efeito de partículas ao construir
+        const emitter = this.add.particles(0, 0, 'tile_grass', {
+            speed: 100,
+            scale: { start: 0.5, end: 0 },
+            alpha: { start: 1, end: 0 },
+            lifespan: 800,
+            blendMode: 'ADD'
+        });
+
+        const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+        emitter.setPosition(
+            this.cameras.main.centerX + tileX,
+            this.cameras.main.centerY + tileY
+        );
+        emitter.explode(10);
 
         const key = `${gridX},${gridY}`;
         if (this.grid.buildingGrid[key]) return;
 
-        const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
         const building = this.add.image(
             this.cameras.main.centerX + tileX,
             this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
