@@ -457,33 +457,32 @@ html, body {
 
 /* Theme Variables */
 :root {
-  /* Prevenir flash de tema padrão */
-  transition: none;
-}
-
-:root.theme-loaded {
-  transition: all 0.3s ease;
-}
-
-:root {
   /* Cores Base */
   --color-black: #1a1a1a;
   --color-white: #FFFFFF;
   --color-dark-gray: #2b2b2b;
 
   /* Temas */
+  --theme-bee-primary: #FFD700;
   --theme-pig-primary: #FFC0CB;
   --theme-cow-primary: #F5F5F5;
 
-  /* Configuração Inicial */
-  --primary-color: var(--theme-pig-primary);
+  /* Configuração Padrão (Bee Theme) */
+  --primary-color: var(--theme-bee-primary);
   --secondary-color: var(--color-dark-gray);
-  --accent-color: rgba(255, 192, 203, 0.3);
-  --background-color: #1a1515;
-  --panel-background: rgba(15, 10, 10, 0.95);
-  --text-color: var(--theme-pig-primary);
-  --button-hover: #FFE4E8;
+  --accent-color: rgba(255, 215, 0, 0.3);
+  --background-color: var(--color-black);
+  --panel-background: rgba(15, 15, 15, 0.95);
+  --text-color: var(--theme-bee-primary);
+  --button-hover: var(--color-white);
   --button-text: var(--color-dark-gray);
+}
+
+/* Tema Abelha */
+[data-theme="bee"] {
+  --primary-color: var(--theme-bee-primary);
+  --accent-color: rgba(255, 215, 0, 0.3);
+  --text-color: var(--theme-bee-primary);
 }
 
 /* Tema Porco */

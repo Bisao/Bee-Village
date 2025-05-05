@@ -162,24 +162,16 @@ applyThemeBtn.addEventListener('click', () => {
     document.querySelector('.start-screen h1 span:last-child').textContent = selectedEmoji;
 });
 
-// Inicializar tema e emoji
-const savedTheme = localStorage.getItem('selectedTheme') || 'pig';
-const savedEmoji = localStorage.getItem('selectedEmoji') || '🐖';
-
-// Aplicar tema e emojis
-document.documentElement.setAttribute('data-theme', savedTheme);
-document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
-
-// Atualizar emojis na interface
+// Load saved emoji
+const savedEmoji = localStorage.getItem('selectedEmoji') || '🐝';
 document.querySelector('.topbar h1 .flower').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:first-child').textContent = savedEmoji;
 document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
 
-// Aplicar tema ao documento
-applyThemeChanges(savedTheme, false);
-
-// Adicionar classe para prevenir flash de tema padrão
-document.documentElement.classList.add('theme-loaded');
+// Load saved theme
+const savedTheme = localStorage.getItem('selectedTheme') || 'bee';
+document.documentElement.setAttribute('data-theme', savedTheme);
+document.querySelector(`.theme-btn[data-theme="${savedTheme}"]`)?.classList.add('selected');
 
 document.getElementById('settings-button').addEventListener('click', () => {
     moveBeeToButton('settings');
