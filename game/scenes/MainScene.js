@@ -410,26 +410,33 @@ export default class MainScene extends Phaser.Scene {
         try {
             const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
             const hoveredTile = this.grid.grid.flat().find(tile => {
-                const bounds = new Phaser.Geom.Rectangle(
-                    tile.x - tile.displayWidth / 2,
-                    tile.y - tile.displayHeight / 2,
-                    tile.displayWidth,
-                    tile.displayHeight
-                );
-                return bounds.contains(worldPoint.x, worldPoint.y);
+                // Use uma área de colisão mais precisa para o tile isométrico
+                const tileCenter = new Phaser.Geom.Point(tile.x, tile.y);
+                const distance = Phaser.Math.Distance.Between(worldPoint.x, worldPoint.y, tile.x, tile.y);
+                
+                // Define uma área de colisão mais precisa baseada na forma do tile
+                const isoWidth = tile.displayWidth * 0.5;
+                const isoHeight = tile.displayHeight * 0.5;
+                
+                // Calcula a distância relativa ao centro do tile
+                const dx = Math.abs(worldPoint.x - tile.x) / isoWidth;
+                const dy = Math.abs(worldPoint.y - tile.y) / isoHeight;
+                
+                // Verifica se o ponto está dentro da área do tile isométrico
+                return (dx + dy) <= 1;
             });
 
             if (hoveredTile && hoveredTile.data) {
                 const gridPosition = hoveredTile.data;
                 const key = `${gridPosition.gridX},${gridPosition.gridY}`;
 
-                // Check if position is already occupied
+                // Verifica se a posição está ocupada
                 if (this.grid.buildingGrid[key]) {
                     this.showFeedback('Posição já ocupada', false);
                     return;
                 }
 
-                // Check if position is valid
+                // Verifica se a posição é válida
                 if (!this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY)) {
                     this.showFeedback('Posição inválida', false);
                     return;
