@@ -402,15 +402,34 @@ export default class MainScene extends Phaser.Scene {
     handleClick(pointer) {
         if (!this.selectedBuilding || pointer.rightButtonDown()) return;
 
-        const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-        const hoveredTile = this.grid.grid.flat().find(tile => {
-            const bounds = tile.getBounds();
-            return bounds.contains(worldPoint.x, worldPoint.y);
-        });
+        try {
+            const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+            const hoveredTile = this.grid.grid.flat().find(tile => {
+                const bounds = tile.getBounds();
+                return bounds.contains(worldPoint.x, worldPoint.y);
+            });
 
-        if (hoveredTile) {
-            const gridPosition = hoveredTile.data;
-            this.placeBuilding(gridPosition.gridX, gridPosition.gridY);
+            if (hoveredTile && hoveredTile.data) {
+                const gridPosition = hoveredTile.data;
+                const key = `${gridPosition.gridX},${gridPosition.gridY}`;
+                
+                // Check if position is already occupied
+                if (this.grid.buildingGrid[key]) {
+                    this.showFeedback('Posição já ocupada', false);
+                    return;
+                }
+
+                // Check if position is valid
+                if (!this.isValidGridPosition(gridPosition.gridX, gridPosition.gridY)) {
+                    this.showFeedback('Posição inválida', false);
+                    return;
+                }
+
+                this.placeBuilding(gridPosition.gridX, gridPosition.gridY);
+            }
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.showFeedback('Erro ao posicionar estrutura', false);
         }
     }
 
@@ -506,22 +525,38 @@ export default class MainScene extends Phaser.Scene {
     autoSave() {
         if (!this.farmer) return;
 
-        const gameState = {
-            buildingGrid: this.grid.buildingGrid,
-            farmerPosition: {
-                x: this.farmer.gridX,
-                y: this.farmer.gridY
+        try {
+            const gameState = {
+                buildingGrid: {},
+                farmerPosition: {
+                    x: this.farmer.gridX,
+                    y: this.farmer.gridY
+                }
+            };
+
+            // Convert building grid to a serializable format
+            Object.entries(this.grid.buildingGrid).forEach(([key, value]) => {
+                gameState.buildingGrid[key] = {
+                    type: value.type,
+                    gridX: value.gridX,
+                    gridY: value.gridY,
+                    buildingType: value.sprite ? value.sprite.texture.key : null
+                };
+            });
+
+            const saveIndicator = document.querySelector('.save-indicator');
+            if (saveIndicator) {
+                saveIndicator.classList.add('saving');
+                setTimeout(() => {
+                    saveIndicator.classList.remove('saving');
+                }, 1000);
             }
-        };
 
-        const saveIndicator = document.querySelector('.save-indicator');
-        saveIndicator.classList.add('saving');
-
-        localStorage.setItem('gameState', JSON.stringify(gameState));
-
-        setTimeout(() => {
-            saveIndicator.classList.remove('saving');
-        }, 1000);
+            localStorage.setItem('gameState', JSON.stringify(gameState));
+            console.log('Game saved successfully');
+        } catch (error) {
+            console.error('Error saving game:', error);
+        }
     }
 
     create() {
