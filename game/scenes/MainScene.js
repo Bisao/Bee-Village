@@ -175,7 +175,8 @@ export default class MainScene extends Phaser.Scene {
             'farmer'
         );
 
-        this.farmer.setScale(2);
+        const scale = this.grid.tileWidth / this.farmer.width;
+        this.farmer.setScale(scale);
         this.farmer.setDepth(startGridPos.y + 1);
         this.farmer.play('walk_right');
 
