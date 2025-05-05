@@ -649,12 +649,12 @@ html, body {
     }
 }
 #controls-panel {
-    display: none;
     position: fixed;
     bottom: 16px;
     left: 16px;
     background: rgba(15, 15, 15, 0.8);
     touch-action: none;
+    display: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
@@ -667,7 +667,7 @@ html, body {
 
 @media (max-width: 768px) {
     #controls-panel {
-        display: block;
+        display: flex !important;
     }
 }
 
