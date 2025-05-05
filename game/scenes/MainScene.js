@@ -646,6 +646,8 @@ export default class MainScene extends Phaser.Scene {
 
         // Add auto-save interval (every 2 minutes)
         setInterval(() => this.autoSave(), 120000);
+    }
+
     clearTileHighlights() {
         this.grid.grid.flat().forEach(tile => {
             tile.clearTint();
