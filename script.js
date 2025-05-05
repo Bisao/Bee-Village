@@ -53,9 +53,20 @@
 document.addEventListener('DOMContentLoaded', function() {
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
+    const fullscreenBtn = document.getElementById('toggleFullscreen');
 
     structuresBtn.addEventListener('click', () => {
         sidePanel.style.display = sidePanel.style.display === 'none' ? 'flex' : 'none';
+    });
+
+    fullscreenBtn.addEventListener('click', () => {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                console.log(`Error attempting to enable full-screen mode: ${err.message}`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
     });
 });
 </script>

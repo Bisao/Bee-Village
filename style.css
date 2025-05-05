@@ -72,6 +72,30 @@ html, body {
     object-fit: contain;
 }
 
+.fullscreen-button {
+    position: fixed;
+    top: 12px;
+    right: 70px;
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 6px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 24px;
+    color: #4CAF50;
+    transition: all 0.3s ease;
+}
+
+.fullscreen-button:hover {
+    transform: scale(1.05);
+    background: rgba(76, 175, 80, 0.2);
+    border-color: #4CAF50;
+}
+
 .topbar h1 {
     color: #fff;
     margin: 0 0 0 15px;
