@@ -67,6 +67,12 @@ export default class MainScene extends Phaser.Scene {
     }
 
     loadAssets() {
+        // Load farmer sprites
+        const numFrames = 12;
+        for (let i = 1; i <= numFrames; i++) {
+            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        }
+
         // Load tiles
         const tiles = [
             'tile_grass',
@@ -139,23 +145,33 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createFarmerCharacter() {
+        // Create animation
+        const frames = [];
+        for (let i = 1; i <= 12; i++) {
+            frames.push({ key: `farmer${i}` });
+        }
+
         this.anims.create({
-            key: 'walk_down',
-            frames: this.anims.generateFrameNumbers('farmer', { start: 0, end: 3 }),
+            key: 'farmer_walk',
+            frames: frames,
             frameRate: 8,
             repeat: -1
         });
 
+        // Create farmer sprite
         this.farmer = this.add.sprite(
             this.cameras.main.centerX,
-            this.cameras.main.centerY - 50,
-            'farmer'
+            this.cameras.main.centerY,
+            'farmer1'
         );
 
-        this.farmer.setScale(3);
+        // Scale to match tile size
+        const scale = this.grid.tileWidth / Math.max(this.farmer.width, 1);
+        this.farmer.setScale(scale);
         this.farmer.setDepth(1);
-        this.farmer.play('walk_down');
+        this.farmer.play('farmer_walk');
 
+        // Add movement
         this.tweens.add({
             targets: this.farmer,
             x: this.farmer.x + 100,
