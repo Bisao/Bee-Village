@@ -124,6 +124,11 @@ export default class MainScene extends Phaser.Scene {
     }
 
     setupUIHandlers() {
+        const centerMapBtn = document.getElementById('centerMap');
+        centerMapBtn.addEventListener('click', () => {
+            this.cameras.main.centerOn(0, 0);
+        });
+
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {
