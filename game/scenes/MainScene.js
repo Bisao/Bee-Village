@@ -16,10 +16,11 @@ export default class MainScene extends Phaser.Scene {
     preload() {
         // Load tile images
         const tiles = [
+            'grass_2_flowers',
             'tile_grass',
             'tile_grass_2',
             'tile_grass_2_flowers',
-            'tile_grass_3_flower'
+            'tile_grass_3_flowers'
         ];
 
         tiles.forEach(tile => {
