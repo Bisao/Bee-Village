@@ -154,24 +154,61 @@ export default class MainScene extends Phaser.Scene {
             repeat: -1
         });
 
+        const startGridPos = { x: 5, y: 5 };
+        const { tileX, tileY } = this.grid.gridToIso(startGridPos.x, startGridPos.y);
+        const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
+        const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
+
         this.farmer = this.add.sprite(
-            this.cameras.main.centerX,
-            this.cameras.main.centerY - 50,
+            this.cameras.main.centerX + tileX + centerOffsetX,
+            this.cameras.main.centerY + tileY + centerOffsetY - 20,
             'farmer'
         );
 
-        this.farmer.setScale(3);
-        this.farmer.setDepth(1);
+        this.farmer.setScale(2);
+        this.farmer.setDepth(startGridPos.y + 1);
         this.farmer.play('walk_down');
 
-        this.tweens.add({
-            targets: this.farmer,
-            x: this.farmer.x + 100,
-            y: this.farmer.y + 50,
-            duration: 2000,
-            yoyo: true,
-            repeat: -1
-        });
+        this.moveFarmerToNextTile();
+    }
+
+    moveFarmerToNextTile() {
+        const randomDir = Math.floor(Math.random() * 4);
+        const directions = [
+            { x: 1, y: 0 }, // direita
+            { x: -1, y: 0 }, // esquerda
+            { x: 0, y: 1 }, // baixo
+            { x: 0, y: -1 } // cima
+        ];
+
+        const currentPos = {
+            x: Math.round((this.farmer.x - this.cameras.main.centerX + (this.grid.width * this.grid.tileWidth) / 2) / this.grid.tileWidth),
+            y: Math.round((this.farmer.y - this.cameras.main.centerY + (this.grid.height * this.grid.tileHeight) / 4) / (this.grid.tileHeight / 2))
+        };
+
+        const newPos = {
+            x: currentPos.x + directions[randomDir].x,
+            y: currentPos.y + directions[randomDir].y
+        };
+
+        if (this.grid.isValidPosition(newPos.x, newPos.y)) {
+            const { tileX, tileY } = this.grid.gridToIso(newPos.x, newPos.y);
+            const centerOffsetX = -(this.grid.width * this.grid.tileWidth) / 2;
+            const centerOffsetY = -(this.grid.height * this.grid.tileHeight) / 4;
+
+            this.tweens.add({
+                targets: this.farmer,
+                x: this.cameras.main.centerX + tileX + centerOffsetX,
+                y: this.cameras.main.centerY + tileY + centerOffsetY - 20,
+                duration: 1000,
+                onComplete: () => {
+                    this.farmer.setDepth(newPos.y + 1);
+                    this.moveFarmerToNextTile();
+                }
+            });
+        } else {
+            this.moveFarmerToNextTile();
+        }
     }
 
     placeEnvironmentObjects() {
