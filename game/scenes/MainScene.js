@@ -25,6 +25,11 @@ export default class MainScene extends Phaser.Scene {
 
         this.placeEnvironmentObjects();
         this.createFarmer();
+
+        // Define zoom inicial diferente para mobile e desktop
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const initialZoom = isMobile ? 0.8 : 1.5;
+        this.cameras.main.setZoom(initialZoom);
     }
 
     createFarmer() {
@@ -117,7 +122,7 @@ export default class MainScene extends Phaser.Scene {
             });
 
             this.input.keyboard.on('keydown', this.handleKeyDown, this);
-    
+
     // Mobile controls
     if ('ontouchstart' in window) {
         const simulateKey = (key) => {
