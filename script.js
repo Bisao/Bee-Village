@@ -54,13 +54,9 @@ document.addEventListener('DOMContentLoaded', function() {
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
-    if (structuresBtn && sidePanel) {
-        structuresBtn.addEventListener('click', () => {
-            const isHidden = sidePanel.style.display === 'none' || sidePanel.style.display === '';
-            sidePanel.style.display = isHidden ? 'flex' : 'none';
-            structuresBtn.classList.toggle('active', isHidden);
-        });
-    }
+    structuresBtn.addEventListener('click', () => {
+        sidePanel.style.display = sidePanel.style.display === 'none' ? 'flex' : 'none';
+    });
 });
 </script>
 
