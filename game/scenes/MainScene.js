@@ -103,7 +103,7 @@ export default class MainScene extends Phaser.Scene {
 
             this.farmer = this.add.sprite(
                 this.cameras.main.centerX + tileX,
-                this.cameras.main.centerY + tileY - 32,
+                this.cameras.main.centerY + tileY - 16,
                 'farmer1'
             );
 
@@ -187,7 +187,7 @@ export default class MainScene extends Phaser.Scene {
         this.tweens.add({
             targets: this.farmer,
             x: this.cameras.main.centerX + tileX,
-            y: this.cameras.main.centerY + tileY - 32,
+            y: this.cameras.main.centerY + tileY - 16,
             duration: 500,
             onComplete: () => {
                 this.farmer.gridX = newX;
