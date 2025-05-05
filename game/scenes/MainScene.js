@@ -145,7 +145,7 @@ export default class MainScene extends Phaser.Scene {
                 ];
 
                 let randomTile;
-                if (!hasAdjacentFlowers(x, y) && Math.random() < 0.15) {
+                if (!hasAdjacentFlowers(x, y) && Math.random() < 0.07) {
                     randomTile = Math.random() < 0.5 ? 'tile_grass_2_flowers' : 'tile_grass_3_flower';
                 } else {
                     randomTile = tileTypes[Math.floor(Math.random() * tileTypes.length)];
