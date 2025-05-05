@@ -485,22 +485,22 @@ export default class MainScene extends Phaser.Scene {
             blendMode: 'ADD'
         });
 
-        emitter.setPosition(
-            this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY
-        );
+        const worldX = this.cameras.main.centerX + tileX;
+        const worldY = this.cameras.main.centerY + tileY;
+
+        emitter.setPosition(worldX, worldY);
         emitter.explode(10);
 
         const building = this.add.image(
-            this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - (this.grid.tileHeight / 2),
+            worldX,
+            worldY - (this.grid.tileHeight / 4),
             this.selectedBuilding
         );
 
         building.setDepth(gridY + 1);
         const scale = (this.grid.tileWidth * 1.2) / Math.max(building.width, 1);
         building.setScale(scale);
-        building.setOrigin(0.5, 1);
+        building.setOrigin(0.5, 0.8);
 
         this.grid.buildingGrid[key] = {
             sprite: building,
