@@ -17,7 +17,9 @@ export default class InputManager {
         // Prevent context menu on right click
         this.scene.game.canvas.addEventListener('contextmenu', (e) => {
             e.preventDefault();
-        });
+            e.stopPropagation();
+            return false;
+        }, false);
         
         this.scene.input.on('pointerdown', this.handlePointerDown, this);
         this.scene.input.on('pointermove', this.handlePointerMove, this);
