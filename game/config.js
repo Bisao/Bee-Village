@@ -42,12 +42,23 @@ let isTransitioning = false;
 document.getElementById('play-button').addEventListener('click', () => {
     if (isTransitioning) return;
     isTransitioning = true;
+    let loadingProgress = 0;
     
     moveBeeToButton('play');
     setTimeout(() => {
-        document.getElementById('start-screen').style.display = 'none';
         document.getElementById('loading-screen').style.display = 'flex';
-        game = new Phaser.Game(config);
+        
+        const progressBar = document.querySelector('.loading-progress');
+        const loadingInterval = setInterval(() => {
+            loadingProgress += 2;
+            progressBar.style.width = `${loadingProgress}%`;
+            
+            if (loadingProgress >= 100) {
+                clearInterval(loadingInterval);
+                document.getElementById('start-screen').style.display = 'none';
+                game = new Phaser.Game(config);
+            }
+        }, 50);
     }, 3000);
 });
 
