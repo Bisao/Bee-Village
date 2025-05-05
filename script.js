@@ -55,7 +55,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const sidePanel = document.getElementById('side-panel');
 
     structuresBtn.addEventListener('click', () => {
-        sidePanel.style.display = sidePanel.style.display === 'none' ? 'flex' : 'none';
+        if (sidePanel.style.display === 'none' || sidePanel.style.display === '') {
+            sidePanel.style.display = 'flex';
+        } else {
+            sidePanel.style.display = 'none';
+        }
     });
 });
 </script>

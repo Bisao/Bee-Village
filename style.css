@@ -83,6 +83,7 @@ html, body {
 #side-panel {
     position: absolute;
     right: 8px;
+    display: none;
     top: 80px;
     width: 5%;
     min-width: 90px;
