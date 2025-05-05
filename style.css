@@ -49,6 +49,117 @@ html, body {
     font-weight: 600;
 }
 
+.status-bar {
+    display: flex;
+    margin-left: auto;
+    gap: 20px;
+    padding: 0 20px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+}
+
+.status-item .icon {
+    font-size: 1.2em;
+}
+
+.help-button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    color: #fff;
+    font-size: 18px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.help-button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tutorial {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    background: rgba(15, 15, 15, 0.95);
+    backdrop-filter: blur(10px);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #fff;
+    z-index: 1000;
+    max-width: 300px;
+}
+
+.tutorial.hidden {
+    display: none;
+}
+
+.tutorial h3 {
+    margin: 0 0 15px 0;
+    color: #4CAF50;
+}
+
+.tutorial ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tutorial li {
+    margin: 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tutorial .close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Controles de zoom mobile */
+.zoom-controls {
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    display: none;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.zoom-button {
+    width: 40px;
+    height: 40px;
+    background: rgba(15, 15, 15, 0.9);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: 50%;
+    color: #fff;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .zoom-controls {
+        display: flex;
+    }
+}
+
 /* Painel de Estruturas */
 #side-panel {
     position: absolute;
