@@ -117,6 +117,18 @@ export default class MainScene extends Phaser.Scene {
             });
 
             this.input.keyboard.on('keydown', this.handleKeyDown, this);
+    
+    // Mobile controls
+    if ('ontouchstart' in window) {
+        const simulateKey = (key) => {
+            this.handleKeyDown({ key: key.toLowerCase() });
+        };
+
+        document.querySelector('.mobile-up').addEventListener('touchstart', () => simulateKey('W'));
+        document.querySelector('.mobile-down').addEventListener('touchstart', () => simulateKey('S'));
+        document.querySelector('.mobile-left').addEventListener('touchstart', () => simulateKey('A'));
+        document.querySelector('.mobile-right').addEventListener('touchstart', () => simulateKey('D'));
+    }
 
 
         });
