@@ -11,7 +11,8 @@ const config = {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH,
         width: window.innerWidth,
-        height: window.innerHeight
+        height: window.innerHeight,
+        fullscreenTarget: 'game-ui'
     },
     physics: {
         default: 'arcade',
@@ -21,4 +22,10 @@ const config = {
     }
 };
 
-new Phaser.Game(config);
+const game = new Phaser.Game(config);
+
+window.onload = () => {
+    if (!game.scale.isFullscreen) {
+        game.scale.startFullscreen();
+    }
+};
