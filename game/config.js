@@ -5,17 +5,16 @@ const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
     height: window.innerHeight,
-    backgroundColor: '#2b2b2b',
-    scene: MainScene,
+    backgroundColor: '#1a1a1a',
+    scene: [MainScene],
     scale: {
         mode: Phaser.Scale.RESIZE,
-        autoCenter: Phaser.Scale.CENTER_BOTH,
-        width: window.innerWidth,
-        height: window.innerHeight
+        autoCenter: Phaser.Scale.CENTER_BOTH
     },
     physics: {
         default: 'arcade',
         arcade: {
+            gravity: { y: 0 },
             debug: false
         }
     }
@@ -155,18 +154,5 @@ function startGameWithLoading() {
     }, 50);
 }
 
-// Mobile handling
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-if (isMobile && window.game) {
-    window.game.scale.on('resize', () => {
-        window.game.scale.resize(window.innerWidth, window.innerHeight);
-    });
-
-    window.addEventListener('orientationchange', () => {
-        setTimeout(() => {
-            window.game.scale.resize(window.innerWidth, window.innerHeight);
-        }, 100);
-    });
-}
 
 export default config;

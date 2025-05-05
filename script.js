@@ -80,7 +80,7 @@
 </div>
 
 <div id="settings-panel" class="settings-panel">
-    <div class="settings-content">
+    <div class="settings-content" id="settings-content">
         <div class="settings-header">
             <h2>Configurações</h2>
             <button class="back-button">✖</button>
@@ -97,6 +97,38 @@
             <div class="setting-item">
                 <label>Zoom Padrão</label>
                 <input type="range" id="defaultZoom" min="50" max="200" value="100">
+
+document.addEventListener('DOMContentLoaded', () => {
+    const settingsPanel = document.getElementById('settings-panel');
+    const togglePanelButton = document.getElementById('togglePanel');
+    const backButton = document.querySelector('.back-button');
+    
+    togglePanelButton?.addEventListener('click', () => {
+        settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'flex' : 'none';
+    });
+    
+    backButton?.addEventListener('click', () => {
+        settingsPanel.style.display = 'none';
+    });
+
+    // Settings controls
+    const gameSoundSlider = document.getElementById('gameSound');
+    const backgroundMusicSlider = document.getElementById('backgroundMusic');
+    const defaultZoomSlider = document.getElementById('defaultZoom');
+
+    gameSoundSlider?.addEventListener('input', (e) => {
+        updateGameSound(e.target.value);
+    });
+
+    backgroundMusicSlider?.addEventListener('input', (e) => {
+        updateBackgroundMusic(e.target.value);
+    });
+
+    defaultZoomSlider?.addEventListener('input', (e) => {
+        updateDefaultZoom(e.target.value);
+    });
+});
+
             </div>
         </div>
     </div>

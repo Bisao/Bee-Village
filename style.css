@@ -438,6 +438,8 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 2000;
+    display: none;
     width: 90%;
     max-width: 400px;
     background: var(--panel-background);
