@@ -101,17 +101,32 @@ themeButtons.forEach(button => {
 });
 
 applyThemeBtn.addEventListener('click', () => {
+    const selectedButton = document.querySelector(`.theme-btn[data-theme="${selectedTheme}"]`);
+    const selectedEmoji = selectedButton.dataset.emoji;
+    
     document.documentElement.setAttribute('data-theme', selectedTheme);
     localStorage.setItem('selectedTheme', selectedTheme);
+    localStorage.setItem('selectedEmoji', selectedEmoji);
     applyThemeBtn.classList.remove('visible');
     
     // Update UI elements with new theme
-    document.querySelectorAll('[class*="button"], [class*="btn"]').forEach(element => {
+    document.querySelectorAll('[class*="button"], [class*="btn"], .topbar, .loading-overlay, #side-panel, .settings-panel').forEach(element => {
         element.style.setProperty('--primary-color', getComputedStyle(document.documentElement).getPropertyValue('--primary-color'));
         element.style.setProperty('--secondary-color', getComputedStyle(document.documentElement).getPropertyValue('--secondary-color'));
         element.style.setProperty('--accent-color', getComputedStyle(document.documentElement).getPropertyValue('--accent-color'));
     });
+
+    // Update emojis
+    document.querySelector('.topbar h1 .flower').textContent = selectedEmoji;
+    document.querySelector('.start-screen h1 span:first-child').textContent = selectedEmoji;
+    document.querySelector('.start-screen h1 span:last-child').textContent = selectedEmoji;
 });
+
+// Load saved emoji
+const savedEmoji = localStorage.getItem('selectedEmoji') || '🐝';
+document.querySelector('.topbar h1 .flower').textContent = savedEmoji;
+document.querySelector('.start-screen h1 span:first-child').textContent = savedEmoji;
+document.querySelector('.start-screen h1 span:last-child').textContent = savedEmoji;
 
 // Load saved theme
 const savedTheme = localStorage.getItem('selectedTheme') || 'bee';

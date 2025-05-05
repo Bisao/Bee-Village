@@ -465,18 +465,50 @@ html, body {
     --primary-color: #FFD700;
     --secondary-color: #2b2b2b;
     --accent-color: rgba(255, 215, 0, 0.3);
+    --background-color: #1a1a1a;
+    --panel-background: rgba(15, 15, 15, 0.95);
 }
 
 :root[data-theme="pig"] {
     --primary-color: #FFC0CB;
     --secondary-color: #2b2b2b;
     --accent-color: rgba(255, 192, 203, 0.3);
+    --background-color: #1a1515;
+    --panel-background: rgba(15, 10, 10, 0.95);
 }
 
 :root[data-theme="cow"] {
     --primary-color: #F5F5F5;
     --secondary-color: #2b2b2b;
     --accent-color: rgba(245, 245, 245, 0.3);
+    --background-color: #1a1a1c;
+    --panel-background: rgba(10, 10, 15, 0.95);
+}
+
+/* Update all themed elements */
+body {
+    background: var(--background-color);
+}
+
+.topbar, .settings-panel, #side-panel {
+    background: var(--panel-background);
+    border-color: var(--primary-color);
+}
+
+.loading-overlay {
+    background: var(--panel-background);
+}
+
+.loading-bar {
+    border-color: var(--primary-color);
+}
+
+.loading-progress {
+    background: var(--primary-color);
+}
+
+.loading-text {
+    color: var(--primary-color);
 }
 
 .theme-options {
