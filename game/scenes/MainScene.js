@@ -58,17 +58,72 @@ export default class MainScene extends Phaser.Scene {
             this.farmer.setScale(0.8);
             this.farmer.play('farmer_walk');
             this.farmer.setDepth(startY + 1);
+            
+            // Adiciona controles WASD
+            this.keys = this.input.keyboard.addKeys({
+                w: Phaser.Input.Keyboard.KeyCodes.W,
+                a: Phaser.Input.Keyboard.KeyCodes.A,
+                s: Phaser.Input.Keyboard.KeyCodes.S,
+                d: Phaser.Input.Keyboard.KeyCodes.D
+            });
 
-            // Inicia o movimento
+            // Adiciona evento de update para verificar inputs
             this.time.addEvent({
-                delay: 2000,
-                callback: this.moveFarmerToNextTile,
+                delay: 100,
+                callback: this.checkPlayerInput,
                 callbackScope: this,
                 loop: true
             });
         });
 
         this.load.start();
+    }
+
+    checkPlayerInput() {
+        if (this.farmer.isMoving) return;
+
+        let direction = null;
+        if (this.keys.w.isDown) {
+            direction = { x: 0, y: -1 };
+        } else if (this.keys.s.isDown) {
+            direction = { x: 0, y: 1 };
+        } else if (this.keys.a.isDown) {
+            direction = { x: -1, y: 0 };
+        } else if (this.keys.d.isDown) {
+            direction = { x: 1, y: 0 };
+        }
+
+        if (direction) {
+            const newX = this.farmer.gridX + direction.x;
+            const newY = this.farmer.gridY + direction.y;
+
+            if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+                this.moveFarmer(direction);
+            }
+        }
+    }
+
+    moveFarmer(direction) {
+        const newX = this.farmer.gridX + direction.x;
+        const newY = this.farmer.gridY + direction.y;
+        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+
+        this.farmer.isMoving = true;
+        this.farmer.currentDirection = direction;
+        this.updateFarmerAnimation(direction);
+
+        this.tweens.add({
+            targets: this.farmer,
+            x: this.cameras.main.centerX + tileX,
+            y: this.cameras.main.centerY + tileY - 32,
+            duration: 500,
+            onComplete: () => {
+                this.farmer.gridX = newX;
+                this.farmer.gridY = newY;
+                this.farmer.setDepth(newY + 1);
+                this.farmer.isMoving = false;
+            }
+        });
     }
 
     isTileOccupied(x, y) {
