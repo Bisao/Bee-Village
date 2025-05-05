@@ -90,23 +90,36 @@ const themeButtons = document.querySelectorAll('.theme-btn');
 const applyThemeBtn = document.getElementById('apply-theme');
 let selectedTheme = localStorage.getItem('selectedTheme') || 'bee';
 
+let previewTheme = localStorage.getItem('selectedTheme') || 'bee';
+
+function applyThemeChanges(theme, save = false) {
+    const selectedButton = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
+    const selectedEmoji = selectedButton.dataset.emoji;
+    
+    document.documentElement.setAttribute('data-theme', theme);
+    document.querySelector('.topbar h1 .flower').textContent = selectedEmoji;
+    document.querySelector('.start-screen h1 span:first-child').textContent = selectedEmoji;
+    document.querySelector('.start-screen h1 span:last-child').textContent = selectedEmoji;
+
+    if (save) {
+        localStorage.setItem('selectedTheme', theme);
+        localStorage.setItem('selectedEmoji', selectedEmoji);
+    }
+}
+
 themeButtons.forEach(button => {
     button.addEventListener('click', () => {
         const theme = button.dataset.theme;
-        selectedTheme = theme;
+        previewTheme = theme;
         themeButtons.forEach(btn => btn.classList.remove('selected'));
         button.classList.add('selected');
         applyThemeBtn.classList.add('visible');
+        applyThemeChanges(theme, false);
     });
 });
 
 applyThemeBtn.addEventListener('click', () => {
-    const selectedButton = document.querySelector(`.theme-btn[data-theme="${selectedTheme}"]`);
-    const selectedEmoji = selectedButton.dataset.emoji;
-    
-    document.documentElement.setAttribute('data-theme', selectedTheme);
-    localStorage.setItem('selectedTheme', selectedTheme);
-    localStorage.setItem('selectedEmoji', selectedEmoji);
+    applyThemeChanges(previewTheme, true);
     applyThemeBtn.classList.remove('visible');
     
     // Update UI elements with new theme
