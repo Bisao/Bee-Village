@@ -42,6 +42,35 @@ export default class MainScene extends Phaser.Scene {
                 repeat: -1
             });
 
+            this.anims.create({
+                key: 'farmer_up',
+                frames: this.anims.generateFrameNames('farmer', {start: 1, end: 4, zeroPad: 2, prefix: 'farmer'}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_down',
+                frames: this.anims.generateFrameNames('farmer', {start: 9, end: 12, zeroPad: 2, prefix: 'farmer'}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_left',
+                frames: this.anims.generateFrameNames('farmer', {start: 5, end: 8, zeroPad: 2, prefix: 'farmer'}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_right',
+                frames: this.anims.generateFrameNames('farmer', {start: 1, end: 4, zeroPad: 2, prefix: 'farmer'}),
+                frameRate: 8,
+                repeat: -1
+            });
+
+
             // Posição inicial no centro do grid
             const startX = Math.floor(this.grid.width / 2);
             const startY = Math.floor(this.grid.height / 2);
@@ -52,13 +81,13 @@ export default class MainScene extends Phaser.Scene {
                 this.cameras.main.centerY + tileY - 32,
                 'farmer1'
             );
-            
+
             this.farmer.gridX = startX;
             this.farmer.gridY = startY;
             this.farmer.setScale(0.8);
-            this.farmer.play('farmer_walk');
+            //this.farmer.play('farmer_walk');
             this.farmer.setDepth(startY + 1);
-            
+
             // Adiciona controles WASD
             this.keys = this.input.keyboard.addKeys({
                 w: Phaser.Input.Keyboard.KeyCodes.W,
@@ -67,30 +96,37 @@ export default class MainScene extends Phaser.Scene {
                 d: Phaser.Input.Keyboard.KeyCodes.D
             });
 
-            // Adiciona evento de update para verificar inputs
-            this.time.addEvent({
-                delay: 100,
-                callback: this.checkPlayerInput,
-                callbackScope: this,
-                loop: true
-            });
+            this.input.keyboard.on('keydown', this.handleKeyDown, this);
+
+
         });
 
         this.load.start();
     }
 
-    checkPlayerInput() {
+    handleKeyDown(event) {
         if (this.farmer.isMoving) return;
 
         let direction = null;
-        if (this.keys.w.isDown) {
-            direction = { x: 0, y: -1 };
-        } else if (this.keys.s.isDown) {
-            direction = { x: 0, y: 1 };
-        } else if (this.keys.a.isDown) {
-            direction = { x: -1, y: 0 };
-        } else if (this.keys.d.isDown) {
-            direction = { x: 1, y: 0 };
+        let animKey = null;
+
+        switch(event.key.toLowerCase()) {
+            case 'w':
+                direction = { x: 0, y: -1 };
+                animKey = 'farmer_up';
+                break;
+            case 's':
+                direction = { x: 0, y: 1 };
+                animKey = 'farmer_down';
+                break;
+            case 'a':
+                direction = { x: -1, y: 0 };
+                animKey = 'farmer_left';
+                break;
+            case 'd':
+                direction = { x: 1, y: 0 };
+                animKey = 'farmer_right';
+                break;
         }
 
         if (direction) {
@@ -98,19 +134,18 @@ export default class MainScene extends Phaser.Scene {
             const newY = this.farmer.gridY + direction.y;
 
             if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
-                this.moveFarmer(direction);
+                this.moveFarmer(direction, animKey);
             }
         }
     }
 
-    moveFarmer(direction) {
+    moveFarmer(direction, animKey) {
         const newX = this.farmer.gridX + direction.x;
         const newY = this.farmer.gridY + direction.y;
         const {tileX, tileY} = this.grid.gridToIso(newX, newY);
 
         this.farmer.isMoving = true;
-        this.farmer.currentDirection = direction;
-        this.updateFarmerAnimation(direction);
+        this.farmer.play(animKey);
 
         this.tweens.add({
             targets: this.farmer,
@@ -122,6 +157,7 @@ export default class MainScene extends Phaser.Scene {
                 this.farmer.gridY = newY;
                 this.farmer.setDepth(newY + 1);
                 this.farmer.isMoving = false;
+                this.farmer.stop();
             }
         });
     }
@@ -146,74 +182,6 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    moveFarmerToNextTile() {
-        if (!this.farmer.currentDirection) {
-            this.farmer.currentDirection = { x: 1, y: 0 }; // Começa movendo para direita
-        }
-
-        const availableDirections = this.getAvailableDirections();
-        if (availableDirections.length === 0) return;
-
-        // Tenta manter a direção atual se possível
-        let nextDirection = availableDirections.find(dir => 
-            dir.x === this.farmer.currentDirection.x && 
-            dir.y === this.farmer.currentDirection.y
-        );
-
-        // Se não puder continuar na mesma direção, escolhe uma direção similar
-        if (!nextDirection) {
-            nextDirection = availableDirections[Math.floor(Math.random() * availableDirections.length)];
-            // Atualiza a sequência de sprites baseado na nova direção
-            this.updateFarmerAnimation(nextDirection);
-        }
-
-        const newX = this.farmer.gridX + nextDirection.x;
-        const newY = this.farmer.gridY + nextDirection.y;
-        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
-
-        this.farmer.currentDirection = nextDirection;
-
-        this.tweens.add({
-            targets: this.farmer,
-            x: this.cameras.main.centerX + tileX,
-            y: this.cameras.main.centerY + tileY - 32,
-            duration: 1000,
-            onComplete: () => {
-                this.farmer.gridX = newX;
-                this.farmer.gridY = newY;
-                this.farmer.setDepth(newY + 1);
-            }
-        });
-    }
-
-    updateFarmerAnimation(direction) {
-        // Define as sequências de sprites baseado na direção
-        let sequence;
-        if (direction.x > 0) { // Direita
-            sequence = [1, 2, 3, 4];
-        } else if (direction.x < 0) { // Esquerda
-            sequence = [5, 6, 7, 8];
-        } else if (direction.y > 0) { // Baixo
-            sequence = [9, 10, 11, 12];
-        } else { // Cima
-            sequence = [1, 2, 3, 4].reverse();
-        }
-
-        // Cria os frames da animação
-        const frames = sequence.map(num => ({ key: `farmer${num}` }));
-
-        // Atualiza a animação existente
-        this.anims.remove('farmer_walk');
-        this.anims.create({
-            key: 'farmer_walk',
-            frames: frames,
-            frameRate: 8,
-            repeat: -1
-        });
-
-        // Reinicia a animação
-        this.farmer.play('farmer_walk');
-    }
 
     updatePreview = (pointer) => {
         if (!this.selectedBuilding) {
@@ -305,7 +273,7 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(key, `game/assets/buildings/${filename}.png`);
         });
 
-        
+
     }
 
     setupUIHandlers() {
