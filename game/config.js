@@ -32,8 +32,8 @@ function applyThemeChanges(theme, save = false) {
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.classList.add('theme-loaded');
 
-    // Update emojis
-    document.querySelectorAll('.flower, .start-screen h1 span').forEach(element => {
+    // Update theme emojis
+    document.querySelectorAll('.theme-emoji, .theme-icon').forEach(element => {
         if (element) element.textContent = emoji;
     });
 
