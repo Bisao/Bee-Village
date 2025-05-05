@@ -581,12 +581,8 @@ export default class MainScene extends Phaser.Scene {
         const initialZoom = isMobile ? 0.8 : 1.5;
         this.cameras.main.setZoom(initialZoom);
 
-        // Add auto-save interval
-        setInterval(() => this.autoSave(), 30000);
-
-        // Set up auto-save events
-        this.events.on('buildingPlaced', () => this.autoSave());
-        this.events.on('farmerMoved', () => this.autoSave());
+        // Add auto-save interval (every 2 minutes)
+        setInterval(() => this.autoSave(), 120000);
     }
 
     placeBuilding(gridX, gridY) {
