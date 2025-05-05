@@ -244,8 +244,12 @@ export default class MainScene extends Phaser.Scene {
                 this.previewBuilding.destroy();
                 this.previewBuilding = null;
             }
+            this.clearTileHighlights();
             return;
         }
+
+        // Update tile highlights
+        this.updateTileHighlights();
 
         const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
         const hoveredTile = this.grid.grid.flat().find(tile => {
@@ -542,8 +546,9 @@ export default class MainScene extends Phaser.Scene {
             // Feedback visual
             this.showFeedback('Estrutura construída!', true);
 
-            // Limpar seleção
+            // Limpar seleção e highlights
             this.clearBuildingSelection();
+            this.clearTileHighlights();
 
             // Notificar outros sistemas
             this.events.emit('buildingPlaced', {
@@ -645,3 +650,26 @@ export default class MainScene extends Phaser.Scene {
 
 
 }
+    clearTileHighlights() {
+        this.grid.grid.flat().forEach(tile => {
+            tile.clearTint();
+        });
+    }
+
+    updateTileHighlights() {
+        this.grid.grid.flat().forEach(tile => {
+            const gridPosition = tile.data;
+            const key = `${gridPosition.gridX},${gridPosition.gridY}`;
+            
+            if (this.grid.buildingGrid[key]) {
+                // Occupied tiles - Red tint
+                tile.setTint(0xFF0000);
+            } else if (this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY)) {
+                // Available tiles - Green tint
+                tile.setTint(0x00FF00);
+            } else {
+                // Invalid tiles - Red tint
+                tile.setTint(0xFF0000);
+            }
+        });
+    }
