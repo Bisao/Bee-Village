@@ -24,8 +24,8 @@ const config = {
 
 const game = new Phaser.Game(config);
 
-window.onload = () => {
+window.addEventListener('click', function() {
     if (!game.scale.isFullscreen) {
         game.scale.startFullscreen();
     }
-};
+}, { once: true });
