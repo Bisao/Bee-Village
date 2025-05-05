@@ -19,6 +19,9 @@ export default class MainScene extends Phaser.Scene {
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
+        
+        // Centraliza a câmera na origem
+        this.cameras.main.centerOn(0, 0);
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
