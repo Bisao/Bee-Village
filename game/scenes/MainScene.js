@@ -436,27 +436,6 @@ export default class MainScene extends Phaser.Scene {
             this.showFeedback('Invalid position', false);
             return;
         }
-        const text = this.add.text(
-            this.input.x, 
-            this.input.y - 50,
-            message,
-            { 
-                fontSize: '16px',
-                fill: success ? '#4CAF50' : '#f44336',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: { x: 10, y: 5 }
-            }
-        ).setOrigin(0.5);
-        
-        this.tweens.add({
-            targets: text,
-            alpha: 0,
-            y: text.y - 20,
-            duration: 1000,
-            ease: 'Power2',
-            onComplete: () => text.destroy()
-        });
-    }
 
         const key = `${gridX},${gridY}`;
         if (this.grid.buildingGrid[key]) return;
