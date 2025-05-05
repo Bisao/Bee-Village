@@ -111,6 +111,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
+    // Settings controls
+    const gameSoundControl = document.getElementById('gameSound');
+    const backgroundMusicControl = document.getElementById('backgroundMusic');
+    const defaultZoomControl = document.getElementById('defaultZoom');
+
+    // Load saved settings
+    const settings = loadSettings();
+    gameSoundControl.value = settings.gameSound;
+    backgroundMusicControl.value = settings.backgroundMusic;
+    defaultZoomControl.value = settings.defaultZoom;
+
+    // Settings event listeners
+    gameSoundControl.addEventListener('input', () => {
+        saveSettings({
+            ...loadSettings(),
+            gameSound: gameSoundControl.value
+        });
+        updateGameSound(gameSoundControl.value);
+    });
+
+    backgroundMusicControl.addEventListener('input', () => {
+        saveSettings({
+            ...loadSettings(),
+            backgroundMusic: backgroundMusicControl.value
+        });
+        updateBackgroundMusic(backgroundMusicControl.value);
+    });
+
+    defaultZoomControl.addEventListener('input', () => {
+        saveSettings({
+            ...loadSettings(),
+            defaultZoom: defaultZoomControl.value
+        });
+        updateDefaultZoom(defaultZoomControl.value);
+    });
+
     menuButton.addEventListener('click', () => {
         settingsPanel.style.display = 'flex';
         settingsPanel.classList.add('visible');
@@ -127,6 +163,50 @@ document.addEventListener('DOMContentLoaded', function() {
         sidePanel.style.display = sidePanel.style.display === 'none' ? 'flex' : 'none';
     });
 });
+
+// Settings management functions
+function loadSettings() {
+    const defaultSettings = {
+        gameSound: 50,
+        backgroundMusic: 50,
+        defaultZoom: 100
+    };
+    
+    const savedSettings = localStorage.getItem('gameSettings');
+    return savedSettings ? JSON.parse(savedSettings) : defaultSettings;
+}
+
+function saveSettings(settings) {
+    localStorage.setItem('gameSettings', JSON.stringify(settings));
+}
+
+function updateGameSound(value) {
+    // Implement game sound volume control
+    if (window.game) {
+        // Update Phaser sound volume
+        const volume = value / 100;
+        window.game.sound.volume = volume;
+    }
+}
+
+function updateBackgroundMusic(value) {
+    // Implement background music volume control
+    if (window.game) {
+        // Update background music volume
+        const volume = value / 100;
+        if (window.game.backgroundMusic) {
+            window.game.backgroundMusic.volume = volume;
+        }
+    }
+}
+
+function updateDefaultZoom(value) {
+    // Implement zoom control
+    if (window.game && window.game.scene.scenes[0]) {
+        const zoom = value / 100;
+        window.game.scene.scenes[0].cameras.main.setZoom(zoom);
+    }
+}
 </script>
 
 </body>
