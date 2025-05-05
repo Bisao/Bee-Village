@@ -394,17 +394,19 @@ html, body {
 /* Settings Panel */
 .settings-panel {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
     background: var(--panel-background);
-    backdrop-filter: blur(10px);
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    padding: 20px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     display: none;
     flex-direction: column;
-    z-index: 10000;
-    padding: 20px;
-    box-sizing: border-box;
+    z-index: 2000;
 }
 
 .settings-panel.visible {
@@ -413,19 +415,21 @@ html, body {
 
 .settings-header {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--primary-color);
 }
 
 .back-button {
     background: transparent;
     border: none;
     color: var(--primary-color);
-    font-size: 24px;
+    font-size: 20px;
     cursor: pointer;
-    padding: 10px;
-    margin-right: 15px;
-    transition: transform 0.3s ease;
+    padding: 5px 10px;
+    transition: transform 0.2s ease;
 }
 
 .back-button:hover {
@@ -438,41 +442,28 @@ html, body {
     font-size: 1.5em;
 }
 
-.settings-content {
+.settings-options {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
 .setting-item {
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
     color: var(--text-color);
-    padding: 10px 0;
 }
 
 .setting-item label {
-    font-size: 1.1em;
+    flex: 1;
 }
 
 .setting-item input[type="range"] {
-    width: 200px;
-    height: 5px;
-    -webkit-appearance: none;
-    background: var(--accent-color);
-    border-radius: 5px;
-    outline: none;
+    flex: 1;
+    margin-left: 15px;
 }
 
-.setting-item input[type="range"]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    width: 15px;
-    height: 15px;
-    background: var(--primary-color);
-    border-radius: 50%;
-    cursor: pointer;
-}
 
 /* Theme Variables */
 :root {

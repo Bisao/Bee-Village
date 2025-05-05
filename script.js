@@ -79,12 +79,26 @@
   </ul>
 </div>
 
-<button id="togglePanel">Open Settings</button>
-<div id="settings-panel">
+<div id="settings-panel" class="settings-panel">
     <div class="settings-content">
-        <h2>Settings</h2>
-        <button class="back-button">Close</button>
-        <!-- Add your settings content here -->
+        <div class="settings-header">
+            <h2>Configurações</h2>
+            <button class="back-button">✖</button>
+        </div>
+        <div class="settings-options">
+            <div class="setting-item">
+                <label>Som do Jogo</label>
+                <input type="range" id="gameSound" min="0" max="100" value="50">
+            </div>
+            <div class="setting-item">
+                <label>Música de Fundo</label>
+                <input type="range" id="backgroundMusic" min="0" max="100" value="50">
+            </div>
+            <div class="setting-item">
+                <label>Zoom Padrão</label>
+                <input type="range" id="defaultZoom" min="50" max="200" value="100">
+            </div>
+        </div>
     </div>
 </div>
 
