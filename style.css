@@ -209,6 +209,9 @@ html, body {
     touch-action: manipulation;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .control-btn:active {
