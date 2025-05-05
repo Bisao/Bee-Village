@@ -104,6 +104,21 @@
 
 
 <script>
+function showFeedback(message, duration = 2000) {
+    const feedback = document.createElement('div');
+    feedback.className = 'feedback-message';
+    feedback.textContent = message;
+    document.body.appendChild(feedback);
+    
+    requestAnimationFrame(() => {
+        feedback.classList.add('visible');
+        setTimeout(() => {
+            feedback.classList.remove('visible');
+            setTimeout(() => feedback.remove(), 300);
+        }, duration);
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     const menuButton = document.getElementById('togglePanel');
     const settingsPanel = document.getElementById('settings-panel');
