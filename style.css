@@ -414,7 +414,7 @@ html, body {
     border: 2px solid var(--primary-color);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: all 0.3s ease;
 }
 
 .settings-panel.visible {

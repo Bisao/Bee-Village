@@ -56,10 +56,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const backButton = document.querySelector('.back-button');
 
     menuButton.addEventListener('click', () => {
+        settingsPanel.style.display = 'flex';
         settingsPanel.classList.add('visible');
     });
 
     backButton.addEventListener('click', () => {
+        settingsPanel.style.display = 'none';
         settingsPanel.classList.remove('visible');
     });
 
@@ -82,7 +84,7 @@ document.addEventListener('DOMContentLoaded', function() {
         applyThemeBtn.classList.remove('visible');
     });
 
-    //Original side panel toggle functionality
+    // Side panel toggle functionality
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
