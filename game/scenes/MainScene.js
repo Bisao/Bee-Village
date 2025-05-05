@@ -573,6 +573,11 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
+            // Se for uma casa de fazendeiro, cria um NPC
+            if (this.selectedBuilding === 'farmerHouse') {
+                this.createNPCFarmer(gridX, gridY, worldX, worldY);
+            }
+
             // Usa as coordenadas exatas passadas como parâmetro
 
             // Criar a estrutura
@@ -582,6 +587,218 @@ export default class MainScene extends Phaser.Scene {
             }
 
             // Configurar a estrutura
+
+    createNPCFarmer(homeX, homeY, worldX, worldY) {
+        const npc = this.add.sprite(worldX, worldY - 16, 'farmer1');
+        npc.setScale(0.8);
+        npc.setDepth(homeY + 1);
+        npc.gridX = homeX;
+        npc.gridY = homeY;
+        npc.homeX = homeX;
+        npc.homeY = homeY;
+        npc.isMoving = false;
+        npc.isWandering = false;
+
+        // Criar as mesmas animações do jogador para o NPC
+        this.anims.create({
+            key: 'npc_up',
+            frames: [
+                { key: 'farmer1' },
+                { key: 'farmer2' },
+                { key: 'farmer3' },
+                { key: 'farmer4' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'npc_down',
+            frames: [
+                { key: 'farmer9' },
+                { key: 'farmer10' },
+                { key: 'farmer11' },
+                { key: 'farmer12' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'npc_left',
+            frames: [
+                { key: 'farmer5' },
+                { key: 'farmer6' },
+                { key: 'farmer7' },
+                { key: 'farmer8' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+
+        this.anims.create({
+            key: 'npc_right',
+            frames: [
+                { key: 'farmer1' },
+                { key: 'farmer2' },
+                { key: 'farmer3' },
+                { key: 'farmer4' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+
+        // Iniciar comportamento de vagar
+        this.time.addEvent({
+            delay: 5000,
+            callback: () => this.startWandering(npc),
+            callbackScope: this
+        });
+    }
+
+    startWandering(npc) {
+        if (!npc.isWandering) {
+            npc.isWandering = true;
+            this.wanderNPC(npc);
+        }
+    }
+
+    wanderNPC(npc) {
+        if (!npc.isWandering) return;
+
+        const directions = [
+            { x: 1, y: 0, anim: 'npc_right' },
+            { x: -1, y: 0, anim: 'npc_left' },
+            { x: 0, y: 1, anim: 'npc_down' },
+            { x: 0, y: -1, anim: 'npc_up' }
+        ];
+
+        const randomDir = directions[Math.floor(Math.random() * directions.length)];
+        const newX = npc.gridX + randomDir.x;
+        const newY = npc.gridY + randomDir.y;
+
+        if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+            const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+            npc.isMoving = true;
+            npc.play(randomDir.anim);
+
+            this.tweens.add({
+                targets: npc,
+                x: this.cameras.main.centerX + tileX,
+                y: this.cameras.main.centerY + tileY - 16,
+                duration: 600,
+                ease: 'Quad.easeInOut',
+                onComplete: () => {
+                    npc.gridX = newX;
+                    npc.gridY = newY;
+                    npc.setDepth(newY + 1);
+                    npc.isMoving = false;
+                    npc.stop();
+
+                    // Verificar se deve voltar para casa
+                    if (Math.random() < 0.2) {
+                        this.returnHome(npc);
+                    } else {
+                        // Continuar vagando após um delay
+                        this.time.addEvent({
+                            delay: 1000,
+                            callback: () => this.wanderNPC(npc),
+                            callbackScope: this
+                        });
+                    }
+                }
+            });
+        } else {
+            // Se não puder mover, tenta novamente
+            this.time.addEvent({
+                delay: 500,
+                callback: () => this.wanderNPC(npc),
+                callbackScope: this
+            });
+        }
+    }
+
+    returnHome(npc) {
+        npc.isWandering = false;
+        const path = this.findPathToHome(npc);
+        
+        if (path.length > 0) {
+            this.moveAlongPath(npc, path, () => {
+                // Quando chegar em casa, aguarda um tempo e começa a vagar novamente
+                this.time.addEvent({
+                    delay: 5000,
+                    callback: () => this.startWandering(npc),
+                    callbackScope: this
+                });
+            });
+        }
+    }
+
+    findPathToHome(npc) {
+        // Implementação simples de caminho - movimento direto para casa
+        const dx = npc.homeX - npc.gridX;
+        const dy = npc.homeY - npc.gridY;
+        const path = [];
+
+        // Adiciona movimentos horizontais
+        for (let i = 0; i < Math.abs(dx); i++) {
+            path.push({
+                x: dx > 0 ? 1 : -1,
+                y: 0,
+                anim: dx > 0 ? 'npc_right' : 'npc_left'
+            });
+        }
+
+        // Adiciona movimentos verticais
+        for (let i = 0; i < Math.abs(dy); i++) {
+            path.push({
+                x: 0,
+                y: dy > 0 ? 1 : -1,
+                anim: dy > 0 ? 'npc_down' : 'npc_up'
+            });
+        }
+
+        return path;
+    }
+
+    moveAlongPath(npc, path, onComplete) {
+        if (path.length === 0) {
+            if (onComplete) onComplete();
+            return;
+        }
+
+        const move = path[0];
+        const newX = npc.gridX + move.x;
+        const newY = npc.gridY + move.y;
+
+        if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+            const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+            npc.isMoving = true;
+            npc.play(move.anim);
+
+            this.tweens.add({
+                targets: npc,
+                x: this.cameras.main.centerX + tileX,
+                y: this.cameras.main.centerY + tileY - 16,
+                duration: 600,
+                ease: 'Quad.easeInOut',
+                onComplete: () => {
+                    npc.gridX = newX;
+                    npc.gridY = newY;
+                    npc.setDepth(newY + 1);
+                    npc.isMoving = false;
+                    npc.stop();
+
+                    // Move para o próximo passo do caminho
+                    this.moveAlongPath(npc, path.slice(1), onComplete);
+                }
+            });
+        } else {
+            // Se não puder mover, pula para o próximo movimento
+            this.moveAlongPath(npc, path.slice(1), onComplete);
+        }
+    }
+
             const scale = (this.grid.tileWidth * 1.4) / building.width;
             building.setScale(scale);
             building.setOrigin(0.5, 0.75);
