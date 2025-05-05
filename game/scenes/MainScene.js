@@ -499,19 +499,15 @@ export default class MainScene extends Phaser.Scene {
             const worldY = this.cameras.main.centerY + tileY;
 
             // Criar a estrutura
-            const building = this.add.sprite(worldX, worldY - (this.grid.tileHeight / 4), this.selectedBuilding);
+            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
             if (!building) {
                 throw new Error('Failed to create building sprite: sprite is null');
             }
-            if (!building) {
-                throw new Error('Failed to create building sprite');
-            }
 
             // Configurar a estrutura
-            const tileScale = 1.2;
-            const scale = (this.grid.tileWidth * tileScale) / Math.max(building.width, 1);
+            const scale = this.grid.tileWidth / building.width;
             building.setScale(scale);
-            building.setOrigin(0.5, 1);
+            building.setOrigin(0.5, 0.75);
             building.setDepth(gridY + 1);
 
             // Registrar no grid
