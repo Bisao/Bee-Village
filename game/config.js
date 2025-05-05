@@ -56,6 +56,7 @@ document.getElementById('play-button').addEventListener('click', () => {
             if (loadingProgress >= 100) {
                 clearInterval(loadingInterval);
                 setTimeout(() => {
+                    document.getElementById('loading-screen').style.display = 'none';
                     document.getElementById('start-screen').style.display = 'none';
                     game = new Phaser.Game(config);
                 }, 2000);

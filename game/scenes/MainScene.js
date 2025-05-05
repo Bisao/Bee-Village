@@ -13,7 +13,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
-        document.getElementById('loading-screen').style.display = 'none';
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
 
