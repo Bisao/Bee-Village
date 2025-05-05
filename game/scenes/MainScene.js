@@ -26,6 +26,17 @@ export default class MainScene extends Phaser.Scene {
             this.load.image(tile, `assets/tiles/${tile}.png`);
         });
 
+        // Load rock images
+        const rocks = [
+            { key: 'rock_small', path: 'assets/rocks/rock_small.png' },
+            { key: 'rock_medium', path: 'assets/rocks/rock_medium.png' },
+            { key: 'rock_large', path: 'assets/rocks/rock_large.png' }
+        ];
+
+        rocks.forEach(rock => {
+            this.load.image(rock.key, rock.path);
+        });
+
         // Load tree images
         const trees = [
             { key: 'tree_simple', path: 'attached_assets/tree_simple.png' },
@@ -74,6 +85,51 @@ export default class MainScene extends Phaser.Scene {
         this.setupInputHandlers();
         this.createFarmerCharacter();
         this.placeTrees();
+        this.placeRocks();
+    }
+
+    placeRocks() {
+        const rockTypes = ['rock_small', 'rock_medium', 'rock_large'];
+        const numRocks = 8;
+        let placedRocks = 0;
+
+        while (placedRocks < numRocks) {
+            const randomX = Math.floor(Math.random() * this.grid[0].length);
+            const randomY = Math.floor(Math.random() * this.grid.length);
+            const key = `${randomX},${randomY}`;
+
+            if (this.buildingGrid[key]) {
+                continue;
+            }
+
+            try {
+                const randomRock = rockTypes[Math.floor(Math.random() * rockTypes.length)];
+                const {x: tileX, y: tileY} = this.gridToIso(randomX, randomY);
+
+                const rock = this.add.image(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.tileHeight / 4),
+                    randomRock
+                );
+
+                rock.setDepth(randomY + 1);
+                const scale = (this.tileWidth * 0.8) / Math.max(rock.width, 1);
+                rock.setScale(scale);
+                rock.setOrigin(0.5, 0.8);
+
+                this.buildingGrid[key] = {
+                    sprite: rock,
+                    type: 'rock',
+                    gridX: randomX,
+                    gridY: randomY
+                };
+
+                placedRocks++;
+            } catch (error) {
+                console.error('Error placing rock:', error);
+                continue;
+            }
+        }
     }
 
     placeTrees() {
