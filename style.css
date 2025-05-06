@@ -570,22 +570,40 @@ html, body {
     .settings-panel,
     .modal-content,
     .feedback-message,
-    .npc-modal {
+    .npc-modal,
+    .panel-tabs,
+    .tab-content,
+    .building-list,
+    .start-buttons-panel {
         width: 98%;
         padding: 4px;
+        gap: 4px;
     }
 
     .tab-btn,
     .control-btn,
-    .theme-btn {
+    .theme-btn,
+    .building-btn,
+    .structure-button,
+    button {
         padding: 2px 4px;
         font-size: 0.7em;
+        min-height: 24px;
+        border-radius: 4px;
     }
 
     .building-info,
     .tool-name,
-    .setting-item label {
+    .setting-item label,
+    .topbar h1,
+    .settings-header h2,
+    .section-title {
         font-size: 0.6em;
+    }
+
+    .topbar {
+        height: 45px;
+        padding: 4px;
     }
 }
 
@@ -627,19 +645,63 @@ html, body {
     }
 }
 
-@media (min-width: 769px) {
+@media (min-width: 481px) and (max-width: 768px) {
     .settings-panel,
     .modal-content,
-    .feedback-message {
-        width: min(75%, 500px);
-        padding: 20px;
+    .feedback-message,
+    .panel-tabs,
+    .tab-content,
+    .start-buttons-panel {
+        width: 85%;
+        padding: 12px;
+        gap: 8px;
     }
 
     .tab-btn,
     .control-btn,
-    .theme-btn {
+    .theme-btn,
+    .building-btn,
+    .structure-button,
+    button {
+        padding: 6px 12px;
+        font-size: 0.9em;
+        min-height: 32px;
+        border-radius: 6px;
+    }
+
+    .topbar {
+        height: 55px;
+        padding: 8px;
+    }
+}
+
+@media (min-width: 769px) {
+    .settings-panel,
+    .modal-content,
+    .feedback-message,
+    .panel-tabs,
+    .tab-content,
+    .start-buttons-panel {
+        width: min(75%, 500px);
+        padding: 20px;
+        gap: 12px;
+    }
+
+    .tab-btn,
+    .control-btn,
+    .theme-btn,
+    .building-btn,
+    .structure-button,
+    button {
         padding: 8px 16px;
         font-size: 1em;
+        min-height: 40px;
+        border-radius: 8px;
+    }
+
+    .topbar {
+        height: 65px;
+        padding: 16px;
     }
 }
 
