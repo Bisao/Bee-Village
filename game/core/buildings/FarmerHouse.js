@@ -12,8 +12,13 @@ export default class FarmerHouse extends Building {
 
     create(worldX, worldY) {
         super.create(worldX, worldY);
-        this.setupProduction();
         this.setupInteractions();
+        
+        this.scene.time.delayedCall(1000, () => {
+            const farmer = new Farmer(this.scene, this.gridX, this.gridY);
+            farmer.create(worldX, worldY);
+            this.npc = farmer;
+        });
     }
 
     setupProduction() {
