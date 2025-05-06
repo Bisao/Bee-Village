@@ -54,16 +54,28 @@ export default class BaseNPC {
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
         
-        // Movimento inicial para fora da casa
-        const newY = this.gridY + 1;
-        if (this.scene.grid.isValidPosition(this.gridX, newY) && 
-            !this.scene.isTileOccupied(this.gridX, newY)) {
-            this.moveTo(this.gridX, newY);
-        }
+        // Esconder sprite inicialmente
+        this.sprite.setVisible(false);
         
-        if (this.isAutonomous) {
-            this.startAutonomousMovement();
-        }
+        // Atrasar movimento para fora da casa em 10 segundos
+        this.scene.time.delayedCall(10000, () => {
+            const newY = this.gridY + 1;
+            if (this.scene.grid.isValidPosition(this.gridX, newY) && 
+                !this.scene.isTileOccupied(this.gridX, newY)) {
+                this.moveTo(this.gridX, newY);
+                // Sprite só fica visível quando estiver fora da casa
+                this.scene.tweens.add({
+                    targets: this.sprite,
+                    alpha: { from: 0, to: 1 },
+                    duration: 500,
+                    onStart: () => this.sprite.setVisible(true)
+                });
+            }
+            
+            if (this.isAutonomous) {
+                this.startAutonomousMovement();
+            }
+        });
     }
 
     showControls() {
