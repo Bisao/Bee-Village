@@ -127,10 +127,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Settings panel controls
     settingsButton?.addEventListener('click', () => {
-        if (startScreen && startScreen.style.display !== 'none') {
-            settingsPanel.style.display = 'flex';
-            settingsPanel.classList.add('visible');
-        }
+        settingsPanel.style.display = 'flex';
+        settingsPanel.classList.add('visible');
     });
 
     backButton?.addEventListener('click', () => {
