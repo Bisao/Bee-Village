@@ -1,8 +1,4 @@
-const { Scene, Scale, Game, AUTO } = Phaser;
-import MainScene from './scenes/MainScene.js';
-import StartScene from './scenes/StartScene.js';
 
-// Game configuration
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -33,7 +29,6 @@ function applyThemeChanges(theme, save = false) {
     document.documentElement.setAttribute('data-theme', theme);
     document.documentElement.classList.add('theme-loaded');
 
-    // Update theme emojis
     document.querySelectorAll('.theme-emoji, .theme-icon').forEach(element => {
         if (element) element.textContent = emoji;
     });
@@ -44,19 +39,15 @@ function applyThemeChanges(theme, save = false) {
     }
 }
 
-// Initialize UI
 document.addEventListener('DOMContentLoaded', () => {
-    // Apply initial theme
     applyThemeChanges(currentTheme, false);
     document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
 
-    // Show theme icon immediately
     const themeIcon = document.querySelector('.theme-icon');
     if (themeIcon) {
         themeIcon.className = 'theme-icon play visible';
     }
 
-    // Setup theme buttons
     const themeButtons = document.querySelectorAll('.theme-btn');
     const applyThemeBtn = document.getElementById('apply-theme');
     let previewTheme = currentTheme;
@@ -76,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
         applyThemeBtn.classList.remove('visible');
     });
 
-    // Show bee icon
     setTimeout(() => {
         const beeIcon = document.querySelector('.bee-icon');
         if (beeIcon) {
@@ -84,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }, 100);
 
-    // Handle play button
     let isTransitioning = false;
     document.getElementById('play-button')?.addEventListener('click', () => {
         if (isTransitioning) return;
@@ -97,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     });
 
-    // Handle settings button
     document.getElementById('settings-button')?.addEventListener('click', () => {
         if (isTransitioning) return;
         moveBeeToButton('settings');
@@ -107,7 +95,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     });
 
-    // Handle back button
     document.querySelector('.back-button')?.addEventListener('click', () => {
         document.getElementById('settings-panel')?.classList.remove('visible');
         const beeIcon = document.querySelector('.theme-icon');
@@ -117,7 +104,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Helper functions
 function moveBeeToButton(buttonType) {
     const beeIcon = document.querySelector('.theme-icon');
     if (beeIcon) {
@@ -156,5 +142,4 @@ function startGameWithLoading() {
     }, 50);
 }
 
-
-export default config;
+export { config, startGameWithLoading };
