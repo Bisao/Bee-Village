@@ -12,7 +12,23 @@ placeBuilding(gridX, gridY, worldX, worldY) {
         }
     };
 
-    //rest of the placeBuilding function would go here.
+    try {
+        if (!this.selectedBuilding) {
+            console.log('No building selected');
+            return;
+        }
+
+        const BuildingClass = this.getBuildingClass(this.selectedBuilding);
+        if (!BuildingClass) {
+            console.error('Invalid building type:', this.selectedBuilding);
+            return;
+        }
+
+        const building = new BuildingClass(this, gridX, gridY);
+        building.create(worldX, worldY);
+    } catch (error) {
+        console.error('Error placing building:', error);
+    }
 }
 
 autoSave() {
