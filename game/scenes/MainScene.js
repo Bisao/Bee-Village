@@ -159,25 +159,7 @@ export default class MainScene extends Phaser.Scene {
                     if (button) {
                         button.addEventListener('touchstart', (e) => {
                             e.preventDefault();
-                            if (this.currentControlledNPC && !this.currentControlledNPC.isAutonomous) {
-                                const direction = {
-                                    'W': { x: 0, y: -1 },
-                                    'S': { x: 0, y: 1 },
-                                    'A': { x: -1, y: 0 },
-                                    'D': { x: 1, y: 0 }
-                                }[key];
-
-                                if (direction) {
-                                    const newX = this.currentControlledNPC.gridX + direction.x;
-                                    const newY = this.currentControlledNPC.gridY + direction.y;
-
-                                    if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
-                                        this.moveNPCTo(this.currentControlledNPC, newX, newY);
-                                    }
-                                }
-                            } else {
-                                this.keys[key.toLowerCase()].isDown = true;
-                            }
+                            this.keys[key.toLowerCase()].isDown = true;
                         });
                         button.addEventListener('touchend', (e) => {
                             e.preventDefault();
@@ -737,65 +719,6 @@ export default class MainScene extends Phaser.Scene {
         });
     }
     createFarmerNPC(houseX, houseY, worldX, worldY) {
-        // Load farmer sprites
-        for (let i = 1; i <= 12; i++) {
-            const key = `farmer${i}`;
-            this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
-        }
-
-        this.load.once('complete', () => {
-            // Create animations
-            this.anims.create({
-                key: 'farmer_up',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_down',
-                frames: [
-                    { key: 'farmer9' },
-                    { key: 'farmer10' },
-                    { key: 'farmer11' },
-                    { key: 'farmer12' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_left',
-                frames: [
-                    { key: 'farmer5' },
-                    { key: 'farmer6' },
-                    { key: 'farmer7' },
-                    { key: 'farmer8' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_right',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-        });
-
-        this.load.start();
-
         const buildingType = this.selectedBuilding;
         const nameData = this.professionNames[buildingType];
         const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
@@ -803,7 +726,7 @@ export default class MainScene extends Phaser.Scene {
 
         const npc = {
             sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-            nameText: this.add.text(worldX, worldY - 64, fullName, {
+            nameText: this.add.text(worldX, worldY - 48, fullName, {
                 fontSize: '14px',
                 fill: '#ffffff',
                 stroke: '#000000',
@@ -872,10 +795,7 @@ export default class MainScene extends Phaser.Scene {
         this.tweens.add({
             targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
-            y: {
-                sprite: this.cameras.main.centerY + tileY - 32,
-                nameText: this.cameras.main.centerY + tileY - 64
-            },
+            y: this.cameras.main.centerY + tileY - 32,
             duration: 600,
             ease: 'Linear',
             onComplete: () => {
