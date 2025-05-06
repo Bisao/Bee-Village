@@ -782,6 +782,12 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
+        // Set current NPC back to autonomous if exists
+        if (this.currentControlledNPC && this.currentControlledNPC !== npc) {
+            this.currentControlledNPC.isAutonomous = true;
+            this.startNPCMovement(this.currentControlledNPC);
+        }
+
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
         modal.innerHTML = `
@@ -806,6 +812,7 @@ export default class MainScene extends Phaser.Scene {
 
         modal.querySelector('#controlled').onclick = () => {
             npc.isAutonomous = false;
+            this.currentControlledNPC = npc;
             this.enablePlayerControl(npc);
             modal.remove();
         };
