@@ -966,8 +966,10 @@ export default class MainScene extends Phaser.Scene {
             this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
             // Show controls panel on mobile
-            if (this.inputManager.isMobile) {
-                document.getElementById('controls-panel').style.display = 'flex';
+            const controlsPanel = document.getElementById('controls-panel');
+            if (this.inputManager.isMobile && controlsPanel) {
+                controlsPanel.style.display = 'flex';
+                controlsPanel.style.zIndex = '2000';
             }
             modal.remove();
         };
