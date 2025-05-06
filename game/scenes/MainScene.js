@@ -542,11 +542,6 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-            // Verifica se é uma casa de fazendeiro
-            if (this.selectedBuilding === 'farmerHouse') {
-                this.createFarmerNPC(gridX, gridY, worldX, worldY);
-            }
-
             if (!this.grid.isValidPosition(gridX, gridY)) {
                 this.showFeedback('Posição inválida', false);
                 return;
@@ -556,6 +551,32 @@ export default class MainScene extends Phaser.Scene {
             if (this.grid.buildingGrid[key]) {
                 this.showFeedback('Posição já ocupada', false);
                 return;
+            }
+
+            // Create building first
+            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
+            if (!building) {
+                throw new Error('Failed to create building sprite: sprite is null');
+            }
+
+            // Configure building
+            const scale = (this.grid.tileWidth * 1.4) / building.width;
+            building.setScale(scale);
+            building.setOrigin(0.5, 0.75);
+            building.setDepth(gridY + 1);
+
+            // Register in grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+
+            // Create farmer NPC after building is registered
+            if (this.selectedBuilding === 'farmerHouse') {
+                this.createFarmerNPC(gridX, gridY, worldX, worldY);
             }
 
             // Usa as coordenadas exatas passadas como parâmetro
