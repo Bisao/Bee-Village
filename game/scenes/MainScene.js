@@ -1,13 +1,11 @@
-import Grid from '../scenes/components/Grid.js';
-import InputManager from '../scenes/components/InputManager.js';
+import Grid from './components/Grid.js';
+import InputManager from './components/InputManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
-
-        // Emoji mapping for professions
         this.professionEmojis = {
             'Farmer': '🥕',
             'Miner': '⛏️',
