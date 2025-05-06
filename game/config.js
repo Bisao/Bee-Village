@@ -114,7 +114,28 @@ function moveBeeToButton(buttonType) {
     }
 }
 
+function checkConsoleErrors() {
+    const errors = [];
+    const originalError = console.error;
+    
+    console.error = function(...args) {
+        errors.push(args.join(' '));
+        originalError.apply(console, args);
+    };
+
+    setTimeout(() => {
+        if (errors.length > 0) {
+            console.log('Erros encontrados após 5 segundos:');
+            errors.forEach(error => console.log('- ' + error));
+        } else {
+            console.log('Nenhum erro encontrado após 5 segundos.');
+        }
+        console.error = originalError;
+    }, 5000);
+}
+
 function startGameWithLoading() {
+    checkConsoleErrors();
     let loadingProgress = 0;
     const progressBar = document.querySelector('.loading-progress');
     const loadingInterval = setInterval(() => {
