@@ -735,9 +735,9 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
-    createFarmerNPC(houseX, houseY, worldX, worldY) {
-        // Import BaseNPC if not already imported
-        import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
+    async createFarmerNPC(houseX, houseY, worldX, worldY) {
+        try {
+            const { default: BaseNPC } = await import('./components/BaseNPC.js');
             // Get building type and name data
             const buildingKey = `${houseX},${houseY}`;
             const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
@@ -766,7 +766,9 @@ export default class MainScene extends Phaser.Scene {
                 house.setInteractive();
                 house.on('pointerdown', () => this.showNPCControls(npc));
             }
-        });
+        } catch (error) {
+            console.error('Erro ao criar NPC:', error);
+        }
     }
 
     startNPCMovement(npc) {
