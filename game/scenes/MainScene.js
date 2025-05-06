@@ -739,14 +739,13 @@ export default class MainScene extends Phaser.Scene {
         const moveNPC = () => {
             if (!npc.isAutonomous || npc.isMoving) return;
 
-            const directions = this.getAvailableDirections(npc.gridX, npc.gridY);
+            const directions = this.getAvailableDirections();
             if (directions.length === 0) return;
 
             const randomDir = directions[Math.floor(Math.random() * directions.length)];
             this.moveNPCTo(npc, npc.gridX + randomDir.x, npc.gridY + randomDir.y);
         };
 
-        // Move a cada 2 segundos
         this.time.addEvent({
             delay: 2000,
             callback: moveNPC,
