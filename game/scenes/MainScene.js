@@ -78,50 +78,6 @@ export default class MainScene extends Phaser.Scene {
                 frames: [
                     { key: 'farmer1' },
                     { key: 'farmer2' },
-                    { key: 'farmer3' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_down',
-                frames: [
-                    { key: 'farmer9' },
-                    { key: 'farmer10' },
-                    { key: 'farmer11' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_left',
-                frames: [
-                    { key: 'farmer5' },
-                    { key: 'farmer6' },
-                    { key: 'farmer7' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_right',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_up',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
                     { key: 'farmer3' },
                     { key: 'farmer4' }
                 ],
@@ -985,8 +941,7 @@ export default class MainScene extends Phaser.Scene {
                 }
             }
             
-            this.showFeedback('Modo autônomo ativado', true);
-            modal.remove();wFeedback(`${npc.config.name} está em modo autônomo`, true);
+            this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
         };
 
