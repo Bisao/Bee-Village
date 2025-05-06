@@ -397,6 +397,20 @@ export default class MainScene extends Phaser.Scene {
                 }
             });
         });
+
+        // Add toggle panel functionality
+        const toggleButton = document.getElementById('toggleStructures');
+        const sidePanel = document.getElementById('side-panel');
+        
+        if (toggleButton && sidePanel) {
+            toggleButton.addEventListener('click', () => {
+                const isVisible = sidePanel.style.display === 'flex';
+                sidePanel.style.display = isVisible ? 'none' : 'flex';
+                if (!isVisible) {
+                    this.clearBuildingSelection();
+                }
+            });
+        }
     }
 
     placeEnvironmentObjects() {
