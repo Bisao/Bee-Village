@@ -359,24 +359,45 @@ html, body {
 
 @media (max-width: 768px) {
     #side-panel {
-        width: 95%;
+        width: min(95%, 600px);
         top: 70px;
         padding: 8px;
+        max-height: 60vh;
     }
 
     .panel-tabs {
         padding: clamp(5px, 1.5vw, 8px);
         gap: clamp(4px, 1vw, 6px);
+        flex-wrap: nowrap;
+        overflow-x: auto;
     }
 
     .tab-btn {
         padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 12px);
         font-size: clamp(12px, 3vw, 14px);
+        white-space: nowrap;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(auto-fit, minmax(min(80px, 20vw), 1fr));
+        gap: 2vw;
+        padding: 2vw;
     }
 
     .building-btn {
         aspect-ratio: 1;
-        padding: clamp(5px, 1vw, 8px);
+        padding: min(2vw, 8px);
+    }
+}
+
+@media (max-width: 480px) {
+    #side-panel {
+        width: 98%;
+        max-height: 70vh;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(auto-fit, minmax(min(60px, 18vw), 1fr));
     }
 }
 
