@@ -1,4 +1,5 @@
-export default class StartScene extends Phaser.Scene {
+
+class StartScene extends Phaser.Scene {
     constructor() {
         super('StartScene');
     }
@@ -21,7 +22,6 @@ export default class StartScene extends Phaser.Scene {
             fontFamily: 'Arial'
         }).setOrigin(0.5);
 
-
         // Botão de Play
         const playButton = this.add.rectangle(centerX, centerY + 50, 200, 60, 0x4CAF50);
         const playText = this.add.text(centerX, centerY + 50, 'Jogar', {
@@ -37,3 +37,5 @@ export default class StartScene extends Phaser.Scene {
         });
     }
 }
+
+window.StartScene = StartScene;

@@ -1,4 +1,3 @@
-import StartScene from '/game/scenes/StartScene.js';
 import MainScene from '/game/scenes/MainScene.js';
 
 const config = {
