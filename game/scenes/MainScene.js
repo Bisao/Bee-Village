@@ -837,6 +837,10 @@ export default class MainScene extends Phaser.Scene {
                 npc.sprite.setDepth(houseY + 2);
                 npc.nameText.setDepth(houseY + 3);
 
+                // Make NPC sprite interactive
+                npc.sprite.setInteractive();
+                npc.sprite.on('pointerdown', () => this.showNPCControls(npc));
+
                 // Armazena referência do NPC
                 this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
 
