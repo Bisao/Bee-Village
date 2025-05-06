@@ -152,6 +152,23 @@ function showFeedback(message, duration = 2000) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Tab switching functionality
+    const tabButtons = document.querySelectorAll('.tab-btn');
+    
+    tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            if (!button.disabled) {
+                // Remove active class from all buttons and tabs
+                document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+                
+                // Add active class to clicked button and corresponding tab
+                button.classList.add('active');
+                const tabId = `${button.dataset.tab}-tab`;
+                document.getElementById(tabId)?.classList.add('active');
+            }
+        });
+    });
     const menuButton = document.getElementById('togglePanel');
     const settingsPanel = document.getElementById('settings-panel');
     const backButton = document.querySelector('.back-button');

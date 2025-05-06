@@ -297,8 +297,8 @@ html, body {
   top: 75px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
-  max-width: 800px;
+  width: 90%;
+  max-width: 900px;
   height: auto;
   max-height: calc(100vh - 95px);
   background-color: var(--panel-background);
@@ -317,6 +317,95 @@ html, body {
 
 #side-panel::-webkit-scrollbar {
     display: none;
+}
+
+.panel-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 10px;
+    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 15px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.tab-btn {
+    padding: 8px 16px;
+    background: var(--accent-color);
+    border: 1px solid var(--primary-color);
+    border-radius: 20px;
+    color: var(--text-color);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.tab-btn.active {
+    background: var(--primary-color);
+    color: var(--button-text);
+}
+
+.tab-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.tab-content {
+    display: none;
+    padding: 10px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    #side-panel {
+        width: 95%;
+        top: 70px;
+        padding: 10px;
+    }
+
+    .panel-tabs {
+        padding: 8px;
+        gap: 6px;
+    }
+
+    .tab-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 10px;
+    }
+
+    .building-btn {
+        aspect-ratio: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    #side-panel {
+        width: 98%;
+        padding: 5px;
+    }
+
+    .panel-tabs {
+        padding: 5px;
+        gap: 4px;
+    }
+
+    .tab-btn {
+        padding: 4px 10px;
+        font-size: 12px;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 8px;
+    }
 }
 
 .building-list {
