@@ -63,15 +63,15 @@ export default class MainScene extends Phaser.Scene {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
 
-        // Load all farmer frames first
+        const frames = [];
         for (let i = 1; i <= 12; i++) {
             const key = `farmer${i}`;
             if (!this.textures.exists(key)) {
                 this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
             }
+            frames.push({ key });
         }
 
-        // Create animations after assets are loaded
         this.load.once('complete', () => {
             this.anims.create({
                 key: 'farmer_walk',
@@ -764,14 +764,60 @@ export default class MainScene extends Phaser.Scene {
 
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
-            
-            // Adiciona interatividade à casa
-            const house = this.grid.buildingGrid[buildingKey].sprite;
-            if (house) {
-                house.setInteractive();
-                house.on('pointerdown', () => this.showNPCControls(npc));
-            }
         });
+
+
+        const professionEmojis = {
+            'Farmer': '🥕',
+            'Miner': '⛏️',
+            'Lumberjack': '🪓',
+            'Fisher': '🎣'
+        };
+
+        const buildingKey = `${houseX},${houseY}`;
+        const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
+        const nameData = this.professionNames[buildingType];
+        const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
+        const emoji = nameData ? professionEmojis[nameData.prefix] || '👤' : '👤';
+        const fullName = `${emoji} ${randomName}`;
+
+        const npc = {
+            sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
+            nameText: this.add.text(worldX, worldY - 64, fullName, {
+                fontSize: '14px',
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 4,
+                resolution: 2
+            }).setOrigin(0.5),
+            gridX: houseX,
+            gridY: houseY,
+            isAutonomous: true,
+            housePosition: {x: houseX, y: houseY},
+            isMoving: false,
+            name: fullName
+        };
+
+        npc.sprite.setScale(0.8);
+        npc.sprite.setDepth(houseY + 2);
+        npc.nameText.setDepth(houseY + 3);
+
+        // Make NPC sprite interactive
+        npc.sprite.setInteractive();
+        npc.sprite.on('pointerdown', () => this.showNPCControls(npc));
+
+        // Armazena referência do NPC
+        this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
+
+        // Timer para começar movimento
+        this.time.delayedCall(10000, () => {
+            this.startNPCMovement(npc);
+        });
+
+        // Adiciona interatividade à casa
+        const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
+        house.setInteractive();
+        house.on('pointerdown', () => this.showNPCControls(npc));
     }
 
     startNPCMovement(npc) {
