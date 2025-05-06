@@ -120,6 +120,23 @@ function showFeedback(message, duration = 2000) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const settingsButton = document.getElementById('settings-button');
+    const settingsPanel = document.getElementById('settings-panel');
+    const backButton = document.querySelector('.back-button');
+
+    // Settings panel controls
+    settingsButton?.addEventListener('click', () => {
+        settingsPanel.style.display = 'flex';
+        settingsPanel.classList.add('visible');
+    });
+
+    backButton?.addEventListener('click', () => {
+        settingsPanel.classList.remove('visible');
+        setTimeout(() => {
+            settingsPanel.style.display = 'none';
+        }, 300);
+    });
+
     // Tab switching functionality
     const tabButtons = document.querySelectorAll('.tab-btn');
 
@@ -137,9 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    const menuButton = document.getElementById('settings-button'); // Added settings button ID
-    const settingsPanel = document.getElementById('settings-panel');
-    const backButton = document.querySelector('.back-button');
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
@@ -177,18 +191,6 @@ document.addEventListener('DOMContentLoaded', function() {
             defaultZoom: defaultZoomControl.value
         });
         updateDefaultZoom(defaultZoomControl.value);
-    });
-
-    menuButton.addEventListener('click', () => {
-        settingsPanel.classList.add('visible');
-        settingsPanel.style.display = 'flex';
-    });
-
-    backButton.addEventListener('click', () => {
-        settingsPanel.classList.remove('visible');
-        setTimeout(() => {
-            settingsPanel.style.display = 'none';
-        }, 300);
     });
 
     structuresBtn.addEventListener('click', () => {
