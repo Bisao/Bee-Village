@@ -1,6 +1,6 @@
 hidden=[".config"]
 modules = ["nodejs-20", "web"]
-run = "npm run dev"
+run = "npm run"
 
 [nix]
 channel = "stable-24_05"
@@ -8,7 +8,7 @@ channel = "stable-24_05"
 [deployment]
 publicDir = "/"
 deploymentTarget = "static"
-run = ["sh", "-c", "npm run dev"]
+run = ["sh", "-c", "npm run"]
 
 [workflows]
 runButton = "Run Game"
