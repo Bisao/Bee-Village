@@ -1,3 +1,4 @@
+const { Scene, Scale, Game, AUTO } = Phaser;
 import MainScene from './scenes/MainScene.js';
 import StartScene from './scenes/StartScene.js';
 
