@@ -932,33 +932,15 @@ export default class MainScene extends Phaser.Scene {
         modal.querySelector('#controlled').onclick = () => {
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
-            
-            // Ajusta zoom e faz câmera seguir o NPC suavemente
-            this.tweens.add({
-                targets: this.cameras.main,
-                zoom: 1.5,
-                duration: 500,
-                ease: 'Power2'
-            });
-            
-            // Configura o seguimento suave da câmera apenas durante movimento
-            this.cameraFollowHandler = () => {
-                const controls = npc.controls || {};
-                const isMoving = Object.values(controls).some(key => key?.isDown);
-                
-                if (isMoving) {
-                    this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
-                } else {
-                    this.cameras.main.stopFollow();
-                }
-            };
-            
-            this.events.on('update', this.cameraFollowHandler);
+            // Make camera follow the NPC
+            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
             // Show controls panel on mobile
             const controlsPanel = document.getElementById('controls-panel');
             if (this.inputManager.isMobile && controlsPanel) {
-                controlsPanel.style.display = 'flex';
+                controlsPanel.style.display = 'flex !important';
+                controlsPanel.style.visibility = 'visible';
+                controlsPanel.style.pointerEvents = 'auto';
             }
             modal.remove();
         };
@@ -978,12 +960,6 @@ export default class MainScene extends Phaser.Scene {
     cleanupNPCControls() {
         if (this.currentControlledNPC) {
             const previousNPC = this.currentControlledNPC;
-
-            // Remove camera follow handler
-            if (this.cameraFollowHandler) {
-                this.events.off('update', this.cameraFollowHandler);
-                this.cameraFollowHandler = null;
-            }
 
             // Reset NPC state
             previousNPC.isAutonomous = true;
