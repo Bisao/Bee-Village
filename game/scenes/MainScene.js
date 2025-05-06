@@ -726,7 +726,7 @@ export default class MainScene extends Phaser.Scene {
 
         const npc = {
             sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-            nameText: this.add.text(worldX, worldY - 48, fullName, {
+            nameText: this.add.text(worldX, worldY - 64, fullName, {
                 fontSize: '14px',
                 fill: '#ffffff',
                 stroke: '#000000',
@@ -795,7 +795,10 @@ export default class MainScene extends Phaser.Scene {
         this.tweens.add({
             targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
-            y: this.cameras.main.centerY + tileY - 32,
+            y: {
+                sprite: this.cameras.main.centerY + tileY - 32,
+                nameText: this.cameras.main.centerY + tileY - 64
+            },
             duration: 600,
             ease: 'Linear',
             onComplete: () => {
