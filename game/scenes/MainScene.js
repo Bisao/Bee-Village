@@ -813,6 +813,7 @@ export default class MainScene extends Phaser.Scene {
 
         // First step down if possible
         const firstStep = () => {
+            if (!npc.isAutonomous) return;
             const newY = npc.gridY + 1;
             if (this.grid.isValidPosition(npc.gridX, newY) && !this.isTileOccupied(npc.gridX, newY)) {
                 this.moveNPCTo(npc, npc.gridX, newY);
@@ -832,9 +833,14 @@ export default class MainScene extends Phaser.Scene {
             this.moveNPCTo(npc, npc.gridX + randomDir.x, npc.gridY + randomDir.y);
         };
 
-        this.time.addEvent({
+        // Store timer reference for cleanup
+        npc.movementTimer = this.time.addEvent({
             delay: 2000,
-            callback: moveNPC,
+            callback: () => {
+                if (npc.isAutonomous) {
+                    moveNPC();
+                }
+            },
             loop: true
         });
     }
@@ -948,6 +954,12 @@ export default class MainScene extends Phaser.Scene {
         modal.querySelector('#autonomous').onclick = (e) => {
             e.stopPropagation();
             npc.isAutonomous = true;
+            
+            // Limpar controles existentes
+            if (npc.movementTimer) {
+                npc.movementTimer.remove();
+            }
+            
             this.cameras.main.stopFollow();
             
             // Ajustar zoom padrão
@@ -957,7 +969,9 @@ export default class MainScene extends Phaser.Scene {
                 duration: 500,
                 ease: 'Power2',
                 onComplete: () => {
-                    this.startNPCMovement(npc);
+                    if (npc.isAutonomous) {
+                        this.startNPCMovement(npc);
+                    }
                 }
             });
             
