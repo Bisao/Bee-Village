@@ -319,16 +319,17 @@ html, body {
 
 .panel-tabs {
     display: flex;
-    gap: 8px;
-    padding: 10px;
+    gap: 12px;
+    padding: 15px;
     border-bottom: 2px solid var(--primary-color);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    justify-content: center;
 }
 
 .tab-btn {
-    padding: 8px 16px;
+    padding: 10px 20px;
     background: var(--accent-color);
     border: 1px solid var(--primary-color);
     border-radius: 20px;
@@ -336,6 +337,9 @@ html, body {
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.3s ease;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
 }
 
 .tab-btn.active {
@@ -420,11 +424,14 @@ html, body {
 
 .section-title {
     color: var(--text-color);
-    margin: 20px 0 10px;
-    padding: 0 10px;
-    font-size: 1.2em;
+    margin: 25px 0 15px;
+    padding: 0 15px;
+    font-size: 1.3em;
+    font-weight: 600;
     border-bottom: 2px solid var(--primary-color);
-    padding-bottom: 5px;
+    padding-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .building-list {
@@ -1205,7 +1212,6 @@ html, body {
 
 .inventory-slot.empty {
     opacity: 0.5;
-};
 }
 
 .control-btn:hover {
@@ -1214,9 +1220,7 @@ html, body {
 }
 
 .control-btn.active {
-    background: var(--primary-color);
-    color: var(--button-text);
-    transform: scale(1.02);
+    background: var(--success-color);
 }
 
 .control-btn {
