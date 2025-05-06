@@ -33,7 +33,6 @@ externalPort = 8081
 [[ports]]
 localPort = 8082
 externalPort = 3000
-exposeLocalhost = true
 
 [[ports]]
 localPort = 8083
