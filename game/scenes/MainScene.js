@@ -859,6 +859,17 @@ export default class MainScene extends Phaser.Scene {
     startNPCMovement(npc) {
         if (!npc.isAutonomous) return;
 
+        // First step to the left if possible
+        const leftStep = () => {
+            const newX = npc.gridX - 1;
+            if (this.grid.isValidPosition(newX, npc.gridY) && !this.isTileOccupied(newX, npc.gridY)) {
+                this.moveNPCTo(npc, newX, npc.gridY);
+            }
+        };
+
+        // Execute initial left step
+        leftStep();
+
         const moveNPC = () => {
             if (!npc.isAutonomous || npc.isMoving) return;
 
@@ -939,6 +950,7 @@ export default class MainScene extends Phaser.Scene {
 
         modal.querySelector('#autonomous').onclick = () => {
             npc.isAutonomous = true;
+            this.cameras.main.stopFollow();
             this.startNPCMovement(npc);
             modal.remove();
         };
@@ -946,6 +958,8 @@ export default class MainScene extends Phaser.Scene {
         modal.querySelector('#controlled').onclick = () => {
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
+            // Make camera follow the NPC
+            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
             modal.remove();
         };
