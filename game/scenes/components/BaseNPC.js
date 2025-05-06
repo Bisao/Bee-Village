@@ -25,12 +25,15 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-
+        
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
+        
+        // Verificar se está na posição inicial (casa)
+        this.checkIfInHouse();
 
         // Criar texto do nome
         this.nameText = this.scene.add.text(worldX, worldY - 64, 
@@ -96,11 +99,21 @@ export default class BaseNPC {
         this.moveTo(this.gridX + directionToUse.x, this.gridY + directionToUse.y);
     }
 
+    checkIfInHouse() {
+        const key = `${this.gridX},${this.gridY}`;
+        const currentTile = this.scene.grid.buildingGrid[key];
+        const isInHouse = currentTile && currentTile.type === 'building';
+        this.sprite.setVisible(!isInHouse);
+    }
+
     moveTo(newX, newY) {
         if (this.isMoving) return;
 
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
         this.isMoving = true;
+
+        // Mostra o sprite ao sair da casa
+        this.sprite.setVisible(true);
 
         // Define frames da animação baseado na direção
         let frameRange;
@@ -146,6 +159,7 @@ export default class BaseNPC {
                 this.nameText.setDepth(newY + 3);
                 this.isMoving = false;
                 this.sprite.stop();
+                this.checkIfInHouse();
             }
         });
     }
