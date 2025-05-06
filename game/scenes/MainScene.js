@@ -8,15 +8,15 @@ export default class MainScene extends Phaser.Scene {
         this.previewBuilding = null;
         this.professionNames = {
             farmerHouse: {
-                prefix: 'Farmer',
+                prefix: '🥕',
                 names: ['John', 'Peter', 'Mary', 'Lucas', 'Emma', 'Sofia', 'Miguel', 'Julia']
             },
             fishermanHouse: {
-                prefix: 'Fisher',
+                prefix: '🎣',
                 names: ['Jack', 'Tom', 'Nina', 'Marco', 'Ana', 'Leo', 'Luna', 'Kai']
             },
             minerHouse: {
-                prefix: 'Miner',
+                prefix: '⛏️',
                 names: ['Max', 'Sam', 'Alex', 'Cole', 'Ruby', 'Jade', 'Rocky', 'Crystal']
             }
         };
