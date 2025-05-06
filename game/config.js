@@ -117,7 +117,7 @@ function moveBeeToButton(buttonType) {
 function checkConsoleErrors() {
     const errors = [];
     const originalError = console.error;
-    
+
     console.error = function(...args) {
         errors.push(args.join(' '));
         originalError.apply(console, args);
