@@ -955,7 +955,41 @@ html, body {
 .npc-profession {
     color: var(--text-color);
     opacity: 0.8;
-    margin: 0 0 15px 0;
+    margin: 0 0 8px 0;
+}
+
+.npc-level-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 10px;
+}
+
+.level-text {
+    color: var(--text-color);
+    font-weight: bold;
+    font-size: 0.9em;
+}
+
+.xp-bar {
+    width: 100%;
+    height: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.xp-progress {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.xp-text {
+    color: var(--text-color);
+    font-size: 0.8em;
+    opacity: 0.8;
+    text-align: right;
 }
 
 .mode-info {

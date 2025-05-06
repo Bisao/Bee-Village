@@ -15,6 +15,9 @@ export default class BaseNPC {
             spritesheet: config.spritesheet || 'farmer',
             scale: config.scale || 0.8,
             movementDelay: config.movementDelay || 2000,
+            level: config.level || 1,
+            xp: config.xp || 0,
+            maxXp: config.maxXp || 100,
             tools: this.getToolsByProfession(config.profession),
             ...config
         };

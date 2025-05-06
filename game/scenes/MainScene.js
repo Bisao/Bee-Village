@@ -863,6 +863,13 @@ export default class MainScene extends Phaser.Scene {
                     <div class="npc-info">
                         <h3>${npc.config.name}</h3>
                         <p class="npc-profession">${npc.config.profession}</p>
+                        <div class="npc-level-info">
+                            <span class="level-text">Nível ${npc.config.level}</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
+                            </div>
+                            <span class="xp-text">${npc.config.xp}/${npc.config.maxXp} XP</span>
+                        </div>
                     </div>
                 </div>
 
