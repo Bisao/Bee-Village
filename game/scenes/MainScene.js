@@ -800,8 +800,10 @@ export default class MainScene extends Phaser.Scene {
 
         modal.querySelector('#autonomous').onclick = () => {
             npc.isAutonomous = true;
-            this.startNPCMovement(npc);
             modal.remove();
+            this.time.delayedCall(500, () => {
+                this.startNPCMovement(npc);
+            });
         };
 
         modal.querySelector('#controlled').onclick = () => {
