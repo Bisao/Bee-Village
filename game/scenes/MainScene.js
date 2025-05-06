@@ -995,8 +995,15 @@ export default class MainScene extends Phaser.Scene {
                 previousNPC.movementTimer.remove();
             }
             
-            // Remove all keyboard controls
-            this.input.keyboard.removeAllListeners('keydown');
+            // Remove specific NPC's controls and update handler
+            if (previousNPC.controls) {
+                Object.values(previousNPC.controls).forEach(key => key.destroy());
+                previousNPC.controls = null;
+            }
+            if (previousNPC.updateHandler) {
+                this.events.off('update', previousNPC.updateHandler);
+                previousNPC.updateHandler = null;
+            }
             
             // Clear reference before starting movement
             this.currentControlledNPC = null;
@@ -1040,8 +1047,8 @@ export default class MainScene extends Phaser.Scene {
         // Remove previous keyboard listeners if they exist
         this.input.keyboard.removeAllListeners('keydown');
         
-        // Setup new keyboard controls
-        this.keys = this.input.keyboard.addKeys({
+        // Create unique controls for this NPC
+        npc.controls = this.input.keyboard.addKeys({
             w: Phaser.Input.Keyboard.KeyCodes.W,
             a: Phaser.Input.Keyboard.KeyCodes.A,
             s: Phaser.Input.Keyboard.KeyCodes.S,
@@ -1057,39 +1064,55 @@ export default class MainScene extends Phaser.Scene {
                 'mobile-right': 'd'
             };
 
+            // Remove existing mobile controls if any
+            Object.keys(buttons).forEach(className => {
+                const button = document.querySelector(`.${className}`);
+                if (button) {
+                    button.replaceWith(button.cloneNode(true));
+                }
+            });
+
+            // Add new mobile controls for this NPC
             Object.entries(buttons).forEach(([className, key]) => {
                 const button = document.querySelector(`.${className}`);
                 if (button) {
                     button.addEventListener('touchstart', (e) => {
                         e.preventDefault();
-                        this.keys[key].isDown = true;
+                        if (this.currentControlledNPC === npc) {
+                            npc.controls[key].isDown = true;
+                        }
                     });
                     button.addEventListener('touchend', (e) => {
                         e.preventDefault();
-                        this.keys[key].isDown = false;
+                        if (this.currentControlledNPC === npc) {
+                            npc.controls[key].isDown = false;
+                        }
                     });
                 }
             });
         }
 
-        // Update the update method to handle controlled NPC movement
-        this.events.on('update', () => {
-            if (!npc || npc.isMoving || npc.isAutonomous) return;
+        // Create unique update handler for this NPC
+        npc.updateHandler = () => {
+            if (!npc || npc.isMoving || npc.isAutonomous || this.currentControlledNPC !== npc) return;
 
             let newX = npc.gridX;
             let newY = npc.gridY;
 
-            if (this.keys.w.isDown) newY--;
-            else if (this.keys.s.isDown) newY++;
-            else if (this.keys.a.isDown) newX--;
-            else if (this.keys.d.isDown) newX++;
+            if (npc.controls.w.isDown) newY--;
+            else if (npc.controls.s.isDown) newY++;
+            else if (npc.controls.a.isDown) newX--;
+            else if (npc.controls.d.isDown) newX++;
 
             if (newX !== npc.gridX || newY !== npc.gridY) {
                 if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
                     this.moveNPCTo(npc, newX, newY);
                 }
             }
-        });
+        };
+
+        // Add update handler
+        this.events.on('update', npc.updateHandler);
     }
 
 }
