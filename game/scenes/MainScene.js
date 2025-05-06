@@ -952,6 +952,10 @@ export default class MainScene extends Phaser.Scene {
             npc.isAutonomous = true;
             this.cameras.main.stopFollow();
             this.startNPCMovement(npc);
+            // Hide controls panel on mobile
+            if (this.inputManager.isMobile) {
+                document.getElementById('controls-panel').style.display = 'none';
+            }
             modal.remove();
         };
 
@@ -961,6 +965,10 @@ export default class MainScene extends Phaser.Scene {
             // Make camera follow the NPC
             this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
+            // Show controls panel on mobile
+            if (this.inputManager.isMobile) {
+                document.getElementById('controls-panel').style.display = 'flex';
+            }
             modal.remove();
         };
 
