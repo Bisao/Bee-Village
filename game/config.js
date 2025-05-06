@@ -1,5 +1,5 @@
-import StartScene from './scenes/StartScene.js';
-import MainScene from './scenes/MainScene.js';
+import StartScene from '/game/scenes/StartScene.js';
+import MainScene from '/game/scenes/MainScene.js';
 
 const config = {
     type: Phaser.AUTO,

@@ -1,4 +1,6 @@
 
+import Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js';
+
 class StartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'StartScene' });
