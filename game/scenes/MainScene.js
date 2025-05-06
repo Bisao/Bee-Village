@@ -6,6 +6,20 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
+        this.professionNames = {
+            farmerHouse: {
+                prefix: 'Farmer',
+                names: ['John', 'Peter', 'Mary', 'Lucas', 'Emma', 'Sofia', 'Miguel', 'Julia']
+            },
+            fishermanHouse: {
+                prefix: 'Fisher',
+                names: ['Jack', 'Tom', 'Nina', 'Marco', 'Ana', 'Leo', 'Luna', 'Kai']
+            },
+            minerHouse: {
+                prefix: 'Miner',
+                names: ['Max', 'Sam', 'Alex', 'Cole', 'Ruby', 'Jade', 'Rocky', 'Crystal']
+            }
+        };
     }
 
     preload() {
@@ -705,17 +719,30 @@ export default class MainScene extends Phaser.Scene {
         });
     }
     createFarmerNPC(houseX, houseY, worldX, worldY) {
+        const buildingType = this.selectedBuilding;
+        const nameData = this.professionNames[buildingType];
+        const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
+        const fullName = nameData ? `${nameData.prefix} ${randomName}` : 'Villager';
+
         const npc = {
             sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
+            nameText: this.add.text(worldX, worldY - 48, fullName, {
+                fontSize: '14px',
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 4
+            }).setOrigin(0.5),
             gridX: houseX,
             gridY: houseY,
             isAutonomous: true,
             housePosition: {x: houseX, y: houseY},
-            isMoving: false
+            isMoving: false,
+            name: fullName
         };
 
         npc.sprite.setScale(0.8);
         npc.sprite.setDepth(houseY + 2);
+        npc.nameText.setDepth(houseY + 3);
 
         // Armazena referência do NPC
         this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
@@ -766,7 +793,7 @@ export default class MainScene extends Phaser.Scene {
         npc.sprite.play(animKey);
 
         this.tweens.add({
-            targets: npc.sprite,
+            targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
             y: this.cameras.main.centerY + tileY - 32,
             duration: 600,
