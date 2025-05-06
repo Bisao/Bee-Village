@@ -378,8 +378,8 @@ html, body {
     }
 
     .building-btn img {
-        width: 50px;
-        height: 50px;
+        width: 35px;
+        height: 35px;
     }
 
     .building-list {
@@ -479,8 +479,8 @@ html, body {
 }
 
 .building-btn img {
-    width: 100%;
-    aspect-ratio: 1;
+    width: 40px;
+    height: 40px;
     object-fit: contain;
     border-radius: 4px;
     transition: all 0.3s ease;
