@@ -856,6 +856,7 @@ export default class MainScene extends Phaser.Scene {
         modal.className = 'npc-modal';
         modal.innerHTML = `
             <div class="modal-content">
+                <button class="close-button">✕</button>
                 <div class="npc-header">
                     <div class="npc-avatar">
                         ${npc.config.emoji}
@@ -942,7 +943,7 @@ export default class MainScene extends Phaser.Scene {
         };
 
         modal.onclick = (e) => {
-            if (e.target === modal) modal.remove();
+            if (e.target === modal || e.target.classList.contains('close-button')) modal.remove();
         };
     }
 
