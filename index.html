@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Isometric Game</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
     <div id="game-container"></div>
     <script type="module">
         import MainScene from './game/scenes/MainScene.js';
-        import Phaser from 'phaser';
 
         const config = {
             type: Phaser.AUTO,
@@ -23,11 +23,11 @@
                     debug: false
                 }
             },
-            scene: [MainScene],
+            scene: MainScene,
             parent: 'game-container'
         };
 
-        const game = new Phaser.Game(config);
+        new Phaser.Game(config);
     </script>
     <div id="start-screen" class="start-screen">
         <h1><span class="theme-emoji"></span> My Village <span class="theme-emoji"></span></h1>
@@ -229,6 +229,5 @@
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </body>
 </html>
