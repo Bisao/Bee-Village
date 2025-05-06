@@ -240,3 +240,21 @@ function updateDefaultZoom(value) {
 
 </body>
 </html>
+// Responsive Layout Handler
+function handleResize() {
+    const sidePanel = document.getElementById('side-panel');
+    const isMobile = window.innerWidth <= 768;
+    
+    // Adjust side panel max height
+    if (sidePanel) {
+        const topbarHeight = document.querySelector('.topbar')?.offsetHeight || 0;
+        sidePanel.style.maxHeight = `calc(100vh - ${topbarHeight + 20}px)`;
+    }
+
+    // Add/remove mobile class for conditional styling
+    document.body.classList.toggle('is-mobile', isMobile);
+}
+
+// Initialize and bind resize handler
+window.addEventListener('resize', handleResize);
+handleResize(); // Call once on load
