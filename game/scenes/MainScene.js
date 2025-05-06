@@ -942,8 +942,15 @@ export default class MainScene extends Phaser.Scene {
             modal.remove();
         };
 
+        // Configure close button
+        const closeButton = modal.querySelector('.close-button');
+        closeButton.onclick = () => {
+            modal.remove();
+        };
+
+        // Close on clicking outside
         modal.onclick = (e) => {
-            if (e.target === modal || e.target.classList.contains('close-button')) modal.remove();
+            if (e.target === modal) modal.remove();
         };
     }
 
