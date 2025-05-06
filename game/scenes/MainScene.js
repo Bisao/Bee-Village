@@ -610,9 +610,8 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
-            // Create NPC based on house type
-            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
-            if (npcHouses.includes(this.selectedBuilding)) {
+            // Create NPC if it's a valid house type
+            if (['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
             }
 
