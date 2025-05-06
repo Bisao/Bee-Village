@@ -602,8 +602,7 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
-            // Create NPC based on building type if no NPC exists
-            const key = `${gridX},${gridY}`;
+            // Create NPC based on building type
             if (!this.grid.buildingGrid[key].npc && 
                 ['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
