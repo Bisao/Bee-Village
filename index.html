@@ -67,8 +67,15 @@
             </div>
         </div>
         <div id="side-panel">
-            <div class="building-list">
-                <button class="building-btn" data-building="farmerHouse">
+            <div class="panel-tabs">
+                <button class="tab-btn active" data-tab="structures">Estruturas</button>
+                <button class="tab-btn" data-tab="terrains">Terrenos</button>
+                <button class="tab-btn" data-tab="seeds">Sementes</button>
+                <button class="tab-btn" data-tab="vehicles">Veículos</button>
+            </div>
+            <div class="tab-content active" id="structures-tab">
+                <div class="building-list">
+                    <button class="building-btn" data-building="farmerHouse">
                     <img src="game/assets/buildings/FarmerHouse.png" alt="Casa do Fazendeiro">
                     <span class="tooltip">Casa do Fazendeiro</span>
                 </button>
@@ -92,6 +99,21 @@
                     <img src="game/assets/buildings/fishermanHouse.png" alt="Casa do Pescador">
                     <span class="tooltip">Casa do Pescador</span>
                 </button>
+                </div>
+            </div>
+            <div class="tab-content" id="terrains-tab">
+                <div class="building-list">
+                    <!-- Future terrain content -->
+                </div>
+            </div>
+            <div class="tab-content" id="seeds-tab">
+                <div class="building-list">
+                    <!-- Future seeds content -->
+                </div>
+            </div>
+            <div class="tab-content" id="vehicles-tab">
+                <div class="building-list">
+                    <!-- Future vehicles content -->
                 </div>
             </div>
         </div>
