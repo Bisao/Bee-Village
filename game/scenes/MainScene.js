@@ -911,13 +911,8 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
-        // Return current controlled NPC to autonomous mode
-        if (this.currentControlledNPC) {
-            this.currentControlledNPC.isAutonomous = true;
-            this.startNPCMovement(this.currentControlledNPC);
-            // Remove existing keyboard event listener
-            this.input.keyboard.removeAllListeners('keydown');
-        }
+        // Cleanup previous NPC controls
+        this.cleanupNPCControls();
 
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
@@ -951,6 +946,27 @@ export default class MainScene extends Phaser.Scene {
         modal.onclick = (e) => {
             if (e.target === modal) modal.remove();
         };
+    }
+
+    cleanupNPCControls() {
+        if (this.currentControlledNPC) {
+            // Reset NPC state
+            this.currentControlledNPC.isAutonomous = true;
+            
+            // Clear existing movement timer if exists
+            if (this.currentControlledNPC.movementTimer) {
+                this.currentControlledNPC.movementTimer.remove();
+            }
+            
+            // Start autonomous movement again
+            this.startNPCMovement(this.currentControlledNPC);
+            
+            // Remove all keyboard controls
+            this.input.keyboard.removeAllListeners('keydown');
+            
+            // Clear reference
+            this.currentControlledNPC = null;
+        }
     }
 
     enablePlayerControl(npc) {
