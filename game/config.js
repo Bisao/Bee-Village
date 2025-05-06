@@ -162,7 +162,6 @@ function checkConsoleErrors() {
     }, 5000);
 }
 
-// Inicia o jogo quando a página carregar
 window.onload = () => {
     window.game = new Phaser.Game(config);
 };
