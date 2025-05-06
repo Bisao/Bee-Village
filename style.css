@@ -838,38 +838,96 @@ html, body {
         overflow-y: auto;
         bottom: 90px;
     }
+}
 
-    @media (orientation: portrait) {
-        #side-panel {
-            width: 95%;
-            height: calc(100vh - 200px);
-        }
-
-        .building-list {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        #controls-panel {
-            bottom: 10px;
-            left: 10px;
-        }
+/* Dispositivos muito pequenos */
+@media (max-width: 320px) {
+    #side-panel {
+        width: 98%;
+        padding: 4px;
     }
 
-    @media (orientation: landscape) {
-        #side-panel {
-            width: 70%;
-            height: calc(100vh - 100px);
-        }
-
-        .building-list {
-            grid-template-columns: repeat(4, 1fr);
-        }
-
-        #controls-panel {
-            bottom: 20px;
-            left: 20px;
-        }
+    .building-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
     }
+
+    .building-btn {
+        padding: 2px;
+    }
+
+    .building-info {
+        font-size: 9px;
+    }
+}
+
+/* Dispositivos pequenos */
+@media (min-width: 321px) and (max-width: 480px) {
+    #side-panel {
+        width: 95%;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 6px;
+    }
+}
+
+/* Tablets em retrato */
+@media (min-width: 481px) and (max-width: 768px) {
+    #side-panel {
+        width: 85%;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Tablets em paisagem */
+@media (min-width: 769px) and (max-width: 1024px) {
+    #side-panel {
+        width: 75%;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+/* Desktops */
+@media (min-width: 1025px) {
+    #side-panel {
+        width: min(85%, 800px);
+    }
+
+    .building-list {
+        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    }
+}
+
+/* Ajustes de orientação */
+@media (orientation: portrait) {
+    #side-panel {
+        height: calc(100vh - 200px);
+    }
+
+    #controls-panel {
+        bottom: 10px;
+        left: 10px;
+    }
+}
+
+@media (orientation: landscape) {
+    #side-panel {
+        height: calc(100vh - 100px);
+    }
+
+    #controls-panel {
+        bottom: 20px;
+        left: 20px;
+    }
+}
 
     .building-list {
         display: grid;
