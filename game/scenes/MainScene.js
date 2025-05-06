@@ -801,55 +801,56 @@ export default class MainScene extends Phaser.Scene {
                 repeat: -1
             });
 
+            const continueNPCCreation = () => {
+                const buildingType = this.selectedBuilding;
+                const nameData = this.professionNames[buildingType];
+                const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
+                const professionEmojis = {
+                    'Farmer': '🥕',
+                    'Miner': '⛏️',
+                    'Lumberjack': '🪓',
+                    'Fisher': '🎣'
+                };
+                const emoji = nameData ? professionEmojis[nameData.prefix] || '👤' : '👤';
+                const fullName = `${emoji} ${randomName}`;
+
+                const npc = {
+                    sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
+                    nameText: this.add.text(worldX, worldY - 48, fullName, {
+                        fontSize: '14px',
+                        fill: '#ffffff',
+                        stroke: '#000000',
+                        strokeThickness: 4
+                    }).setOrigin(0.5),
+                    gridX: houseX,
+                    gridY: houseY,
+                    isAutonomous: true,
+                    housePosition: {x: houseX, y: houseY},
+                    isMoving: false,
+                    name: fullName
+                };
+
+                npc.sprite.setScale(0.8);
+                npc.sprite.setDepth(houseY + 2);
+                npc.nameText.setDepth(houseY + 3);
+
+                // Armazena referência do NPC
+                this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
+
+                // Timer para começar movimento
+                this.time.delayedCall(10000, () => {
+                    this.startNPCMovement(npc);
+                });
+
+                // Adiciona interatividade à casa
+                const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
+                house.setInteractive();
+                house.on('pointerdown', () => this.showNPCControls(npc));
+            }
             continueNPCCreation();
         };
 
-        const continueNPCCreation = () => {
-
-        const buildingType = this.selectedBuilding;
-        const nameData = this.professionNames[buildingType];
-        const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
-        const professionEmojis = {
-            'Farmer': '🥕',
-            'Miner': '⛏️',
-            'Lumberjack': '🪓',
-            'Fisher': '🎣'
-        };
-        const emoji = nameData ? professionEmojis[nameData.prefix] || '👤' : '👤';
-        const fullName = `${emoji} ${randomName}`;
-
-        const npc = {
-            sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-            nameText: this.add.text(worldX, worldY - 48, fullName, {
-                fontSize: '14px',
-                fill: '#ffffff',
-                stroke: '#000000',
-                strokeThickness: 4
-            }).setOrigin(0.5),
-            gridX: houseX,
-            gridY: houseY,
-            isAutonomous: true,
-            housePosition: {x: houseX, y: houseY},
-            isMoving: false,
-            name: fullName
-        };
-
-        npc.sprite.setScale(0.8);
-        npc.sprite.setDepth(houseY + 2);
-        npc.nameText.setDepth(houseY + 3);
-
-        // Armazena referência do NPC
-        this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
-
-        // Timer para começar movimento
-        this.time.delayedCall(10000, () => {
-            this.startNPCMovement(npc);
-        });
-
-        // Adiciona interatividade à casa
-        const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
-        house.setInteractive();
-        house.on('pointerdown', () => this.showNPCControls(npc));
+        loadAndCreateAnimations();
     }
 
     startNPCMovement(npc) {
@@ -924,7 +925,7 @@ export default class MainScene extends Phaser.Scene {
                 <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
                     🤖 Autônomo
                 </button>
-                <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}"id="controlled">
                     🕹️ Controlado
                 </button>
             </div>
