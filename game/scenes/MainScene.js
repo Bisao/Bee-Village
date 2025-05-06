@@ -908,7 +908,8 @@ export default class MainScene extends Phaser.Scene {
 
         document.body.appendChild(modal);
 
-        modal.querySelector('#autonomous').onclick = () => {
+        modal.querySelector('#autonomous').onclick = (e) => {
+            e.stopPropagation();
             npc.isAutonomous = true;
             this.cameras.main.stopFollow();
             
@@ -928,14 +929,18 @@ export default class MainScene extends Phaser.Scene {
                 const controlsPanel = document.getElementById('controls-panel');
                 if (controlsPanel) {
                     controlsPanel.style.display = 'none';
+                    controlsPanel.style.visibility = 'hidden';
+                    controlsPanel.style.pointerEvents = 'none';
                 }
             }
             
-            this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
+            this.showFeedback('Modo autônomo ativado', true);
+            modal.remove();wFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
         };
 
-        modal.querySelector('#controlled').onclick = () => {
+        modal.querySelector('#controlled').onclick = (e) => {
+            e.stopPropagation();
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
             
@@ -950,9 +955,11 @@ export default class MainScene extends Phaser.Scene {
                     controlsPanel.style.display = 'flex';
                     controlsPanel.style.visibility = 'visible';
                     controlsPanel.style.pointerEvents = 'auto';
+                    controlsPanel.style.opacity = '1';
                 }
             }
             
+            this.showFeedback('Modo controlado ativado', true);
             modal.remove();
         };
 
