@@ -25,6 +25,7 @@ export default class MainScene extends Phaser.Scene {
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
+        this.setupStructuresPanel();
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
@@ -411,6 +412,102 @@ export default class MainScene extends Phaser.Scene {
     placeTrees() {
         const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
         this.placeObjects(treeTypes, 15, 'tree');
+    }
+
+    setupStructuresPanel() {
+        // Criar painel de construções
+        const padding = 10;
+        const width = 60;
+        const x = this.cameras.main.width - width - padding;
+        const y = 80; // Abaixo da topbar
+
+        const panel = document.createElement('div');
+        panel.id = 'structures-panel';
+        panel.style.cssText = `
+            position: fixed;
+            right: ${padding}px;
+            top: ${y}px;
+            width: ${width}px;
+            background: var(--panel-background);
+            border: 1px solid var(--primary-color);
+            border-radius: 8px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 1000;
+        `;
+
+        const buildings = [
+            { key: 'farmerHouse', img: 'FarmerHouse.png', tooltip: 'Casa do Fazendeiro' },
+            { key: 'cowHouse', img: 'CowHouse.png', tooltip: 'Estábulo' },
+            { key: 'chickenHouse', img: 'ChickenHouse.png', tooltip: 'Galinheiro' },
+            { key: 'pigHouse', img: 'PigHouse.png', tooltip: 'Chiqueiro' },
+            { key: 'minerHouse', img: 'MinerHouse.png', tooltip: 'Casa do Minerador' },
+            { key: 'fishermanHouse', img: 'fishermanHouse.png', tooltip: 'Casa do Pescador' }
+        ];
+
+        buildings.forEach(building => {
+            const button = document.createElement('button');
+            button.className = 'structure-btn';
+            button.dataset.building = building.key;
+            button.style.cssText = `
+                width: 100%;
+                aspect-ratio: 1;
+                padding: 4px;
+                background: var(--accent-color);
+                border: 1px solid var(--primary-color);
+                border-radius: 4px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.3s ease;
+            `;
+
+            const img = document.createElement('img');
+            img.src = `game/assets/buildings/${building.img}`;
+            img.alt = building.tooltip;
+            img.style.cssText = `
+                width: 100%;
+                height: 100%;
+                object-fit: contain;
+            `;
+
+            const tooltip = document.createElement('span');
+            tooltip.className = 'tooltip';
+            tooltip.textContent = building.tooltip;
+            tooltip.style.cssText = `
+                position: absolute;
+                left: calc(100% + 8px);
+                top: 50%;
+                transform: translateY(-50%);
+                background: var(--panel-background);
+                color: var(--text-color);
+                padding: 4px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                white-space: nowrap;
+                opacity: 0;
+                pointer-events: none;
+                transition: all 0.3s ease;
+                border: 1px solid var(--primary-color);
+            `;
+
+            button.addEventListener('mouseenter', () => tooltip.style.opacity = '1');
+            button.addEventListener('mouseleave', () => tooltip.style.opacity = '0');
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.structure-btn').forEach(btn => btn.style.background = 'var(--accent-color)');
+                button.style.background = 'rgba(255, 215, 0, 0.2)';
+                this.selectedBuilding = building.key;
+            });
+
+            button.appendChild(img);
+            button.appendChild(tooltip);
+            panel.appendChild(button);
+        });
+
+        document.body.appendChild(panel);
     }
 
     placeObjects(types, count, objectType) {
