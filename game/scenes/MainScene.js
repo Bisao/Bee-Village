@@ -543,6 +543,11 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
+            // Verifica se é uma casa de fazendeiro
+            if (this.selectedBuilding === 'farmerHouse') {
+                this.createFarmerNPC(gridX, gridY, worldX, worldY);
+            }
+
             if (!this.grid.isValidPosition(gridX, gridY)) {
                 this.showFeedback('Posição inválida', false);
                 return;
@@ -703,3 +708,136 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 }
+    createFarmerNPC(houseX, houseY, worldX, worldY) {
+        const npc = {
+            sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
+            gridX: houseX,
+            gridY: houseY,
+            isAutonomous: true,
+            housePosition: {x: houseX, y: houseY},
+            isMoving: false
+        };
+        
+        npc.sprite.setScale(0.8);
+        npc.sprite.setDepth(houseY + 2);
+        
+        // Armazena referência do NPC
+        this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
+        
+        // Timer para começar movimento
+        this.time.delayedCall(10000, () => {
+            this.startNPCMovement(npc);
+        });
+        
+        // Adiciona interatividade à casa
+        const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
+        house.setInteractive();
+        house.on('pointerdown', () => this.showNPCControls(npc));
+    }
+    
+    startNPCMovement(npc) {
+        if (!npc.isAutonomous) return;
+        
+        const moveNPC = () => {
+            if (!npc.isAutonomous || npc.isMoving) return;
+            
+            const directions = this.getAvailableDirections(npc.gridX, npc.gridY);
+            if (directions.length === 0) return;
+            
+            const randomDir = directions[Math.floor(Math.random() * directions.length)];
+            this.moveNPCTo(npc, npc.gridX + randomDir.x, npc.gridY + randomDir.y);
+        };
+        
+        // Move a cada 2 segundos
+        this.time.addEvent({
+            delay: 2000,
+            callback: moveNPC,
+            loop: true
+        });
+    }
+    
+    moveNPCTo(npc, newX, newY) {
+        if (npc.isMoving) return;
+        
+        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
+        npc.isMoving = true;
+        
+        // Determina direção da animação
+        let animKey = 'farmer_right';
+        if (newY < npc.gridY) animKey = 'farmer_up';
+        else if (newY > npc.gridY) animKey = 'farmer_down';
+        else if (newX < npc.gridX) animKey = 'farmer_left';
+        
+        npc.sprite.play(animKey);
+        
+        this.tweens.add({
+            targets: npc.sprite,
+            x: this.cameras.main.centerX + tileX,
+            y: this.cameras.main.centerY + tileY - 32,
+            duration: 600,
+            ease: 'Linear',
+            onComplete: () => {
+                npc.gridX = newX;
+                npc.gridY = newY;
+                npc.sprite.setDepth(newY + 2);
+                npc.isMoving = false;
+                npc.sprite.stop();
+            }
+        });
+    }
+    
+    showNPCControls(npc) {
+        const modal = document.createElement('div');
+        modal.className = 'npc-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <h3>Controles do Fazendeiro</h3>
+                <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
+                    🤖 Autônomo
+                </button>
+                <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                    🕹️ Controlado
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        modal.querySelector('#autonomous').onclick = () => {
+            npc.isAutonomous = true;
+            this.startNPCMovement(npc);
+            modal.remove();
+        };
+        
+        modal.querySelector('#controlled').onclick = () => {
+            npc.isAutonomous = false;
+            this.enablePlayerControl(npc);
+            modal.remove();
+        };
+        
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
+    }
+    
+    enablePlayerControl(npc) {
+        const handleKeyDown = (event) => {
+            if (npc.isMoving || npc.isAutonomous) return;
+            
+            let newX = npc.gridX;
+            let newY = npc.gridY;
+            
+            switch(event.key.toLowerCase()) {
+                case 'w': newY--; break;
+                case 's': newY++; break;
+                case 'a': newX--; break;
+                case 'd': newX++; break;
+            }
+            
+            if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+                this.moveNPCTo(npc, newX, newY);
+            }
+        };
+        
+        this.input.keyboard.on('keydown', handleKeyDown);
+    }
