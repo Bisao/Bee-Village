@@ -6,7 +6,7 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
-        
+
         // Emoji mapping for professions
         this.professionEmojis = {
             'Farmer': '🥕',
@@ -748,7 +748,7 @@ export default class MainScene extends Phaser.Scene {
             const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
             const nameData = this.professionNames[buildingType];
             const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
-            
+
             // Create NPC configuration
             const npcConfig = {
                 name: randomName,
@@ -761,150 +761,63 @@ export default class MainScene extends Phaser.Scene {
 
             // Create NPC instance
             const npc = new BaseNPC(this, houseX, houseY, npcConfig);
-            
+
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
         });
 
-        const loadAndCreateAnimations = () => {
-            // Load farmer sprites if they don't exist
-            const spritesToLoad = [];
-            for (let i = 1; i <= 12; i++) {
-                const key = `farmer${i}`;
-                if (!this.textures.exists(key)) {
-                    spritesToLoad.push({
-                        key: key,
-                        url: `attached_assets/Farmer_${i}-ezgif.com-resize.png`
-                    });
-                }
-            }
 
-            if (spritesToLoad.length > 0) {
-                spritesToLoad.forEach(sprite => {
-                    this.load.image(sprite.key, sprite.url);
-                });
-
-                this.load.once('complete', createAnimations);
-                this.load.start();
-            } else {
-                createAnimations();
-            }
+        const professionEmojis = {
+            'Farmer': '🥕',
+            'Miner': '⛏️',
+            'Lumberjack': '🪓',
+            'Fisher': '🎣'
         };
 
-        const createAnimations = () => {
-            // Remove existing animations if they exist
-            ['farmer_up', 'farmer_down', 'farmer_left', 'farmer_right'].forEach(key => {
-                if (this.anims.exists(key)) {
-                    this.anims.remove(key);
-                }
-            });
+        const buildingKey = `${houseX},${houseY}`;
+        const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
+        const nameData = this.professionNames[buildingType];
+        const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
+        const emoji = nameData ? professionEmojis[nameData.prefix] || '👤' : '👤';
+        const fullName = `${emoji} ${randomName}`;
 
-            // Create animations
-            this.anims.create({
-                key: 'farmer_up',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_down',
-                frames: [
-                    { key: 'farmer9' },
-                    { key: 'farmer10' },
-                    { key: 'farmer11' },
-                    { key: 'farmer12' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_left',
-                frames: [
-                    { key: 'farmer5' },
-                    { key: 'farmer6' },
-                    { key: 'farmer7' },
-                    { key: 'farmer8' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_right',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            const continueNPCCreation = () => {
-                // Get building type from the grid position
-                const buildingKey = `${houseX},${houseY}`;
-                const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
-                const nameData = this.professionNames[buildingType];
-                const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
-                const professionEmojis = {
-                    'Farmer': '🥕',
-                    'Miner': '⛏️',
-                    'Lumberjack': '🪓',
-                    'Fisher': '🎣'
-                };
-                const emoji = nameData ? professionEmojis[nameData.prefix] || '👤' : '👤';
-                const fullName = `${emoji} ${randomName}`;
-
-                const npc = {
-                    sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-                    nameText: this.add.text(worldX, worldY - 64, fullName, {
-                        fontSize: '14px',
-                        fill: '#ffffff',
-                        stroke: '#000000',
-                        strokeThickness: 4,
-                        resolution: 2
-                    }).setOrigin(0.5),
-                    gridX: houseX,
-                    gridY: houseY,
-                    isAutonomous: true,
-                    housePosition: {x: houseX, y: houseY},
-                    isMoving: false,
-                    name: fullName
-                };
-
-                npc.sprite.setScale(0.8);
-                npc.sprite.setDepth(houseY + 2);
-                npc.nameText.setDepth(houseY + 3);
-
-                // Make NPC sprite interactive
-                npc.sprite.setInteractive();
-                npc.sprite.on('pointerdown', () => this.showNPCControls(npc));
-
-                // Armazena referência do NPC
-                this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
-
-                // Timer para começar movimento
-                this.time.delayedCall(10000, () => {
-                    this.startNPCMovement(npc);
-                });
-
-                // Adiciona interatividade à casa
-                const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
-                house.setInteractive();
-                house.on('pointerdown', () => this.showNPCControls(npc));
-            }
-            continueNPCCreation();
+        const npc = {
+            sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
+            nameText: this.add.text(worldX, worldY - 64, fullName, {
+                fontSize: '14px',
+                fill: '#ffffff',
+                stroke: '#000000',
+                strokeThickness: 4,
+                resolution: 2
+            }).setOrigin(0.5),
+            gridX: houseX,
+            gridY: houseY,
+            isAutonomous: true,
+            housePosition: {x: houseX, y: houseY},
+            isMoving: false,
+            name: fullName
         };
 
-        loadAndCreateAnimations();
+        npc.sprite.setScale(0.8);
+        npc.sprite.setDepth(houseY + 2);
+        npc.nameText.setDepth(houseY + 3);
+
+        // Make NPC sprite interactive
+        npc.sprite.setInteractive();
+        npc.sprite.on('pointerdown', () => this.showNPCControls(npc));
+
+        // Armazena referência do NPC
+        this.grid.buildingGrid[`${houseX},${houseY}`].npc = npc;
+
+        // Timer para começar movimento
+        this.time.delayedCall(10000, () => {
+            this.startNPCMovement(npc);
+        });
+
+        // Adiciona interatividade à casa
+        const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
+        house.setInteractive();
+        house.on('pointerdown', () => this.showNPCControls(npc));
     }
 
     startNPCMovement(npc) {
@@ -1033,15 +946,15 @@ export default class MainScene extends Phaser.Scene {
     cleanupNPCControls() {
         if (this.currentControlledNPC) {
             const previousNPC = this.currentControlledNPC;
-            
+
             // Reset NPC state
             previousNPC.isAutonomous = true;
-            
+
             // Clear existing movement timer if exists
             if (previousNPC.movementTimer) {
                 previousNPC.movementTimer.remove();
             }
-            
+
             // Remove specific NPC's controls and update handler
             if (previousNPC.controls) {
                 Object.values(previousNPC.controls).forEach(key => key.destroy());
@@ -1051,10 +964,10 @@ export default class MainScene extends Phaser.Scene {
                 this.events.off('update', previousNPC.updateHandler);
                 previousNPC.updateHandler = null;
             }
-            
+
             // Clear reference before starting movement
             this.currentControlledNPC = null;
-            
+
             // Start autonomous movement again after a short delay
             this.time.delayedCall(100, () => {
                 this.startNPCMovement(previousNPC);
@@ -1072,22 +985,22 @@ export default class MainScene extends Phaser.Scene {
             console.warn(`No names available for building type: ${buildingType}`);
             return 'Unknown';
         }
-        
+
         // Get used names for this profession
         if (!this.usedNames) this.usedNames = {};
         if (!this.usedNames[buildingType]) this.usedNames[buildingType] = new Set();
-        
+
         // Filter available names
         const availableNames = nameData.names.filter(name => 
             !this.usedNames[buildingType].has(name)
         );
-        
+
         // If all names are used, reset the used names
         if (availableNames.length === 0) {
             this.usedNames[buildingType].clear();
             return this.getRandomName(buildingType);
         }
-        
+
         // Get random name and mark as used
         const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
         this.usedNames[buildingType].add(randomName);
@@ -1097,7 +1010,7 @@ export default class MainScene extends Phaser.Scene {
     enablePlayerControl(npc) {
         // Remove previous keyboard listeners if they exist
         this.input.keyboard.removeAllListeners('keydown');
-        
+
         // Create unique controls for this NPC
         npc.controls = this.input.keyboard.addKeys({
             w: Phaser.Input.Keyboard.KeyCodes.W,
