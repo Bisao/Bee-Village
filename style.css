@@ -438,15 +438,16 @@ html, body {
 
 .building-list {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fill, minmax(min(120px, 20vw), 1fr));
+    gap: clamp(8px, 1.5vw, 15px);
     width: 100%;
-    padding: 8px;
+    padding: clamp(5px, 1vw, 10px);
 }
 
 .building-btn {
     position: relative;
-    padding: 3px 2px;
+    width: 100%;
+    padding: 6px 4px;
     background: var(--accent-color);
     border: 1px solid var(--primary-color);
     border-radius: 6px;
@@ -460,10 +461,10 @@ html, body {
 
 .building-info {
     width: 100%;
-    margin-top: 2px;
-    padding: 3px;
+    margin-top: 3px;
+    padding: 4px;
     border-top: 1px solid var(--primary-color);
-    font-size: 10px;
+    font-size: 11px;
     color: var(--text-color);
     text-align: left;
 }
