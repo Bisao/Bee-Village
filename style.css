@@ -540,9 +540,13 @@ html, body {
     border-radius: 15px;
     padding: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-    display: none;
     flex-direction: column;
-    z-index: 2000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.settings-panel.visible {
+    opacity: 1;
 }
 
 .settings-panel.visible {

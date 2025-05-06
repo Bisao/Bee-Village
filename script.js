@@ -97,38 +97,6 @@
             <div class="setting-item">
                 <label>Zoom Padrão</label>
                 <input type="range" id="defaultZoom" min="50" max="200" value="100">
-
-document.addEventListener('DOMContentLoaded', () => {
-    const settingsPanel = document.getElementById('settings-panel');
-    const togglePanelButton = document.getElementById('togglePanel');
-    const backButton = document.querySelector('.back-button');
-    
-    togglePanelButton?.addEventListener('click', () => {
-        settingsPanel.style.display = settingsPanel.style.display === 'none' ? 'flex' : 'none';
-    });
-    
-    backButton?.addEventListener('click', () => {
-        settingsPanel.style.display = 'none';
-    });
-
-    // Settings controls
-    const gameSoundSlider = document.getElementById('gameSound');
-    const backgroundMusicSlider = document.getElementById('backgroundMusic');
-    const defaultZoomSlider = document.getElementById('defaultZoom');
-
-    gameSoundSlider?.addEventListener('input', (e) => {
-        updateGameSound(e.target.value);
-    });
-
-    backgroundMusicSlider?.addEventListener('input', (e) => {
-        updateBackgroundMusic(e.target.value);
-    });
-
-    defaultZoomSlider?.addEventListener('input', (e) => {
-        updateDefaultZoom(e.target.value);
-    });
-});
-
             </div>
         </div>
     </div>
@@ -141,7 +109,7 @@ function showFeedback(message, duration = 2000) {
     feedback.className = 'feedback-message';
     feedback.textContent = message;
     document.body.appendChild(feedback);
-    
+
     requestAnimationFrame(() => {
         feedback.classList.add('visible');
         setTimeout(() => {
@@ -154,14 +122,14 @@ function showFeedback(message, duration = 2000) {
 document.addEventListener('DOMContentLoaded', function() {
     // Tab switching functionality
     const tabButtons = document.querySelectorAll('.tab-btn');
-    
+
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             if (!button.disabled) {
                 // Remove active class from all buttons and tabs
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-                
+
                 // Add active class to clicked button and corresponding tab
                 button.classList.add('active');
                 const tabId = `${button.dataset.tab}-tab`;
@@ -169,7 +137,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
-    const menuButton = document.getElementById('togglePanel');
+    const menuButton = document.getElementById('settings-button'); // Added settings button ID
     const settingsPanel = document.getElementById('settings-panel');
     const backButton = document.querySelector('.back-button');
     const structuresBtn = document.getElementById('toggleStructures');
@@ -212,8 +180,8 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     menuButton.addEventListener('click', () => {
-        settingsPanel.style.display = 'flex';
         settingsPanel.classList.add('visible');
+        settingsPanel.style.display = 'flex';
     });
 
     backButton.addEventListener('click', () => {
@@ -235,7 +203,7 @@ function loadSettings() {
         backgroundMusic: 50,
         defaultZoom: 100
     };
-    
+
     const savedSettings = localStorage.getItem('gameSettings');
     return savedSettings ? JSON.parse(savedSettings) : defaultSettings;
 }
