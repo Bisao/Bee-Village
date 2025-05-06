@@ -31,15 +31,28 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.loadAssets();
+        this.isLoading = true;
+        this.loadingProgress = 0;
+        
+        // Setup loading events
+        this.load.on('progress', (value) => {
+            this.loadingProgress = value;
+        });
+
         this.load.on('complete', () => {
+            this.isLoading = false;
             this.game.events.emit('ready');
         });
+
+        // Load all assets
+        this.loadAssets();
     }
 
     create() {
-        if (!this.textures.exists('tile_grass')) {
-            return; // Wait for assets to load
+        if (this.isLoading || !this.textures.exists('tile_grass')) {
+            // Try again in next frame if still loading
+            this.time.delayedCall(100, () => this.scene.restart());
+            return;
         }
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);

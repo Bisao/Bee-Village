@@ -139,6 +139,7 @@ function startGameWithLoading() {
                 window.game = new Phaser.Game(config);
 
                 window.game.events.once('ready', () => {
+                    // Wait a bit longer to ensure everything is properly initialized
                     setTimeout(() => {
                         const loadingScreen = document.getElementById('loading-screen');
                         const startScreen = document.getElementById('start-screen');
