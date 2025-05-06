@@ -359,34 +359,32 @@ html, body {
 
 @media (max-width: 768px) {
     #side-panel {
-        width: min(95%, 600px);
+        left: 50%;
+        transform: translateX(-50%);
         top: 70px;
-        padding: 8px;
-        max-height: 60vh;
-    }
-
-    .panel-tabs {
-        padding: clamp(5px, 1.5vw, 8px);
-        gap: clamp(4px, 1vw, 6px);
-        flex-wrap: nowrap;
-        overflow-x: auto;
-    }
-
-    .tab-btn {
-        padding: clamp(4px, 1vw, 6px) clamp(8px, 2vw, 12px);
-        font-size: clamp(12px, 3vw, 14px);
-        white-space: nowrap;
-    }
-
-    .building-list {
-        grid-template-columns: repeat(auto-fit, minmax(min(80px, 20vw), 1fr));
-        gap: 2vw;
-        padding: 2vw;
+        width: 90%;
+        max-width: 400px;
     }
 
     .building-btn {
-        aspect-ratio: 1;
-        padding: min(2vw, 8px);
+        width: 100%;
+        min-height: 80px;
+        padding: 8px;
+    }
+
+    .building-btn img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .building-list {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        padding: 10px;
+    }
+
+    .building-info {
+        font-size: 11px;
     }
 }
 
@@ -758,13 +756,13 @@ html, body {
         left: 15px;
         padding: 15px;
     }
-    
+
     .control-btn {
         width: 60px;
         height: 60px;
         font-size: 20px;
     }
-    
+
     .controls-grid {
         gap: 8px;
     }
