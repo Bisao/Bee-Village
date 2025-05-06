@@ -353,6 +353,11 @@ export default class MainScene extends Phaser.Scene {
         // Cache de texturas para otimização
         if (this.textures.exists('tile_grass')) return;
 
+        // Load farmer sprites
+        for (let i = 1; i <= 12; i++) {
+            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        }
+
         // Load tiles
         const tiles = [
             'tile_grass',

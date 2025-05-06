@@ -27,7 +27,7 @@ export default class BaseNPC {
         const worldY = this.scene.cameras.main.centerY + tileY;
 
         // Criar sprite
-        this.sprite = this.scene.add.sprite(worldX, worldY - 32, `${this.config.spritesheet}1`);
+        this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
