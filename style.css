@@ -297,18 +297,18 @@ html, body {
   top: 75px;
   left: 50%;
   transform: translateX(-50%);
-  width: min(90%, 1200px);
+  width: min(85%, 800px);
   height: auto;
-  max-height: calc(100vh - 85px);
+  max-height: calc(100vh - 95px);
   background-color: var(--panel-background);
   backdrop-filter: blur(10px);
   border: 2px solid var(--primary-color);
   border-radius: 12px;
-  padding: clamp(10px, 2vw, 20px);
+  padding: 15px;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 8px;
   z-index: 2000;
   overflow-y: auto;
 }
@@ -319,13 +319,15 @@ html, body {
 
 .panel-tabs {
     display: flex;
-    gap: 12px;
-    padding: 15px;
+    gap: 8px;
+    padding: 8px;
     border-bottom: 2px solid var(--primary-color);
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     justify-content: center;
+    flex-wrap: nowrap;
+    width: 100%;
 }
 
 .tab-btn {
