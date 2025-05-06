@@ -446,7 +446,6 @@ html, body {
 
 .building-btn {
     position: relative;
-    width: 100%;
     padding: 3px 2px;
     background: var(--accent-color);
     border: 1px solid var(--primary-color);
