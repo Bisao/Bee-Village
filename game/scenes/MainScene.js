@@ -800,18 +800,12 @@ export default class MainScene extends Phaser.Scene {
 
         modal.querySelector('#autonomous').onclick = () => {
             npc.isAutonomous = true;
+            this.startNPCMovement(npc);
             modal.remove();
-            // Libera a câmera quando autônomo
-            this.cameras.main.stopFollow();
-            this.time.delayedCall(500, () => {
-                this.startNPCMovement(npc);
-            });
         };
 
         modal.querySelector('#controlled').onclick = () => {
             npc.isAutonomous = false;
-            // Trava a câmera no NPC quando controlado
-            this.cameras.main.startFollow(npc.sprite);
             this.enablePlayerControl(npc);
             modal.remove();
         };
