@@ -1,4 +1,5 @@
 
+const { Math: PhaserMath } = Phaser;
 export default class InputManager {
     constructor(scene) {
         this.scene = scene;
