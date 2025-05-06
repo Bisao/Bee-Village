@@ -575,6 +575,12 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
+            // Check if building already has an NPC
+            if (this.grid.buildingGrid[key]?.npc) {
+                this.showFeedback('Esta casa já possui um NPC', false);
+                return;
+            }
+
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
             if (!building) {
@@ -596,8 +602,10 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
-            // Create farmer NPC only after building is fully registered
-            if (this.selectedBuilding === 'farmerHouse') {
+            // Create NPC based on building type if no NPC exists
+            const key = `${gridX},${gridY}`;
+            if (!this.grid.buildingGrid[key].npc && 
+                ['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
             }
 
