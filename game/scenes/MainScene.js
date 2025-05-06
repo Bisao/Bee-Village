@@ -885,9 +885,11 @@ export default class MainScene extends Phaser.Scene {
                 </div>
 
                 <div class="npc-inventory">
-                    ${inventory.map(item => `
-                        <div class="inventory-slot ${!item ? 'empty' : ''}" title="${item || 'Vazio'}">
-                            ${item || ''}
+                    ${npc.config.tools.map(tool => `
+                        <div class="tool-slot">
+                            <div class="tool-emoji">${tool.emoji}</div>
+                            <div class="tool-name">${tool.name}</div>
+                            <div class="tool-description">${tool.description}</div>
                         </div>
                     `).join('')}
                 </div>

@@ -1024,11 +1024,46 @@ html, body {
 
 .npc-inventory {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    padding: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 15px;
     background: rgba(0, 0, 0, 0.2);
     border-radius: 8px;
+}
+
+.tool-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tool-slot:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tool-emoji {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+.tool-name {
+    font-size: 0.8em;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.tool-description {
+    font-size: 0.7em;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-align: center;
+    margin-top: 4px;
 }
 
 .inventory-slot {

@@ -15,6 +15,7 @@ export default class BaseNPC {
             spritesheet: config.spritesheet || 'farmer',
             scale: config.scale || 0.8,
             movementDelay: config.movementDelay || 2000,
+            tools: this.getToolsByProfession(config.profession),
             ...config
         };
 
@@ -181,6 +182,27 @@ export default class BaseNPC {
                 this.checkIfInHouse();
             }
         });
+    }
+
+    getToolsByProfession(profession) {
+        const toolsets = {
+            'Farmer': [
+                { name: 'Enchada', emoji: '🦾', description: 'Para cultivar a terra' },
+                { name: 'Regador', emoji: '💧', description: 'Para regar as plantas' },
+                { name: 'Escopeta', emoji: '🔫', description: 'Para defesa da fazenda' }
+            ],
+            'Miner': [
+                { name: 'Picareta', emoji: '⛏️', description: 'Para minerar' },
+                { name: 'Pá', emoji: '🔨', description: 'Para cavar' },
+                { name: 'Lanterna', emoji: '🔦', description: 'Para iluminar' }
+            ],
+            'Fisher': [
+                { name: 'Vara', emoji: '🎣', description: 'Para pescar' },
+                { name: 'Rede', emoji: '🕸️', description: 'Para pegar peixes' },
+                { name: 'Arpão', emoji: '🔱', description: 'Para peixes grandes' }
+            ]
+        };
+        return toolsets[profession] || [];
     }
 
     destroy() {
