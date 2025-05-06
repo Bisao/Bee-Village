@@ -1,3 +1,4 @@
+
 import MainScene from './scenes/MainScene.js';
 
 // Game configuration
@@ -26,94 +27,99 @@ const currentEmoji = currentTheme === 'pig' ? '🐖' : '🐄';
 
 function applyThemeChanges(theme, save = false) {
     const themeButton = document.querySelector(`.theme-btn[data-theme="${theme}"]`);
-    const emoji = themeButton?.dataset.emoji || '🐄';
+    if (themeButton) {
+        const emoji = themeButton.dataset.emoji || '🐄';
+        document.documentElement.setAttribute('data-theme', theme);
+        document.documentElement.classList.add('theme-loaded');
 
-    document.documentElement.setAttribute('data-theme', theme);
-    document.documentElement.classList.add('theme-loaded');
+        // Update theme emojis if they exist
+        document.querySelectorAll('.theme-emoji, .theme-icon').forEach(element => {
+            if (element) element.textContent = emoji;
+        });
 
-    // Update theme emojis
-    document.querySelectorAll('.theme-emoji, .theme-icon').forEach(element => {
-        if (element) element.textContent = emoji;
-    });
-
-    if (save) {
-        localStorage.setItem('selectedTheme', theme);
-        localStorage.setItem('selectedEmoji', emoji);
+        if (save) {
+            localStorage.setItem('selectedTheme', theme);
+            localStorage.setItem('selectedEmoji', emoji);
+        }
     }
 }
 
-// Initialize UI
-document.addEventListener('DOMContentLoaded', () => {
+function initializeUI() {
     // Apply initial theme
     applyThemeChanges(currentTheme, false);
-    document.querySelector(`.theme-btn[data-theme="${currentTheme}"]`)?.classList.add('selected');
-
-    // Show theme icon immediately
-    const themeIcon = document.querySelector('.theme-icon');
-    if (themeIcon) {
-        themeIcon.className = 'theme-icon play visible';
-    }
-
-    // Setup theme buttons
+    
     const themeButtons = document.querySelectorAll('.theme-btn');
     const applyThemeBtn = document.getElementById('apply-theme');
     let previewTheme = currentTheme;
 
     themeButtons.forEach(button => {
-        button.addEventListener('click', () => {
+        button?.addEventListener('click', () => {
             previewTheme = button.dataset.theme;
             themeButtons.forEach(btn => btn.classList.remove('selected'));
             button.classList.add('selected');
-            applyThemeBtn.classList.add('visible');
+            if (applyThemeBtn) {
+                applyThemeBtn.classList.add('visible');
+            }
             applyThemeChanges(previewTheme, false);
         });
     });
 
-    applyThemeBtn.addEventListener('click', () => {
+    applyThemeBtn?.addEventListener('click', () => {
         applyThemeChanges(previewTheme, true);
         applyThemeBtn.classList.remove('visible');
     });
 
     // Show bee icon
-    setTimeout(() => {
-        const beeIcon = document.querySelector('.bee-icon');
-        if (beeIcon) {
+    const beeIcon = document.querySelector('.bee-icon');
+    if (beeIcon) {
+        setTimeout(() => {
             beeIcon.className = 'bee-icon play visible';
-        }
-    }, 100);
+        }, 100);
+    }
 
     // Handle play button
     let isTransitioning = false;
-    document.getElementById('play-button')?.addEventListener('click', () => {
+    const playButton = document.getElementById('play-button');
+    playButton?.addEventListener('click', () => {
         if (isTransitioning) return;
         isTransitioning = true;
-
         moveBeeToButton('play');
         setTimeout(() => {
-            document.getElementById('loading-screen').style.display = 'flex';
+            const loadingScreen = document.getElementById('loading-screen');
+            if (loadingScreen) {
+                loadingScreen.style.display = 'flex';
+            }
             startGameWithLoading();
         }, 1000);
     });
 
     // Handle settings button
-    document.getElementById('settings-button')?.addEventListener('click', () => {
+    const settingsButton = document.getElementById('settings-button');
+    settingsButton?.addEventListener('click', () => {
         if (isTransitioning) return;
         moveBeeToButton('settings');
         setTimeout(() => {
-            document.getElementById('settings-panel').classList.add('visible');
+            const settingsPanel = document.getElementById('settings-panel');
+            if (settingsPanel) {
+                settingsPanel.classList.add('visible');
+            }
             isTransitioning = false;
         }, 1000);
     });
 
     // Handle back button
-    document.querySelector('.back-button')?.addEventListener('click', () => {
-        document.getElementById('settings-panel')?.classList.remove('visible');
+    const backButton = document.querySelector('.back-button');
+    backButton?.addEventListener('click', () => {
+        const settingsPanel = document.getElementById('settings-panel');
+        if (settingsPanel) {
+            settingsPanel.classList.remove('visible');
+        }
         const beeIcon = document.querySelector('.theme-icon');
         if (beeIcon) {
             beeIcon.className = 'theme-icon play visible';
         }
     });
-});
+}
 
 // Helper functions
 function moveBeeToButton(buttonType) {
@@ -137,7 +143,6 @@ function startGameWithLoading() {
             clearInterval(loadingInterval);
             try {
                 window.game = new Phaser.Game(config);
-
                 window.game.events.once('ready', () => {
                     setTimeout(() => {
                         const loadingScreen = document.getElementById('loading-screen');
@@ -154,5 +159,7 @@ function startGameWithLoading() {
     }, 50);
 }
 
+// Initialize UI when DOM is loaded
+document.addEventListener('DOMContentLoaded', initializeUI);
 
 export default config;
