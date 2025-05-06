@@ -159,7 +159,25 @@ export default class MainScene extends Phaser.Scene {
                     if (button) {
                         button.addEventListener('touchstart', (e) => {
                             e.preventDefault();
-                            this.keys[key.toLowerCase()].isDown = true;
+                            if (this.currentControlledNPC && !this.currentControlledNPC.isAutonomous) {
+                                const direction = {
+                                    'W': { x: 0, y: -1 },
+                                    'S': { x: 0, y: 1 },
+                                    'A': { x: -1, y: 0 },
+                                    'D': { x: 1, y: 0 }
+                                }[key];
+
+                                if (direction) {
+                                    const newX = this.currentControlledNPC.gridX + direction.x;
+                                    const newY = this.currentControlledNPC.gridY + direction.y;
+
+                                    if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+                                        this.moveNPCTo(this.currentControlledNPC, newX, newY);
+                                    }
+                                }
+                            } else {
+                                this.keys[key.toLowerCase()].isDown = true;
+                            }
                         });
                         button.addEventListener('touchend', (e) => {
                             e.preventDefault();
