@@ -719,15 +719,40 @@ export default class MainScene extends Phaser.Scene {
         });
     }
     createFarmerNPC(houseX, houseY, worldX, worldY) {
-        // Carregar sprites do fazendeiro
-        for (let i = 1; i <= 12; i++) {
-            const key = `farmer${i}`;
-            if (!this.textures.exists(key)) {
-                this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        const loadAndCreateAnimations = () => {
+            // Load farmer sprites if they don't exist
+            const spritesToLoad = [];
+            for (let i = 1; i <= 12; i++) {
+                const key = `farmer${i}`;
+                if (!this.textures.exists(key)) {
+                    spritesToLoad.push({
+                        key: key,
+                        url: `attached_assets/Farmer_${i}-ezgif.com-resize.png`
+                    });
+                }
             }
-        }
 
-        this.load.once('complete', () => {
+            if (spritesToLoad.length > 0) {
+                spritesToLoad.forEach(sprite => {
+                    this.load.image(sprite.key, sprite.url);
+                });
+
+                this.load.once('complete', createAnimations);
+                this.load.start();
+            } else {
+                createAnimations();
+            }
+        };
+
+        const createAnimations = () => {
+            // Remove existing animations if they exist
+            ['farmer_up', 'farmer_down', 'farmer_left', 'farmer_right'].forEach(key => {
+                if (this.anims.exists(key)) {
+                    this.anims.remove(key);
+                }
+            });
+
+            // Create animations
             this.anims.create({
                 key: 'farmer_up',
                 frames: [
@@ -775,9 +800,11 @@ export default class MainScene extends Phaser.Scene {
                 frameRate: 8,
                 repeat: -1
             });
-        });
 
-        this.load.start();
+            continueNPCCreation();
+        };
+
+        const continueNPCCreation = () => {
 
         const buildingType = this.selectedBuilding;
         const nameData = this.professionNames[buildingType];
@@ -857,9 +884,13 @@ export default class MainScene extends Phaser.Scene {
         else if (newY > npc.gridY) animKey = 'farmer_down';
         else if (newX < npc.gridX) animKey = 'farmer_left';
 
-        // Garante que a animação existe antes de executar
+        // Verifica e toca a animação
         if (this.anims.exists(animKey)) {
-            npc.sprite.play(animKey);
+            npc.sprite.play(animKey, true); // true força o reinício da animação
+        } else {
+            console.warn(`Animation ${animKey} not found`);
+            // Usa um frame estático como fallback
+            npc.sprite.setTexture('farmer1');
         }
 
         this.tweens.add({
