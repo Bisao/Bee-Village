@@ -844,13 +844,22 @@ export default class MainScene extends Phaser.Scene {
         modal.className = 'npc-modal';
         modal.innerHTML = `
             <div class="modal-content">
-                <h3>Controles do Fazendeiro</h3>
+                <h3>${npc.config.emoji} ${npc.config.name}</h3>
+                <p class="npc-profession">${npc.config.profession}</p>
                 <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
-                    🤖 Autônomo
+                    🤖 Modo Autônomo
                 </button>
-                <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}"id="controlled">
-                    🕹️ Controlado
+                <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                    🕹️ Modo Controlado
                 </button>
+                <div class="mode-info">
+                    <p class="autonomous-info ${npc.isAutonomous ? 'visible' : ''}">
+                        🔄 NPC se move livremente
+                    </p>
+                    <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
+                        📱 Use WASD ou controles mobile
+                    </p>
+                </div>
             </div>
         `;
 

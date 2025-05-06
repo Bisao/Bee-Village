@@ -939,9 +939,62 @@ html, body {
 .modal-content {
     background: var(--accent-color);
     padding: 20px;
-    border-radius: 8px;
+    border-radius: 12px;
     border: 2px solid var(--primary-color);
     text-align: center;
+    min-width: 280px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.modal-content h3 {
+    color: var(--text-color);
+    margin: 0 0 5px 0;
+    font-size: 1.4em;
+}
+
+.npc-profession {
+    color: var(--text-color);
+    opacity: 0.8;
+    margin: 0 0 15px 0;
+}
+
+.mode-info {
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.mode-info p {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: var(--text-color);
+}
+
+.mode-info p.visible {
+    opacity: 1;
+}
+
+.control-btn {
+    width: 100%;
+    margin: 8px 0;
+    padding: 12px;
+    font-size: 1.1em;
+    transition: all 0.3s ease;
+    background: var(--accent-color);
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.control-btn:hover {
+    background: var(--primary-color);
+    color: var(--button-text);
+}
+
+.control-btn.active {
+    background: var(--primary-color);
+    color: var(--button-text);
+    transform: scale(1.02);
 }
 
 .control-btn {

@@ -102,16 +102,32 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
         this.isMoving = true;
 
-        // Determina direção da animação
-        let animKey = `${this.config.spritesheet}_right`;
-        if (newY < this.gridY) animKey = `${this.config.spritesheet}_up`;
-        else if (newY > this.gridY) animKey = `${this.config.spritesheet}_down`;
-        else if (newX < this.gridX) animKey = `${this.config.spritesheet}_left`;
+        // Define frames da animação baseado na direção
+        let frameRange;
+        if (newY < this.gridY) frameRange = [1, 4];  // up
+        else if (newY > this.gridY) frameRange = [9, 12];  // down
+        else if (newX < this.gridX) frameRange = [5, 8];  // left
+        else frameRange = [1, 4];  // right/default
 
-        // Toca animação
-        if (this.scene.anims.exists(animKey)) {
-            this.sprite.play(animKey);
+        // Atualiza frame estático quando não há animação
+        const baseFrame = `${this.config.spritesheet}${frameRange[0]}`;
+        this.sprite.setTexture(baseFrame);
+
+        // Gera frames para animação
+        const frames = [];
+        for (let i = frameRange[0]; i <= frameRange[1]; i++) {
+            frames.push({ key: `${this.config.spritesheet}${i}` });
         }
+
+        // Cria e toca animação temporária
+        const animKey = `temp_move_${Date.now()}`;
+        this.scene.anims.create({
+            key: animKey,
+            frames: frames,
+            frameRate: 8,
+            repeat: -1
+        });
+        this.sprite.play(animKey);
 
         // Move o NPC
         this.scene.tweens.add({
