@@ -120,14 +120,17 @@ function showFeedback(message, duration = 2000) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    const startScreen = document.getElementById('start-screen');
     const settingsButton = document.getElementById('settings-button');
     const settingsPanel = document.getElementById('settings-panel');
     const backButton = document.querySelector('.back-button');
 
     // Settings panel controls
     settingsButton?.addEventListener('click', () => {
-        settingsPanel.style.display = 'flex';
-        settingsPanel.classList.add('visible');
+        if (startScreen && startScreen.style.display !== 'none') {
+            settingsPanel.style.display = 'flex';
+            settingsPanel.classList.add('visible');
+        }
     });
 
     backButton?.addEventListener('click', () => {
@@ -143,17 +146,16 @@ document.addEventListener('DOMContentLoaded', function() {
     tabButtons.forEach(button => {
         button.addEventListener('click', () => {
             if (!button.disabled) {
-                // Remove active class from all buttons and tabs
                 document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
                 document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-                // Add active class to clicked button and corresponding tab
                 button.classList.add('active');
                 const tabId = `${button.dataset.tab}-tab`;
                 document.getElementById(tabId)?.classList.add('active');
             }
         });
     });
+
     const structuresBtn = document.getElementById('toggleStructures');
     const sidePanel = document.getElementById('side-panel');
 
@@ -169,7 +171,7 @@ document.addEventListener('DOMContentLoaded', function() {
     defaultZoomControl.value = settings.defaultZoom;
 
     // Settings event listeners
-    gameSoundControl.addEventListener('input', () => {
+    gameSoundControl?.addEventListener('input', () => {
         saveSettings({
             ...loadSettings(),
             gameSound: gameSoundControl.value
@@ -177,7 +179,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateGameSound(gameSoundControl.value);
     });
 
-    backgroundMusicControl.addEventListener('input', () => {
+    backgroundMusicControl?.addEventListener('input', () => {
         saveSettings({
             ...loadSettings(),
             backgroundMusic: backgroundMusicControl.value
@@ -185,7 +187,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateBackgroundMusic(backgroundMusicControl.value);
     });
 
-    defaultZoomControl.addEventListener('input', () => {
+    defaultZoomControl?.addEventListener('input', () => {
         saveSettings({
             ...loadSettings(),
             defaultZoom: defaultZoomControl.value
@@ -193,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function() {
         updateDefaultZoom(defaultZoomControl.value);
     });
 
-    structuresBtn.addEventListener('click', () => {
+    structuresBtn?.addEventListener('click', () => {
         sidePanel.style.display = sidePanel.style.display === 'none' ? 'flex' : 'none';
     });
 });
@@ -215,18 +217,14 @@ function saveSettings(settings) {
 }
 
 function updateGameSound(value) {
-    // Implement game sound volume control
     if (window.game) {
-        // Update Phaser sound volume
         const volume = value / 100;
         window.game.sound.volume = volume;
     }
 }
 
 function updateBackgroundMusic(value) {
-    // Implement background music volume control
     if (window.game) {
-        // Update background music volume
         const volume = value / 100;
         if (window.game.backgroundMusic) {
             window.game.backgroundMusic.volume = volume;
@@ -235,7 +233,6 @@ function updateBackgroundMusic(value) {
 }
 
 function updateDefaultZoom(value) {
-    // Implement zoom control
     if (window.game && window.game.scene.scenes[0]) {
         const zoom = value / 100;
         window.game.scene.scenes[0].cameras.main.setZoom(zoom);
