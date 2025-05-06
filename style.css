@@ -757,18 +757,18 @@ html, body {
 
 @media (max-width: 768px) {
     #side-panel {
-        right: 16px;
+        left: 50%;
+        transform: translateX(-50%);
         top: 80px;
-        width: 43px;
-        min-width: 43px;
+        width: 80%;
         flex-direction: column;
         max-height: calc(100vh - 120px);
-        padding: 4px;
+        padding: 8px;
     }
 
     .building-list {
         display: grid;
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
         gap: 8px;
         padding: 4px;
     }
