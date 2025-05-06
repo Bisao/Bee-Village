@@ -759,7 +759,7 @@ export default class MainScene extends Phaser.Scene {
 
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
-            
+
             // Adiciona interatividade à casa
             const house = this.grid.buildingGrid[buildingKey].sprite;
             if (house) {
@@ -938,7 +938,7 @@ export default class MainScene extends Phaser.Scene {
             // Show controls panel on mobile
             const controlsPanel = document.getElementById('controls-panel');
             if (this.inputManager.isMobile && controlsPanel) {
-                controlsPanel.style.display = 'flex';
+                controlsPanel.style.display = 'flex !important';
                 controlsPanel.style.visibility = 'visible';
                 controlsPanel.style.pointerEvents = 'auto';
             }
