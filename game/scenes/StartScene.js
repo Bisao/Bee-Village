@@ -1,63 +1,39 @@
-
-class StartScene extends Phaser.Scene {
+export default class StartScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'StartScene' });
+        super('StartScene');
     }
 
     preload() {
-        // Preload assets if needed
+        // Preload de assets se necessário
     }
 
     create() {
-        const { width, height } = this.cameras.main;
-        
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+
+        // Adiciona um retângulo escuro como fundo
+        this.add.rectangle(centerX, centerY, this.cameras.main.width, this.cameras.main.height, 0x000000, 0.7);
+
         // Título
-        const title = this.add.text(width / 2, height / 3, 'My Village', {
+        const title = this.add.text(centerX, centerY - 100, 'My Village', {
             fontSize: '64px',
-            fill: '#ffffff',
-            fontFamily: 'Arial',
-            stroke: '#000000',
-            strokeThickness: 6
+            fill: '#fff',
+            fontFamily: 'Arial'
         }).setOrigin(0.5);
 
-        // Efeito de flutuação no título
-        this.tweens.add({
-            targets: title,
-            y: title.y + 10,
-            duration: 1500,
-            yoyo: true,
-            repeat: -1,
-            ease: 'Sine.inOut'
-        });
 
         // Botão de Play
-        const playButton = this.add.text(width / 2, height / 2, 'Jogar', {
+        const playButton = this.add.rectangle(centerX, centerY + 50, 200, 60, 0x4CAF50);
+        const playText = this.add.text(centerX, centerY + 50, 'Jogar', {
             fontSize: '32px',
-            fill: '#ffffff',
-            backgroundColor: '#4CAF50',
-            padding: { x: 20, y: 10 },
-            stroke: '#000000',
-            strokeThickness: 4
-        })
-        .setOrigin(0.5)
-        .setInteractive({ useHandCursor: true });
+            fill: '#fff',
+            fontFamily: 'Arial'
+        }).setOrigin(0.5);
 
-        // Efeitos do botão
-        playButton.on('pointerover', () => {
-            playButton.setScale(1.1);
-        });
-
-        playButton.on('pointerout', () => {
-            playButton.setScale(1);
-        });
-
+        // Torna o botão interativo
+        playButton.setInteractive();
         playButton.on('pointerdown', () => {
-            this.cameras.main.fade(500, 0, 0, 0);
-            this.time.delayedCall(500, () => {
-                this.scene.start('MainScene');
-            });
+            this.scene.start('MainScene');
         });
     }
 }
-
-export { StartScene as default };
