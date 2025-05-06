@@ -72,10 +72,28 @@ export default class BaseNPC {
         if (!this.isAutonomous || this.isMoving) return;
 
         const directions = this.scene.getAvailableDirections(this.gridX, this.gridY);
-        if (directions.length === 0) return;
+        if (directions.length === 0) {
+            // Se não houver direções disponíveis, tentar novamente em 1 segundo
+            this.scene.time.delayedCall(1000, () => this.moveRandomly());
+            return;
+        }
 
-        const randomDir = directions[Math.floor(Math.random() * directions.length)];
-        this.moveTo(this.gridX + randomDir.x, this.gridY + randomDir.y);
+        // Priorizar movimentos que não retornam à posição anterior
+        const filteredDirections = directions.filter(dir => {
+            const newX = this.gridX + dir.x;
+            const newY = this.gridY + dir.y;
+            return !(this.lastPosition && 
+                    this.lastPosition.x === newX && 
+                    this.lastPosition.y === newY);
+        });
+
+        const directionToUse = filteredDirections.length > 0 ? 
+            filteredDirections[Math.floor(Math.random() * filteredDirections.length)] :
+            directions[Math.floor(Math.random() * directions.length)];
+
+        // Guardar posição atual antes de mover
+        this.lastPosition = { x: this.gridX, y: this.gridY };
+        this.moveTo(this.gridX + directionToUse.x, this.gridY + directionToUse.y);
     }
 
     moveTo(newX, newY) {

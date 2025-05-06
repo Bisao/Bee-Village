@@ -857,13 +857,23 @@ export default class MainScene extends Phaser.Scene {
         document.body.appendChild(modal);
 
         modal.querySelector('#autonomous').onclick = () => {
-            npc.isAutonomous = true;
-            this.cameras.main.stopFollow();
-            this.startNPCMovement(npc);
-            // Hide controls panel on mobile
-            if (this.inputManager.isMobile) {
-                document.getElementById('controls-panel').style.display = 'none';
-            }
+            // Transição suave da câmera
+            this.tweens.add({
+                targets: this.cameras.main,
+                zoom: 1.5,
+                duration: 500,
+                ease: 'Power2',
+                onComplete: () => {
+                    npc.isAutonomous = true;
+                    this.cameras.main.stopFollow();
+                    this.startNPCMovement(npc);
+                    // Hide controls panel on mobile
+                    if (this.inputManager.isMobile) {
+                        document.getElementById('controls-panel').style.display = 'none';
+                    }
+                }
+            });
+            this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
         };
 
