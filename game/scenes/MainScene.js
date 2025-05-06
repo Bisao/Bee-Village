@@ -707,8 +707,7 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
-}
-    createFarmerNPC(houseX, houseY, worldX, worldY) {
+createFarmerNPC(houseX, houseY, worldX, worldY) {
         const npc = {
             sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
             gridX: houseX,
@@ -733,8 +732,6 @@ export default class MainScene extends Phaser.Scene {
         const house = this.grid.buildingGrid[`${houseX},${houseY}`].sprite;
         house.setInteractive();
         house.on('pointerdown', () => this.showNPCControls(npc));
-    }
-    
     startNPCMovement(npc) {
         if (!npc.isAutonomous) return;
         
