@@ -101,7 +101,8 @@ export default class InputManager {
     }
 
     handlePointerDown(pointer) {
-        if (pointer.rightButtonDown() || (this.isMobile && pointer.id === 0)) {
+        // No mobile, permitir arrastar com um dedo quando não houver dois dedos pressionados
+        if (pointer.rightButtonDown() || (this.isMobile && !this.scene.input.pointer2.isDown)) {
             this.isDragging = true;
             this.scene.game.canvas.style.cursor = 'grabbing';
         }
