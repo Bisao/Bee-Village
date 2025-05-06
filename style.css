@@ -837,6 +837,38 @@ html, body {
         bottom: 90px;
     }
 
+    @media (orientation: portrait) {
+        #side-panel {
+            width: 95%;
+            height: calc(100vh - 200px);
+        }
+
+        .building-list {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        #controls-panel {
+            bottom: 10px;
+            left: 10px;
+        }
+    }
+
+    @media (orientation: landscape) {
+        #side-panel {
+            width: 70%;
+            height: calc(100vh - 100px);
+        }
+
+        .building-list {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        #controls-panel {
+            bottom: 20px;
+            left: 20px;
+        }
+    }
+
     .building-list {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
