@@ -30,7 +30,6 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointermove', this.updatePreview, this);
 
         this.placeEnvironmentObjects();
-        this.createFarmer();
 
         // Define zoom inicial diferente para mobile e desktop
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
