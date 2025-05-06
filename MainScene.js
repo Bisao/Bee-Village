@@ -93,3 +93,22 @@ autoSave() {
             }
         }
     }
+
+setupUIHandlers() {
+        this.uiManager = new UIManager(this);
+        this.uiManager.init();
+
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedBuilding = btn.dataset.building;
+                if (this.previewBuilding) {
+                    this.previewBuilding.destroy();
+                    this.previewBuilding = null;
+                }
+                document.getElementById('side-panel').style.display = 'none';
+            });
+        });
+    }
