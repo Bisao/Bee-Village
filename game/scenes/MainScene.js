@@ -808,15 +808,11 @@ export default class MainScene extends Phaser.Scene {
         const {tileX, tileY} = this.grid.gridToIso(newX, newY);
         npc.isMoving = true;
 
-        // Determina direção e frame base
-        let baseFrame;
-        if (newY < npc.gridY) baseFrame = 'farmer1';
-        else if (newY > npc.gridY) baseFrame = 'farmer9';
-        else if (newX < npc.gridX) baseFrame = 'farmer5';
-        else baseFrame = 'farmer1';
-
-        // Define frame estático
-        npc.sprite.setTexture(baseFrame);
+        // Determina direção da animação
+        let animKey = 'farmer_right';
+        if (newY < npc.gridY) animKey = 'farmer_up';
+        else if (newY > npc.gridY) animKey = 'farmer_down';
+        else if (newX < npc.gridX) animKey = 'farmer_left';
 
         // Verifica e toca a animação
         if (this.anims.exists(animKey)) {
@@ -1037,13 +1033,10 @@ export default class MainScene extends Phaser.Scene {
     }
 
     enablePlayerControl(npc) {
-        // Parar movimento autônomo
-        if (npc.movementTimer) {
-            npc.movementTimer.remove();
-            npc.movementTimer = null;
-        }
+        // Remove previous keyboard listeners if they exist
+        this.input.keyboard.removeAllListeners('keydown');
 
-        // Configurar controles
+        // Create unique controls for this NPC
         npc.controls = this.input.keyboard.addKeys({
             w: Phaser.Input.Keyboard.KeyCodes.W,
             a: Phaser.Input.Keyboard.KeyCodes.A,

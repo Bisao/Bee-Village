@@ -687,11 +687,13 @@ html, body {
 }
 
 #controls-panel {
-    display: none;
+    display: none !important;
     position: fixed;
     bottom: 20px;
     left: 20px;
     z-index: 2000;
+    visibility: hidden;
+    pointer-events: none;
 }
 
 @media (max-width: 768px) {
