@@ -297,18 +297,18 @@ html, body {
   top: 75px;
   left: 50%;
   transform: translateX(-50%);
-  width: min(85%, 800px);
+  width: min(90%, 1200px);
   height: auto;
-  max-height: calc(100vh - 95px);
+  max-height: calc(100vh - 85px);
   background-color: var(--panel-background);
   backdrop-filter: blur(10px);
   border: 2px solid var(--primary-color);
   border-radius: 12px;
-  padding: 15px;
+  padding: clamp(10px, 2vw, 20px);
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 8px;
+  gap: 10px;
   z-index: 2000;
   overflow-y: auto;
 }
@@ -319,15 +319,13 @@ html, body {
 
 .panel-tabs {
     display: flex;
-    gap: 8px;
-    padding: 8px;
+    gap: 12px;
+    padding: 15px;
     border-bottom: 2px solid var(--primary-color);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     justify-content: center;
-    flex-wrap: nowrap;
-    width: 100%;
 }
 
 .tab-btn {
@@ -447,24 +445,24 @@ html, body {
 .building-btn {
     position: relative;
     width: 100%;
-    padding: 6px 4px;
+    padding: 10px 5px;
     background: var(--accent-color);
-    border: 1px solid var(--primary-color);
-    border-radius: 6px;
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 5px;
 }
 
 .building-info {
     width: 100%;
-    margin-top: 3px;
-    padding: 4px;
+    margin-top: 5px;
+    padding: 5px;
     border-top: 1px solid var(--primary-color);
-    font-size: 11px;
+    font-size: 12px;
     color: var(--text-color);
     text-align: left;
 }
@@ -554,174 +552,16 @@ html, body {
     transform: translate(-50%, -50%);
     z-index: 2001;
     display: none;
-    width: min(90%, 400px);
+    width: 90%;
+    max-width: 400px;
     background: var(--panel-background);
     border: 2px solid var(--primary-color);
     border-radius: 15px;
-    padding: clamp(10px, 3vw, 20px);
+    padding: 20px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     flex-direction: column;
     opacity: 0;
     transition: opacity 0.3s ease;
-}
-
-/* Responsive Settings for all UI Elements */
-@media (max-width: 320px) {
-    .settings-panel,
-    .modal-content,
-    .feedback-message,
-    .npc-modal,
-    .panel-tabs,
-    .tab-content,
-    .building-list,
-    .start-buttons-panel {
-        width: 98%;
-        padding: 4px;
-        gap: 4px;
-    }
-
-    .tab-btn,
-    .control-btn,
-    .theme-btn,
-    .building-btn,
-    .structure-button,
-    button {
-        padding: 2px 4px;
-        font-size: 0.7em;
-        min-height: 24px;
-        border-radius: 4px;
-    }
-
-    .building-info,
-    .tool-name,
-    .setting-item label,
-    .topbar h1,
-    .settings-header h2,
-    .section-title {
-        font-size: 0.6em;
-    }
-
-    .topbar {
-        height: 45px;
-        padding: 4px;
-    }
-}
-
-@media (min-width: 321px) and (max-width: 480px) {
-    .settings-panel,
-    .modal-content,
-    .feedback-message {
-        width: 95%;
-        padding: 8px;
-    }
-
-    .tab-btn,
-    .control-btn,
-    .theme-btn {
-        padding: 4px 8px;
-        font-size: 0.8em;
-    }
-
-    .building-info,
-    .tool-name,
-    .setting-item label {
-        font-size: 0.7em;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    .settings-panel,
-    .modal-content,
-    .feedback-message {
-        width: 85%;
-        padding: 12px;
-    }
-
-    .tab-btn,
-    .control-btn,
-    .theme-btn {
-        padding: 6px 12px;
-        font-size: 0.9em;
-    }
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-    .settings-panel,
-    .modal-content,
-    .feedback-message,
-    .panel-tabs,
-    .tab-content,
-    .start-buttons-panel {
-        width: 85%;
-        padding: 12px;
-        gap: 8px;
-    }
-
-    .tab-btn,
-    .control-btn,
-    .theme-btn,
-    .building-btn,
-    .structure-button,
-    button {
-        padding: 6px 12px;
-        font-size: 0.9em;
-        min-height: 32px;
-        border-radius: 6px;
-    }
-
-    .topbar {
-        height: 55px;
-        padding: 8px;
-    }
-}
-
-@media (min-width: 769px) {
-    .settings-panel,
-    .modal-content,
-    .feedback-message,
-    .panel-tabs,
-    .tab-content,
-    .start-buttons-panel {
-        width: min(75%, 500px);
-        padding: 20px;
-        gap: 12px;
-    }
-
-    .tab-btn,
-    .control-btn,
-    .theme-btn,
-    .building-btn,
-    .structure-button,
-    button {
-        padding: 8px 16px;
-        font-size: 1em;
-        min-height: 40px;
-        border-radius: 8px;
-    }
-
-    .topbar {
-        height: 65px;
-        padding: 16px;
-    }
-}
-
-/* Orientation-specific adjustments */
-@media (orientation: portrait) {
-    .settings-panel,
-    .modal-content,
-    .npc-modal {
-        max-height: 80vh;
-        overflow-y: auto;
-    }
-}
-
-@media (orientation: landscape) {
-    .settings-panel,
-    .modal-content,
-    .npc-modal {
-        max-height: 90vh;
-        overflow-y: auto;
-    }
 }
 
 .settings-panel.visible {
@@ -996,96 +836,6 @@ html, body {
         overflow-y: auto;
         bottom: 90px;
     }
-}
-
-/* Dispositivos muito pequenos */
-@media (max-width: 320px) {
-    #side-panel {
-        width: 98%;
-        padding: 4px;
-    }
-
-    .building-list {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 4px;
-    }
-
-    .building-btn {
-        padding: 2px;
-    }
-
-    .building-info {
-        font-size: 9px;
-    }
-}
-
-/* Dispositivos pequenos */
-@media (min-width: 321px) and (max-width: 480px) {
-    #side-panel {
-        width: 95%;
-    }
-
-    .building-list {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 6px;
-    }
-}
-
-/* Tablets em retrato */
-@media (min-width: 481px) and (max-width: 768px) {
-    #side-panel {
-        width: 85%;
-    }
-
-    .building-list {
-        grid-template-columns: repeat(3, 1fr);
-    }
-}
-
-/* Tablets em paisagem */
-@media (min-width: 769px) and (max-width: 1024px) {
-    #side-panel {
-        width: 75%;
-    }
-
-    .building-list {
-        grid-template-columns: repeat(4, 1fr);
-    }
-}
-
-/* Desktops */
-@media (min-width: 1025px) {
-    #side-panel {
-        width: min(85%, 800px);
-    }
-
-    .building-list {
-        grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-    }
-}
-
-/* Ajustes de orientação */
-@media (orientation: portrait) {
-    #side-panel {
-        height: calc(100vh - 200px);
-    }
-
-    #controls-panel {
-        bottom: 10px;
-        left: 10px;
-    }
-}
-
-@media (orientation: landscape) {
-    #side-panel {
-        height: calc(100vh - 100px);
-    }
-
-    #controls-panel {
-        bottom: 20px;
-        left: 20px;
-    }
-}
 
     .building-list {
         display: grid;
