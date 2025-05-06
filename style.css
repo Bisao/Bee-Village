@@ -759,24 +759,28 @@ html, body {
     #side-panel {
         left: 50%;
         transform: translateX(-50%);
-        top: 80px;
+        top: 70px;
         width: 80%;
         flex-direction: column;
-        max-height: calc(100vh - 120px);
+        height: calc(100vh - 180px);
         padding: 8px;
+        overflow-y: auto;
+        bottom: 90px;
     }
 
     .building-list {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
         gap: 8px;
         padding: 4px;
+        margin-bottom: 80px;
     }
 
     .building-btn {
         width: 100%;
         height: auto;
         aspect-ratio: 1;
+        padding: 4px;
     }
 
     .building-btn .tooltip {
