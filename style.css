@@ -652,7 +652,7 @@ html, body {
 [data-theme="bee"] {
   --primary-color: var(--theme-bee-primary);
   --accent-color: rgba(255, 215, 0, 0.3);
-  --text-color: var(--theme-bee-primary);
+  --text-color: #806A00;
 }
 
 /* Tema Porco */
@@ -661,7 +661,7 @@ html, body {
   --accent-color: rgba(255, 192, 203, 0.3);
   --background-color: #1a1515;
   --panel-background: rgba(15, 10, 10, 0.95);
-  --text-color: var(--theme-pig-primary);
+  --text-color: #804D57;
   --button-hover: #FFE4E8;
 }
 
@@ -671,7 +671,7 @@ html, body {
   --accent-color: rgba(245, 245, 245, 0.3);
   --background-color: #1a1a1c;
   --panel-background: rgba(10, 10, 15, 0.95);
-  --text-color: var(--theme-cow-primary);
+  --text-color: #808080;
 }
 
 
