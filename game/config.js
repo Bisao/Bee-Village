@@ -3,10 +3,10 @@ import MainScene from './scenes/MainScene.js';
 // Game configuration
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
-    backgroundColor: '#1a1a1a',
-    scene: [MainScene],
+    width: 800,
+    height: 600,
+    backgroundColor: '#2d2d2d',
+    scene: MainScene,
     scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
