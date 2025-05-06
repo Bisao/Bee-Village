@@ -554,16 +554,112 @@ html, body {
     transform: translate(-50%, -50%);
     z-index: 2001;
     display: none;
-    width: 90%;
-    max-width: 400px;
+    width: min(90%, 400px);
     background: var(--panel-background);
     border: 2px solid var(--primary-color);
     border-radius: 15px;
-    padding: 20px;
+    padding: clamp(10px, 3vw, 20px);
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     flex-direction: column;
     opacity: 0;
     transition: opacity 0.3s ease;
+}
+
+/* Responsive Settings for all UI Elements */
+@media (max-width: 320px) {
+    .settings-panel,
+    .modal-content,
+    .feedback-message,
+    .npc-modal {
+        width: 98%;
+        padding: 4px;
+    }
+
+    .tab-btn,
+    .control-btn,
+    .theme-btn {
+        padding: 2px 4px;
+        font-size: 0.7em;
+    }
+
+    .building-info,
+    .tool-name,
+    .setting-item label {
+        font-size: 0.6em;
+    }
+}
+
+@media (min-width: 321px) and (max-width: 480px) {
+    .settings-panel,
+    .modal-content,
+    .feedback-message {
+        width: 95%;
+        padding: 8px;
+    }
+
+    .tab-btn,
+    .control-btn,
+    .theme-btn {
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+
+    .building-info,
+    .tool-name,
+    .setting-item label {
+        font-size: 0.7em;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    .settings-panel,
+    .modal-content,
+    .feedback-message {
+        width: 85%;
+        padding: 12px;
+    }
+
+    .tab-btn,
+    .control-btn,
+    .theme-btn {
+        padding: 6px 12px;
+        font-size: 0.9em;
+    }
+}
+
+@media (min-width: 769px) {
+    .settings-panel,
+    .modal-content,
+    .feedback-message {
+        width: min(75%, 500px);
+        padding: 20px;
+    }
+
+    .tab-btn,
+    .control-btn,
+    .theme-btn {
+        padding: 8px 16px;
+        font-size: 1em;
+    }
+}
+
+/* Orientation-specific adjustments */
+@media (orientation: portrait) {
+    .settings-panel,
+    .modal-content,
+    .npc-modal {
+        max-height: 80vh;
+        overflow-y: auto;
+    }
+}
+
+@media (orientation: landscape) {
+    .settings-panel,
+    .modal-content,
+    .npc-modal {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
 }
 
 .settings-panel.visible {
