@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -9,17 +10,71 @@
 </head>
 <body>
     <div id="game-container"></div>
-    <script>
+    <script type="module">
+        class StartScene extends Phaser.Scene {
+            constructor() {
+                super('StartScene');
+            }
+
+            preload() {
+                this.load.setBaseURL(window.location.href);
+                this.load.image('background', 'game/assets/tiles/tile_grass.png');
+            }
+
+            create() {
+                const width = this.cameras.main.width;
+                const height = this.cameras.main.height;
+
+                this.add.tileSprite(0, 0, width * 2, height * 2, 'background');
+
+                const title = this.add.text(width / 2, height / 3, 'My Village', {
+                    fontSize: '64px',
+                    fill: '#fff',
+                    fontFamily: 'Arial',
+                    stroke: '#000',
+                    strokeThickness: 6
+                }).setOrigin(0.5);
+
+                const playButton = this.add.rectangle(width / 2, height / 2, 200, 50, 0x4CAF50);
+                const playText = this.add.text(width / 2, height / 2, 'Iniciar Jogo', {
+                    fontSize: '32px',
+                    fill: '#fff'
+                }).setOrigin(0.5);
+
+                playButton.setInteractive();
+                playButton.on('pointerdown', () => {
+                    this.scene.start('MainScene');
+                });
+
+                playButton.on('pointerover', () => {
+                    playButton.setFillStyle(0x45a049);
+                });
+                playButton.on('pointerout', () => {
+                    playButton.setFillStyle(0x4CAF50);
+                });
+            }
+        }
+
+        class MainScene extends Phaser.Scene {
+            constructor() {
+                super('MainScene');
+            }
+
+            create() {
+                this.add.text(400, 300, 'Main Game Scene', {
+                    fontSize: '32px',
+                    fill: '#fff'
+                }).setOrigin(0.5);
+            }
+        }
+
         const config = {
             type: Phaser.AUTO,
             parent: 'game-container',
             width: window.innerWidth,
             height: window.innerHeight,
             backgroundColor: '#1a1a1a',
-            scene: {
-                preload: preload,
-                create: create
-            },
+            scene: [StartScene, MainScene],
             scale: {
                 mode: Phaser.Scale.RESIZE,
                 autoCenter: Phaser.Scale.CENTER_BOTH
@@ -32,40 +87,6 @@
                 }
             }
         };
-
-        function preload() {
-            this.load.setBaseURL(window.location.href);
-            this.load.image('background', 'game/assets/tiles/tile_grass.png');
-        }
-
-        function create() {
-            const width = this.cameras.main.width;
-            const height = this.cameras.main.height;
-
-            this.add.tileSprite(0, 0, width * 2, height * 2, 'background');
-
-            const title = this.add.text(width / 2, height / 3, 'My Village', {
-                fontSize: '64px',
-                fill: '#fff',
-                fontFamily: 'Arial',
-                stroke: '#000',
-                strokeThickness: 6
-            }).setOrigin(0.5);
-
-            const playButton = this.add.rectangle(width / 2, height / 2, 200, 50, 0x4CAF50);
-            const playText = this.add.text(width / 2, height / 2, 'Iniciar Jogo', {
-                fontSize: '32px',
-                fill: '#fff'
-            }).setOrigin(0.5);
-
-            playButton.setInteractive();
-            playButton.on('pointerover', () => {
-                playButton.setFillStyle(0x45a049);
-            });
-            playButton.on('pointerout', () => {
-                playButton.setFillStyle(0x4CAF50);
-            });
-        }
 
         window.onload = () => {
             window.game = new Phaser.Game(config);
