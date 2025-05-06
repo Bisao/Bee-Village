@@ -472,37 +472,11 @@ html, body {
 }
 
 .building-btn .tooltip {
-    position: static;
-    opacity: 1;
-    background: none;
-    padding: 0;
-    color: var(--text-color);
-    font-size: 12px;
-    text-align: center;
-    pointer-events: none;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 100%;
+    display: none;
 }
 
-.building-btn .tooltip {
-    position: absolute;
-    left: calc(100% + 8px);
-    top: 50%;
-    transform: translateY(-50%);
-    background: var(--panel-background);
-    color: var(--text-color);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 0.85em;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    border: 1px solid var(--primary-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1001;
+.building-btn:hover .tooltip {
+    display: none;
 }
 
 .feedback-message {
@@ -549,10 +523,6 @@ html, body {
     transform: translateX(-2px);
 }
 
-.building-btn:hover .tooltip {
-    opacity: 1;
-    transform: translateY(-50%) translateX(5px);
-}
 
 .building-btn.selected {
     background: rgba(255, 215, 0, 0.2);
