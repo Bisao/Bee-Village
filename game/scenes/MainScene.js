@@ -793,7 +793,7 @@ export default class MainScene extends Phaser.Scene {
 
         const npc = {
             sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-            nameText: this.add.text(worldX, worldY - 64, fullName, {
+            nameText: this.add.text(worldX, worldY - 48, fullName, {
                 fontSize: '14px',
                 fill: '#ffffff',
                 stroke: '#000000',
