@@ -8,35 +8,47 @@ html, body {
     background: var(--background-color);
 }
 
-/* Responsive Typography */
-:root {
-    --base-font-size: clamp(14px, 1vw + 8px, 18px);
-    --heading-font-size: clamp(18px, 1.5vw + 16px, 32px);
-    --button-font-size: clamp(12px, 1vw + 8px, 16px);
-}
-
 /* Topbar */
 .topbar {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
-    height: clamp(50px, 8vh, 65px);
+    height: 65px;
     background: var(--panel-background);
     backdrop-filter: blur(10px);
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 max(16px, 2vw);
+    padding: 0 16px;
     z-index: 1000;
     border-bottom: 2px solid var(--primary-color);
 }
 
-/* Topbar */
+
+
+@keyframes beeFloat {
+    0% { transform: translate(0, 0) rotate(-2deg); }
+    25% { transform: translate(4px, -2px) rotate(2deg); }
+    50% { transform: translate(0, -4px) rotate(-1deg); }
+    75% { transform: translate(-4px, -2px) rotate(1deg); }
+    100% { transform: translate(0, 0) rotate(-2deg); }
+}
+
+.save-indicator {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    margin: 0 10px;
+}
+
+.save-indicator.saving {
+    opacity: 1;
+}
+
 .topbar h1 {
     color: var(--text-color);
     margin: 0 0 0 15px;
-    font-size: var(--heading-font-size);
+    font-size: 1.2em;
     font-weight: 600;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
@@ -280,26 +292,26 @@ html, body {
 
 /* Painel de Estruturas */
 #side-panel {
-    /* Existing styles remain */
-    display: none;
-    position: fixed;
-    top: calc(clamp(50px, 8vh, 65px) + 10px);
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90%, 500px);
-    max-height: calc(100vh - clamp(50px, 8vh, 65px) - 20px);
-    background: var(--accent-color);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--primary-color);
-    border-radius: 12px;
-    padding: clamp(10px, 2vw, 20px);
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 15px;
-    z-index: 2000;
-    overflow-y: auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  display: none;
+  position: fixed;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(75%, 500px);
+  height: auto;
+  max-height: calc(100vh - 85px);
+  background: var(--accent-color);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  padding: 20px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 15px;
+  z-index: 2000;
+  overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 #side-panel::-webkit-scrollbar {
@@ -308,17 +320,17 @@ html, body {
 
 .panel-tabs {
     display: flex;
-    gap: clamp(8px, 1.5vw, 12px);
-    padding: clamp(10px, 2vh, 15px);
+    gap: 12px;
+    padding: 15px;
     border-bottom: 2px solid var(--primary-color);
-    margin-bottom: clamp(15px, 3vh, 20px);
+    margin-bottom: 20px;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     justify-content: center;
 }
 
 .tab-btn {
-    padding: clamp(8px, 1.5vw, 10px) clamp(15px, 2vw, 20px);
+    padding: 10px 20px;
     background: var(--accent-color);
     border: 1px solid var(--primary-color);
     border-radius: 20px;
@@ -326,11 +338,9 @@ html, body {
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.3s ease;
-    font-size: var(--button-font-size);
+    font-size: 15px;
     font-weight: 500;
     letter-spacing: 0.5px;
-    min-height: 44px;
-    min-width: 44px;
 }
 
 .tab-btn.active {
@@ -359,7 +369,6 @@ html, body {
         top: 70px;
         width: 90%;
         max-width: 400px;
-        padding: 10px;
     }
 
     .building-btn {
@@ -388,7 +397,6 @@ html, body {
     #side-panel {
         width: 98%;
         max-height: 70vh;
-        padding: 5px;
     }
 
     .building-list {
@@ -448,10 +456,6 @@ html, body {
     flex-direction: column;
     align-items: center;
     gap: 5px;
-    aspect-ratio: 1;
-    min-height: 44px;
-    padding: clamp(8px, 1.5vw, 10px);
-    font-size: var(--button-font-size);
 }
 
 .building-info {
@@ -533,6 +537,7 @@ html, body {
     border-color: var(--primary-color);
     transform: translateX(-2px);
 }
+
 
 .building-btn.selected {
     background: rgba(255, 215, 0, 0.2);
@@ -619,54 +624,56 @@ html, body {
     margin-left: 15px;
 }
 
+
 /* Theme Variables */
 :root {
-    /* Cores Base */
-    --color-black: #1a1a1a;
-    --color-white: #FFFFFF;
-    --color-dark-gray: #2b2b2b;
+  /* Cores Base */
+  --color-black: #1a1a1a;
+  --color-white: #FFFFFF;
+  --color-dark-gray: #2b2b2b;
 
-    /* Temas */
-    --theme-bee-primary: #FFD700;
-    --theme-pig-primary: #FFC0CB;
-    --theme-cow-primary: #F5F5F5;
+  /* Temas */
+  --theme-bee-primary: #FFD700;
+  --theme-pig-primary: #FFC0CB;
+  --theme-cow-primary: #F5F5F5;
 
-    /* Configuração Padrão (Bee Theme) */
-    --primary-color: var(--theme-bee-primary);
-    --secondary-color: var(--color-dark-gray);
-    --accent-color: rgba(255, 215, 0, 0.3);
-    --background-color: var(--color-black);
-    --panel-background: rgba(15, 15, 15, 0.95);
-    --text-color: var(--theme-bee-primary);
-    --button-hover: var(--color-white);
-    --button-text: var(--color-dark-gray);
+  /* Configuração Padrão (Bee Theme) */
+  --primary-color: var(--theme-bee-primary);
+  --secondary-color: var(--color-dark-gray);
+  --accent-color: rgba(255, 215, 0, 0.3);
+  --background-color: var(--color-black);
+  --panel-background: rgba(15, 15, 15, 0.95);
+  --text-color: var(--theme-bee-primary);
+  --button-hover: var(--color-white);
+  --button-text: var(--color-dark-gray);
 }
 
 /* Tema Abelha */
 [data-theme="bee"] {
-    --primary-color: var(--theme-bee-primary);
-    --accent-color: rgba(255, 215, 0, 0.3);
-    --text-color: #806A00;
+  --primary-color: var(--theme-bee-primary);
+  --accent-color: rgba(255, 215, 0, 0.3);
+  --text-color: #806A00;
 }
 
 /* Tema Porco */
 [data-theme="pig"] {
-    --primary-color: var(--theme-pig-primary);
-    --accent-color: rgba(255, 192, 203, 0.3);
-    --background-color: #1a1515;
-    --panel-background: rgba(15, 10, 10, 0.95);
-    --text-color: #804D57;
-    --button-hover: #FFE4E8;
+  --primary-color: var(--theme-pig-primary);
+  --accent-color: rgba(255, 192, 203, 0.3);
+  --background-color: #1a1515;
+  --panel-background: rgba(15, 10, 10, 0.95);
+  --text-color: #804D57;
+  --button-hover: #FFE4E8;
 }
 
 /* Tema Vaca */
 [data-theme="cow"] {
-    --primary-color: var(--theme-cow-primary);
-    --accent-color: rgba(245, 245, 245, 0.3);
-    --background-color: #1a1a1c;
-    --panel-background: rgba(10, 10, 15, 0.95);
-    --text-color: #808080;
+  --primary-color: var(--theme-cow-primary);
+  --accent-color: rgba(245, 245, 245, 0.3);
+  --background-color: #1a1a1c;
+  --panel-background: rgba(10, 10, 15, 0.95);
+  --text-color: #808080;
 }
+
 
 .apply-theme-btn {
     background: var(--primary-color);
@@ -772,8 +779,8 @@ html, body {
     grid-template-areas:
         ". up ."
         "left down right";
-    gap: clamp(8px, 1.5vw, 12px);
-    padding: clamp(5px, 1vw, 10px);
+    gap: 12px;
+    padding: 5px;
 }
 
 @media (max-width: 480px) {
@@ -795,14 +802,14 @@ html, body {
 }
 
 .control-btn {
-    width: clamp(50px, 10vw, 70px);
-    height: clamp(50px, 10vw, 70px);
+    width: 70px;
+    height: 70px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     background: var(--accent-color);
     border: 2px solid var(--primary-color);
     border-radius: 15px;
-    font-size: var(--button-font-size);
+    font-size: 24px;
     font-weight: bold;
     color: var(--text-color);
     touch-action: manipulation;
@@ -815,8 +822,6 @@ html, body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    min-height: 44px;
-    min-width: 44px;
 }
 
 .control-btn:active {
@@ -1271,9 +1276,4 @@ html, body {
 
 .control-btn.active {
     background: var(--success-color);
-}
-@keyframes beeFloat {
-    0% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
-    100% { transform: translateY(0); }
 }
