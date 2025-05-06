@@ -1,8 +1,7 @@
-import Grid from './components/Grid.js';
-import InputManager from './components/InputManager.js';
+import Grid from '../scenes/components/Grid.js';
+import InputManager from '../scenes/components/InputManager.js';
 
-const { Scene } = Phaser;
-export default class MainScene extends Scene {
+export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;

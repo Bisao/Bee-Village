@@ -26,6 +26,7 @@ html, body {
 }
 
 
+
 @keyframes beeFloat {
     0% { transform: translate(0, 0) rotate(-2deg); }
     25% { transform: translate(4px, -2px) rotate(2deg); }
@@ -291,25 +292,25 @@ html, body {
 
 /* Painel de Estruturas */
 #side-panel {
-    display: none;
-    position: fixed;
-    top: 75px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: min(90%, 1200px);
-    height: auto;
-    max-height: calc(100vh - 85px);
-    background-color: var(--panel-background);
-    backdrop-filter: blur(10px);
-    border: 2px solid var(--primary-color);
-    border-radius: 12px;
-    padding: clamp(10px, 2vw, 20px);
-    flex-direction: column;
-    align-items: stretch;
-    justify-content: flex-start;
-    gap: 10px;
-    z-index: 2000;
-    overflow-y: auto;
+  display: none;
+  position: fixed;
+  top: 75px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(90%, 1200px);
+  height: auto;
+  max-height: calc(100vh - 85px);
+  background-color: var(--panel-background);
+  backdrop-filter: blur(10px);
+  border: 2px solid var(--primary-color);
+  border-radius: 12px;
+  padding: clamp(10px, 2vw, 20px);
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 10px;
+  z-index: 2000;
+  overflow-y: auto;
 }
 
 #side-panel::-webkit-scrollbar {
@@ -522,6 +523,7 @@ html, body {
     transform: translateX(-2px);
 }
 
+
 .building-btn.selected {
     background: rgba(255, 215, 0, 0.2);
     border-color: var(--primary-color);
@@ -607,6 +609,7 @@ html, body {
     margin-left: 15px;
 }
 
+
 /* Theme Variables */
 :root {
   /* Cores Base */
@@ -655,6 +658,7 @@ html, body {
   --panel-background: rgba(10, 10, 15, 0.95);
   --text-color: var(--theme-cow-primary);
 }
+
 
 .apply-theme-btn {
     background: var(--primary-color);
@@ -919,45 +923,6 @@ html, body {
     top: calc(50% + 30px);
     transform: translateY(-50%);
 }
-
-#game-container {
-    width: 100vw;
-    height: 100vh;
-    margin: 0;
-    padding: 0;
-}
-
-body {
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-}
-
-#side-panel {
-    position: fixed;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 10px;
-    background: rgba(0,0,0,0.7);
-}
-
-.building-btn {
-    padding: 10px;
-    cursor: pointer;
-}
-
-#toggleStructures {
-    position: fixed;
-    right: 10px;
-    top: 10px;
-    padding: 10px;
-    cursor: pointer;
-}
-
 .npc-modal {
     position: fixed;
     top: 0;

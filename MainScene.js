@@ -12,23 +12,7 @@ placeBuilding(gridX, gridY, worldX, worldY) {
         }
     };
 
-    try {
-        if (!this.selectedBuilding) {
-            console.log('No building selected');
-            return;
-        }
-
-        const BuildingClass = this.getBuildingClass(this.selectedBuilding);
-        if (!BuildingClass) {
-            console.error('Invalid building type:', this.selectedBuilding);
-            return;
-        }
-
-        const building = new BuildingClass(this, gridX, gridY);
-        building.create(worldX, worldY);
-    } catch (error) {
-        console.error('Error placing building:', error);
-    }
+    //rest of the placeBuilding function would go here.
 }
 
 autoSave() {
@@ -108,23 +92,4 @@ autoSave() {
                 console.error('Emergency save failed:', emergencyError);
             }
         }
-    }
-
-setupUIHandlers() {
-        this.uiManager = new UIManager(this);
-        this.uiManager.init();
-
-        const buttons = document.querySelectorAll('.building-btn');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                this.selectedBuilding = btn.dataset.building;
-                if (this.previewBuilding) {
-                    this.previewBuilding.destroy();
-                    this.previewBuilding = null;
-                }
-                document.getElementById('side-panel').style.display = 'none';
-            });
-        });
     }

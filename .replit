@@ -1,6 +1,6 @@
 hidden=[".config"]
 modules = ["nodejs-20", "web"]
-run = "npm run"
+run = "npm run dev"
 
 [nix]
 channel = "stable-24_05"
@@ -8,7 +8,7 @@ channel = "stable-24_05"
 [deployment]
 publicDir = "/"
 deploymentTarget = "static"
-run = ["sh", "-c", "npm run"]
+run = ["sh", "-c", "npm run dev"]
 
 [workflows]
 runButton = "Run Game"
@@ -20,7 +20,7 @@ mode = "sequential"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "npx http-server -c-1"
+args = "npm run dev"
 
 [[ports]]
 localPort = 8080
