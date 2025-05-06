@@ -63,15 +63,15 @@ export default class MainScene extends Phaser.Scene {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
 
-        const frames = [];
+        // Load all farmer frames first
         for (let i = 1; i <= 12; i++) {
             const key = `farmer${i}`;
             if (!this.textures.exists(key)) {
                 this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
             }
-            frames.push({ key });
         }
 
+        // Create animations after assets are loaded
         this.load.once('complete', () => {
             this.anims.create({
                 key: 'farmer_walk',
