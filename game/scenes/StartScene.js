@@ -1,6 +1,4 @@
 
-import Phaser from 'phaser';
-
 const { Scene } = Phaser;
 export default class StartScene extends Scene {
     constructor() {
@@ -43,7 +41,6 @@ export default class StartScene extends Scene {
         });
 
         settingsButton.on('pointerdown', () => {
-            // Implementar menu de configurações
             console.log('Abrir configurações');
         });
     }

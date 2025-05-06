@@ -1,4 +1,7 @@
 
+import StartScene from './scenes/StartScene.js';
+import MainScene from './scenes/MainScene.js';
+
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
