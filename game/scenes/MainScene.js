@@ -897,11 +897,12 @@ export default class MainScene extends Phaser.Scene {
             npc.sprite.setTexture('farmer1');
         }
 
+        const scene = this;
         this.tweens.add({
             targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
             y: function (target, key, value, targetIndex) {
-                const baseY = this.scene.cameras.main.centerY + tileY;
+                const baseY = scene.cameras.main.centerY + tileY;
                 return targetIndex === 0 ? baseY - 32 : baseY - 64;
             },
             duration: 600,
