@@ -804,7 +804,7 @@ export default class MainScene extends Phaser.Scene {
             const continueNPCCreation = () => {
                 const buildingType = this.selectedBuilding;
                 const nameData = this.professionNames[buildingType];
-                const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
+                const randomName = this.getRandomName(buildingType);
                 const professionEmojis = {
                     'Farmer': '🥕',
                     'Miner': '⛏️',
@@ -816,11 +816,12 @@ export default class MainScene extends Phaser.Scene {
 
                 const npc = {
                     sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-                    nameText: this.add.text(worldX, worldY - 48, fullName, {
+                    nameText: this.add.text(worldX, worldY - 64, fullName, {
                         fontSize: '14px',
                         fill: '#ffffff',
                         stroke: '#000000',
-                        strokeThickness: 4
+                        strokeThickness: 4,
+                        resolution: 2
                     }).setOrigin(0.5),
                     gridX: houseX,
                     gridY: houseY,
@@ -897,7 +898,11 @@ export default class MainScene extends Phaser.Scene {
         this.tweens.add({
             targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
-            y: this.cameras.main.centerY + tileY - 32,
+            y: function (target, key, value, targetIndex) {
+                return targetIndex === 0 ? 
+                    this.cameras.main.centerY + tileY - 32 : 
+                    this.cameras.main.centerY + tileY - 64;
+            },
             duration: 600,
             ease: 'Linear',
             onComplete: () => {
@@ -950,23 +955,55 @@ export default class MainScene extends Phaser.Scene {
 
     cleanupNPCControls() {
         if (this.currentControlledNPC) {
+            const previousNPC = this.currentControlledNPC;
+            
             // Reset NPC state
-            this.currentControlledNPC.isAutonomous = true;
+            previousNPC.isAutonomous = true;
             
             // Clear existing movement timer if exists
-            if (this.currentControlledNPC.movementTimer) {
-                this.currentControlledNPC.movementTimer.remove();
+            if (previousNPC.movementTimer) {
+                previousNPC.movementTimer.remove();
             }
-            
-            // Start autonomous movement again
-            this.startNPCMovement(this.currentControlledNPC);
             
             // Remove all keyboard controls
             this.input.keyboard.removeAllListeners('keydown');
             
-            // Clear reference
+            // Clear reference before starting movement
             this.currentControlledNPC = null;
+            
+            // Start autonomous movement again after a short delay
+            this.time.delayedCall(100, () => {
+                this.startNPCMovement(previousNPC);
+            });
         }
+    }
+
+    getRandomName(buildingType) {
+        const nameData = this.professionNames[buildingType];
+        if (!nameData || !nameData.names || nameData.names.length === 0) {
+            console.warn(`No names available for building type: ${buildingType}`);
+            return 'Unknown';
+        }
+        
+        // Get used names for this profession
+        if (!this.usedNames) this.usedNames = {};
+        if (!this.usedNames[buildingType]) this.usedNames[buildingType] = new Set();
+        
+        // Filter available names
+        const availableNames = nameData.names.filter(name => 
+            !this.usedNames[buildingType].has(name)
+        );
+        
+        // If all names are used, reset the used names
+        if (availableNames.length === 0) {
+            this.usedNames[buildingType].clear();
+            return this.getRandomName(buildingType);
+        }
+        
+        // Get random name and mark as used
+        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
+        this.usedNames[buildingType].add(randomName);
+        return randomName;
     }
 
     enablePlayerControl(npc) {
