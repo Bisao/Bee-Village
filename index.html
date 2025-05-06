@@ -8,6 +8,12 @@
 </head>
 <body>
     <div id="game-container"></div>
+    <div id="side-panel" style="display: none;">
+        <button class="building-btn" data-building="farmerHouse">Farmer House</button>
+        <button class="building-btn" data-building="minerHouse">Miner House</button>
+        <button class="building-btn" data-building="fishermanHouse">Fisherman House</button>
+    </div>
+    <button id="toggleStructures">Toggle Structures</button>
     <script>
         class StartScene extends Phaser.Scene {
             constructor() {
@@ -53,26 +59,13 @@
             }
         }
 
-        class MainScene extends Phaser.Scene {
-            constructor() {
-                super('MainScene');
-            }
-
-            create() {
-                this.add.text(400, 300, 'Main Game Scene', {
-                    fontSize: '32px',
-                    fill: '#fff'
-                }).setOrigin(0.5);
-            }
-        }
-
         const config = {
             type: Phaser.AUTO,
             parent: 'game-container',
             width: window.innerWidth,
             height: window.innerHeight,
             backgroundColor: '#1a1a1a',
-            scene: [StartScene, MainScene],
+            scene: [StartScene],
             scale: {
                 mode: Phaser.Scale.RESIZE,
                 autoCenter: Phaser.Scale.CENTER_BOTH
