@@ -1031,25 +1031,59 @@ export default class MainScene extends Phaser.Scene {
     }
 
     enablePlayerControl(npc) {
-        const handleKeyDown = (event) => {
-            if (npc.isMoving || npc.isAutonomous) return;
+        // Remove previous keyboard listeners if they exist
+        this.input.keyboard.removeAllListeners('keydown');
+        
+        // Setup new keyboard controls
+        this.keys = this.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
+        // Mobile controls
+        if (this.inputManager.isMobile) {
+            const buttons = {
+                'mobile-up': 'w',
+                'mobile-down': 's',
+                'mobile-left': 'a',
+                'mobile-right': 'd'
+            };
+
+            Object.entries(buttons).forEach(([className, key]) => {
+                const button = document.querySelector(`.${className}`);
+                if (button) {
+                    button.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.keys[key].isDown = true;
+                    });
+                    button.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        this.keys[key].isDown = false;
+                    });
+                }
+            });
+        }
+
+        // Update the update method to handle controlled NPC movement
+        this.events.on('update', () => {
+            if (!npc || npc.isMoving || npc.isAutonomous) return;
 
             let newX = npc.gridX;
             let newY = npc.gridY;
 
-            switch(event.key.toLowerCase()) {
-                case 'w': newY--; break;
-                case 's': newY++; break;
-                case 'a': newX--; break;
-                case 'd': newX++; break;
-            }
+            if (this.keys.w.isDown) newY--;
+            else if (this.keys.s.isDown) newY++;
+            else if (this.keys.a.isDown) newX--;
+            else if (this.keys.d.isDown) newX++;
 
-            if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
-                this.moveNPCTo(npc, newX, newY);
+            if (newX !== npc.gridX || newY !== npc.gridY) {
+                if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+                    this.moveNPCTo(npc, newX, newY);
+                }
             }
-        };
-
-        this.input.keyboard.on('keydown', handleKeyDown);
+        });
     }
 
 }
