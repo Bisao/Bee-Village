@@ -438,33 +438,34 @@ html, body {
 
 .building-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(120px, 20vw), 1fr));
-    gap: clamp(8px, 1.5vw, 15px);
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 8px;
     width: 100%;
-    padding: clamp(5px, 1vw, 10px);
+    padding: 8px;
 }
 
 .building-btn {
     position: relative;
     width: 100%;
-    padding: 6px 4px;
+    padding: 4px 2px;
     background: var(--accent-color);
     border: 1px solid var(--primary-color);
-    border-radius: 6px;
+    border-radius: 4px;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 3px;
+    gap: 2px;
+    min-width: 80px;
 }
 
 .building-info {
     width: 100%;
-    margin-top: 3px;
-    padding: 4px;
+    margin-top: 2px;
+    padding: 3px;
     border-top: 1px solid var(--primary-color);
-    font-size: 11px;
+    font-size: 10px;
     color: var(--text-color);
     text-align: left;
 }
