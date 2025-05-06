@@ -575,6 +575,20 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
+            // Validar se é uma casa que pode ter NPC
+            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
+            const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+
+            // Contar NPCs existentes para este tipo de casa
+            const existingNPCCount = Object.values(this.grid.buildingGrid)
+                .filter(b => b.buildingType === this.selectedBuilding && b.npc)
+                .length;
+
+            if (isNPCHouse && existingNPCCount >= 1) {
+                this.showFeedback('Já existe um NPC deste tipo no jogo', false);
+                return;
+            }
+
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
             if (!building) {
@@ -596,8 +610,9 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
-            // Create farmer NPC only after building is fully registered
-            if (this.selectedBuilding === 'farmerHouse') {
+            // Create NPC based on house type
+            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
+            if (npcHouses.includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
             }
 
