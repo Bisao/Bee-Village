@@ -958,9 +958,7 @@ export default class MainScene extends Phaser.Scene {
             // Show controls panel on mobile
             const controlsPanel = document.getElementById('controls-panel');
             if (this.inputManager.isMobile && controlsPanel) {
-                controlsPanel.style.display = 'flex !important';
-                controlsPanel.style.visibility = 'visible';
-                controlsPanel.style.pointerEvents = 'auto';
+                controlsPanel.style.display = 'flex';
             }
             modal.remove();
         };
