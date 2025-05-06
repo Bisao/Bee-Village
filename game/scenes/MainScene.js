@@ -6,6 +6,14 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
+        
+        // Emoji mapping for professions
+        this.professionEmojis = {
+            'Farmer': '🥕',
+            'Miner': '⛏️',
+            'Fisher': '🎣',
+            'Villager': '👤'
+        };
         this.professionNames = {
             farmerHouse: {
                 prefix: 'Farmer',
@@ -719,6 +727,31 @@ export default class MainScene extends Phaser.Scene {
         });
     }
     createFarmerNPC(houseX, houseY, worldX, worldY) {
+        // Import BaseNPC if not already imported
+        import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
+            // Get building type and name data
+            const buildingKey = `${houseX},${houseY}`;
+            const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
+            const nameData = this.professionNames[buildingType];
+            const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
+            
+            // Create NPC configuration
+            const npcConfig = {
+                name: randomName,
+                profession: nameData?.prefix || 'Villager',
+                emoji: this.getProfessionEmoji(nameData?.prefix),
+                spritesheet: 'farmer',
+                scale: 0.8,
+                movementDelay: 2000
+            };
+
+            // Create NPC instance
+            const npc = new BaseNPC(this, houseX, houseY, npcConfig);
+            
+            // Store NPC reference in building grid
+            this.grid.buildingGrid[buildingKey].npc = npc;
+        });
+
         const loadAndCreateAnimations = () => {
             // Load farmer sprites if they don't exist
             const spritesToLoad = [];
@@ -1013,6 +1046,10 @@ export default class MainScene extends Phaser.Scene {
                 this.startNPCMovement(previousNPC);
             });
         }
+    }
+
+    getProfessionEmoji(profession) {
+        return this.professionEmojis[profession] || '👤';
     }
 
     getRandomName(buildingType) {
