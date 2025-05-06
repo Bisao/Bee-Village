@@ -2,6 +2,7 @@ import MainScene from '/game/scenes/MainScene.js';
 
 const config = {
     type: Phaser.AUTO,
+    parent: 'game-container',
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: '#1a1a1a',
@@ -83,7 +84,35 @@ document.addEventListener('DOMContentLoaded', () => {
         moveBeeToButton('play');
         setTimeout(() => {
             document.getElementById('loading-screen').style.display = 'flex';
-            startGameWithLoading();
+            //startGameWithLoading();  Removed call to this function
+            let loadingProgress = 0;
+            const progressBar = document.querySelector('.loading-progress');
+            const loadingInterval = setInterval(() => {
+                loadingProgress += 2;
+                if (progressBar) {
+                    progressBar.style.width = `${loadingProgress}%`;
+                }
+
+                if (loadingProgress >= 100) {
+                    clearInterval(loadingInterval);
+                    try {
+                        window.game = new Phaser.Game(config);
+
+                        window.game.events.once('ready', () => {
+                            setTimeout(() => {
+                                const loadingScreen = document.getElementById('loading-screen');
+                                const startScreen = document.getElementById('start-screen');
+                                if (loadingScreen) loadingScreen.style.display = 'none';
+                                if (startScreen) startScreen.style.display = 'none';
+                            }, 500);
+                        });
+                    } catch (error) {
+                        console.error('Game initialization error:', error);
+                        alert('Failed to start the game. Please try refreshing the page.');
+                    }
+                }
+            }, 50);
+
         }, 1000);
     });
 
@@ -133,35 +162,9 @@ function checkConsoleErrors() {
     }, 5000);
 }
 
-function startGameWithLoading() {
-    checkConsoleErrors();
-    let loadingProgress = 0;
-    const progressBar = document.querySelector('.loading-progress');
-    const loadingInterval = setInterval(() => {
-        loadingProgress += 2;
-        if (progressBar) {
-            progressBar.style.width = `${loadingProgress}%`;
-        }
+// Inicia o jogo quando a página carregar
+window.onload = () => {
+    window.game = new Phaser.Game(config);
+};
 
-        if (loadingProgress >= 100) {
-            clearInterval(loadingInterval);
-            try {
-                window.game = new Phaser.Game(config);
-
-                window.game.events.once('ready', () => {
-                    setTimeout(() => {
-                        const loadingScreen = document.getElementById('loading-screen');
-                        const startScreen = document.getElementById('start-screen');
-                        if (loadingScreen) loadingScreen.style.display = 'none';
-                        if (startScreen) startScreen.style.display = 'none';
-                    }, 500);
-                });
-            } catch (error) {
-                console.error('Game initialization error:', error);
-                alert('Failed to start the game. Please try refreshing the page.');
-            }
-        }
-    }, 50);
-}
-
-export { config, startGameWithLoading };
+export { config };
