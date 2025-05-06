@@ -802,9 +802,11 @@ export default class MainScene extends Phaser.Scene {
             });
 
             const continueNPCCreation = () => {
-                const buildingType = this.selectedBuilding;
+                // Get building type from the grid position
+                const buildingKey = `${houseX},${houseY}`;
+                const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
                 const nameData = this.professionNames[buildingType];
-                const randomName = this.getRandomName(buildingType);
+                const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
                 const professionEmojis = {
                     'Farmer': '🥕',
                     'Miner': '⛏️',
@@ -899,9 +901,8 @@ export default class MainScene extends Phaser.Scene {
             targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
             y: function (target, key, value, targetIndex) {
-                return targetIndex === 0 ? 
-                    this.cameras.main.centerY + tileY - 32 : 
-                    this.cameras.main.centerY + tileY - 64;
+                const baseY = this.scene.cameras.main.centerY + tileY;
+                return targetIndex === 0 ? baseY - 32 : baseY - 64;
             },
             duration: 600,
             ease: 'Linear',
