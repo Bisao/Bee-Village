@@ -54,6 +54,13 @@ export default class BaseNPC {
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
         
+        // Movimento inicial para fora da casa
+        const newY = this.gridY + 1;
+        if (this.scene.grid.isValidPosition(this.gridX, newY) && 
+            !this.scene.isTileOccupied(this.gridX, newY)) {
+            this.moveTo(this.gridX, newY);
+        }
+        
         if (this.isAutonomous) {
             this.startAutonomousMovement();
         }
