@@ -722,11 +722,18 @@ export default class MainScene extends Phaser.Scene {
         const buildingType = this.selectedBuilding;
         const nameData = this.professionNames[buildingType];
         const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
-        const fullName = nameData ? `${nameData.prefix} ${randomName}` : 'Villager';
+        const professionEmojis = {
+            'Farmer': '🥕',
+            'Miner': '⛏️',
+            'Lumberjack': '🪓',
+            'Fisher': '🎣'
+        };
+        const emoji = nameData ? professionEmojis[nameData.prefix] || '👤' : '👤';
+        const fullName = `${emoji} ${randomName}`;
 
         const npc = {
             sprite: this.add.sprite(worldX, worldY - 32, 'farmer1'),
-            nameText: this.add.text(worldX, worldY - 48, fullName, {
+            nameText: this.add.text(worldX, worldY - 64, fullName, {
                 fontSize: '14px',
                 fill: '#ffffff',
                 stroke: '#000000',
