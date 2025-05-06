@@ -845,18 +845,36 @@ export default class MainScene extends Phaser.Scene {
         // Cleanup previous NPC controls
         this.cleanupNPCControls();
 
+        // Exemplo de inventário (pode ser expandido para um sistema real)
+        const inventory = [
+            '🌾', '🥕', '⛏️', null,
+            '🪓', '🎣', null, null,
+            '💎', null, null, null
+        ];
+
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
         modal.innerHTML = `
             <div class="modal-content">
-                <h3>${npc.config.emoji} ${npc.config.name}</h3>
-                <p class="npc-profession">${npc.config.profession}</p>
-                <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
-                    🤖 Modo Autônomo
-                </button>
-                <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
-                    🕹️ Modo Controlado
-                </button>
+                <div class="npc-header">
+                    <div class="npc-avatar">
+                        ${npc.config.emoji}
+                    </div>
+                    <div class="npc-info">
+                        <h3>${npc.config.name}</h3>
+                        <p class="npc-profession">${npc.config.profession}</p>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
+                        🤖 Modo Autônomo
+                    </button>
+                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                        🕹️ Modo Controlado
+                    </button>
+                </div>
+
                 <div class="mode-info">
                     <p class="autonomous-info ${npc.isAutonomous ? 'visible' : ''}">
                         🔄 NPC se move livremente
@@ -864,6 +882,14 @@ export default class MainScene extends Phaser.Scene {
                     <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
                         📱 Use WASD ou controles mobile
                     </p>
+                </div>
+
+                <div class="npc-inventory">
+                    ${inventory.map(item => `
+                        <div class="inventory-slot ${!item ? 'empty' : ''}" title="${item || 'Vazio'}">
+                            ${item || ''}
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
