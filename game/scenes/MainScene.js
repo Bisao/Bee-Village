@@ -553,34 +553,6 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-            // Create building first
-            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
-            if (!building) {
-                throw new Error('Failed to create building sprite: sprite is null');
-            }
-
-            // Configure building
-            const scale = (this.grid.tileWidth * 1.4) / building.width;
-            building.setScale(scale);
-            building.setOrigin(0.5, 0.75);
-            building.setDepth(gridY + 1);
-
-            // Register in grid
-            this.grid.buildingGrid[key] = {
-                sprite: building,
-                type: 'building',
-                buildingType: this.selectedBuilding,
-                gridX: gridX,
-                gridY: gridY
-            };
-
-            // Create farmer NPC after building is registered
-            if (this.selectedBuilding === 'farmerHouse') {
-                this.createFarmerNPC(gridX, gridY, worldX, worldY);
-            }
-
-            // Usa as coordenadas exatas passadas como parâmetro
-
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
             if (!building) {
@@ -601,6 +573,11 @@ export default class MainScene extends Phaser.Scene {
                 gridX: gridX,
                 gridY: gridY
             };
+
+            // Create farmer NPC only after building is fully registered
+            if (this.selectedBuilding === 'farmerHouse') {
+                this.createFarmerNPC(gridX, gridY, worldX, worldY);
+            }
 
             // Efeito de partículas
             const particles = this.add.particles(0, 0, 'tile_grass', {
