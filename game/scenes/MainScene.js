@@ -1,11 +1,13 @@
-import Grid from './components/Grid.js';
-import InputManager from './components/InputManager.js';
+import Grid from '../scenes/components/Grid.js';
+import InputManager from '../scenes/components/InputManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
+        
+        // Emoji mapping for professions
         this.professionEmojis = {
             'Farmer': '🥕',
             'Miner': '⛏️',
@@ -573,12 +575,6 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-            // Check if building already has an NPC
-            if (this.grid.buildingGrid[key]?.npc) {
-                this.showFeedback('Esta casa já possui um NPC', false);
-                return;
-            }
-
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
             if (!building) {
@@ -600,9 +596,8 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
-            // Create NPC based on building type
-            if (!this.grid.buildingGrid[`${gridX},${gridY}`].npc && 
-                ['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
+            // Create farmer NPC only after building is fully registered
+            if (this.selectedBuilding === 'farmerHouse') {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
             }
 
@@ -739,7 +734,7 @@ export default class MainScene extends Phaser.Scene {
             const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
             const nameData = this.professionNames[buildingType];
             const randomName = nameData ? this.getRandomName(buildingType) : 'Unknown';
-
+            
             // Create NPC configuration
             const npcConfig = {
                 name: randomName,
@@ -752,7 +747,7 @@ export default class MainScene extends Phaser.Scene {
 
             // Create NPC instance
             const npc = new BaseNPC(this, houseX, houseY, npcConfig);
-
+            
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
         });
@@ -1024,15 +1019,15 @@ export default class MainScene extends Phaser.Scene {
     cleanupNPCControls() {
         if (this.currentControlledNPC) {
             const previousNPC = this.currentControlledNPC;
-
+            
             // Reset NPC state
             previousNPC.isAutonomous = true;
-
+            
             // Clear existing movement timer if exists
             if (previousNPC.movementTimer) {
                 previousNPC.movementTimer.remove();
             }
-
+            
             // Remove specific NPC's controls and update handler
             if (previousNPC.controls) {
                 Object.values(previousNPC.controls).forEach(key => key.destroy());
@@ -1042,10 +1037,10 @@ export default class MainScene extends Phaser.Scene {
                 this.events.off('update', previousNPC.updateHandler);
                 previousNPC.updateHandler = null;
             }
-
+            
             // Clear reference before starting movement
             this.currentControlledNPC = null;
-
+            
             // Start autonomous movement again after a short delay
             this.time.delayedCall(100, () => {
                 this.startNPCMovement(previousNPC);
@@ -1063,22 +1058,22 @@ export default class MainScene extends Phaser.Scene {
             console.warn(`No names available for building type: ${buildingType}`);
             return 'Unknown';
         }
-
+        
         // Get used names for this profession
         if (!this.usedNames) this.usedNames = {};
         if (!this.usedNames[buildingType]) this.usedNames[buildingType] = new Set();
-
+        
         // Filter available names
         const availableNames = nameData.names.filter(name => 
             !this.usedNames[buildingType].has(name)
         );
-
+        
         // If all names are used, reset the used names
         if (availableNames.length === 0) {
             this.usedNames[buildingType].clear();
             return this.getRandomName(buildingType);
         }
-
+        
         // Get random name and mark as used
         const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
         this.usedNames[buildingType].add(randomName);
@@ -1088,7 +1083,7 @@ export default class MainScene extends Phaser.Scene {
     enablePlayerControl(npc) {
         // Remove previous keyboard listeners if they exist
         this.input.keyboard.removeAllListeners('keydown');
-
+        
         // Create unique controls for this NPC
         npc.controls = this.input.keyboard.addKeys({
             w: Phaser.Input.Keyboard.KeyCodes.W,

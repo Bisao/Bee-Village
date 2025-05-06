@@ -5,30 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
     <title>Isometric Game</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
-    <div id="game-container"></div>
-    <script type="module">
-        import MainScene from './game/scenes/MainScene.js';
-
-        const config = {
-            type: Phaser.AUTO,
-            width: 800,
-            height: 600,
-            physics: {
-                default: 'arcade',
-                arcade: {
-                    gravity: { y: 0 },
-                    debug: false
-                }
-            },
-            scene: MainScene,
-            parent: 'game-container'
-        };
-
-        const game = new Phaser.Game(config);
-    </script>
     <div id="start-screen" class="start-screen">
         <h1><span class="theme-emoji"></span> My Village <span class="theme-emoji"></span></h1>
         <div class="start-buttons-panel">
@@ -156,7 +134,9 @@
                             <p>🪵 45</p>
                             <p>🪨 25</p>
                         </div>
-                    </button>
+                    </button>rmanHouse.png" alt="Casa do Pescador">
+                    <span class="tooltip">Casa do Pescador</span>
+                </button>
                 </div>
             </div>
             <div class="tab-content" id="terrains-tab">
@@ -229,5 +209,7 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="game/config.js" type="module"></script>
 </body>
 </html>
