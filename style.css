@@ -673,19 +673,20 @@ html, body {
 
 #controls-panel {
     position: fixed;
-    bottom: 16px;
-    left: 16px;
+    bottom: 20px;
+    left: 20px;
     background: var(--panel-background);
     touch-action: none;
     display: none;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
-    padding: 15px;
+    padding: 20px;
     border-radius: 20px;
     border: 2px solid var(--primary-color);
     backdrop-filter: blur(5px);
     z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
 @media (max-width: 768px) {
@@ -747,18 +748,38 @@ html, body {
     grid-template-areas:
         ". up ."
         "left down right";
-    gap: 18px;
+    gap: 12px;
+    padding: 5px;
+}
+
+@media (max-width: 480px) {
+    #controls-panel {
+        bottom: 15px;
+        left: 15px;
+        padding: 15px;
+    }
+    
+    .control-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+    }
+    
+    .controls-grid {
+        gap: 8px;
+    }
 }
 
 .control-btn {
-    width: 60px;
-    height: 60px;
+    width: 70px;
+    height: 70px;
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     background: var(--accent-color);
     border: 2px solid var(--primary-color);
-    border-radius: 12px;
-    font-size: 28px;
+    border-radius: 15px;
+    font-size: 24px;
+    font-weight: bold;
     color: var(--text-color);
     touch-action: manipulation;
     cursor: pointer;
@@ -766,6 +787,10 @@ html, body {
     user-select: none;
     -webkit-user-select: none;
     -webkit-touch-callout: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
 .control-btn:active {
