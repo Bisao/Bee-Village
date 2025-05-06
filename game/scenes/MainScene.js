@@ -257,7 +257,7 @@ export default class MainScene extends Phaser.Scene {
         return object && object.type === 'building';
     }
 
-    getAvailableDirections() {
+    getAvailableDirections(fromX, fromY) {
         const directions = [
             { x: 1, y: 0 },   // direita
             { x: -1, y: 0 },  // esquerda
@@ -266,8 +266,8 @@ export default class MainScene extends Phaser.Scene {
         ];
 
         return directions.filter(dir => {
-            const newX = this.farmer.gridX + dir.x;
-            const newY = this.farmer.gridY + dir.y;
+            const newX = fromX + dir.x;
+            const newY = fromY + dir.y;
             return this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY);
         });
     }
@@ -737,7 +737,7 @@ export default class MainScene extends Phaser.Scene {
         const moveNPC = () => {
             if (!npc.isAutonomous || npc.isMoving) return;
 
-            const directions = this.getAvailableDirections();
+            const directions = this.getAvailableDirections(npc.gridX, npc.gridY);
             if (directions.length === 0) return;
 
             const randomDir = directions[Math.floor(Math.random() * directions.length)];
