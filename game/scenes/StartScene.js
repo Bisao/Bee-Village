@@ -1,47 +1,19 @@
-
 const { Scene } = Phaser;
-export default class StartScene extends Scene {
+class StartScene extends Phaser.Scene {
     constructor() {
         super({ key: 'StartScene' });
     }
 
     create() {
-        const { width, height } = this.cameras.main;
-        
-        // Título
-        const title = this.add.text(width / 2, height / 3, 'My Village', {
-            fontSize: '64px',
-            fill: '#ffffff',
-            fontFamily: 'Arial'
+        this.add.text(400, 300, 'Clique para começar', {
+            fontSize: '32px',
+            fill: '#fff'
         }).setOrigin(0.5);
 
-        // Botão de Play
-        const playButton = this.add.text(width / 2, height / 2, 'Jogar', {
-            fontSize: '32px',
-            fill: '#ffffff',
-            backgroundColor: '#4CAF50',
-            padding: { x: 20, y: 10 }
-        })
-        .setOrigin(0.5)
-        .setInteractive();
-
-        // Botão de Configurações
-        const settingsButton = this.add.text(width / 2, height / 2 + 60, 'Configurações', {
-            fontSize: '32px',
-            fill: '#ffffff',
-            backgroundColor: '#2196F3',
-            padding: { x: 20, y: 10 }
-        })
-        .setOrigin(0.5)
-        .setInteractive();
-
-        // Eventos dos botões
-        playButton.on('pointerdown', () => {
+        this.input.on('pointerdown', () => {
             this.scene.start('MainScene');
-        });
-
-        settingsButton.on('pointerdown', () => {
-            console.log('Abrir configurações');
         });
     }
 }
+
+export default StartScene;

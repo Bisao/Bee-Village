@@ -1,4 +1,3 @@
-
 import StartScene from './scenes/StartScene.js';
 import MainScene from './scenes/MainScene.js';
 
