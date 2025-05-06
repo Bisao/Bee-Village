@@ -737,6 +737,65 @@ export default class MainScene extends Phaser.Scene {
         });
     }
     createFarmerNPC(houseX, houseY, worldX, worldY) {
+        // Load farmer sprites
+        for (let i = 1; i <= 12; i++) {
+            const key = `farmer${i}`;
+            this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        }
+
+        this.load.once('complete', () => {
+            // Create animations
+            this.anims.create({
+                key: 'farmer_up',
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_down',
+                frames: [
+                    { key: 'farmer9' },
+                    { key: 'farmer10' },
+                    { key: 'farmer11' },
+                    { key: 'farmer12' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_left',
+                frames: [
+                    { key: 'farmer5' },
+                    { key: 'farmer6' },
+                    { key: 'farmer7' },
+                    { key: 'farmer8' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_right',
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+        });
+
+        this.load.start();
+
         const buildingType = this.selectedBuilding;
         const nameData = this.professionNames[buildingType];
         const randomName = nameData ? nameData.names[Math.floor(Math.random() * nameData.names.length)] : 'Unknown';
