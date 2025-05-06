@@ -1,7 +1,7 @@
 
 class StartScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'StartScene' });
+        super('StartScene');
     }
 
     preload() {
@@ -48,3 +48,5 @@ class StartScene extends Phaser.Scene {
         });
     }
 }
+
+window.StartScene = StartScene;
