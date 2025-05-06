@@ -907,17 +907,16 @@ export default class MainScene extends Phaser.Scene {
 
         document.body.appendChild(modal);
 
-        modal.querySelector('#autonomous').onclick = (e) => {
-            e.stopPropagation();
+        modal.querySelector('#autonomous').onclick = (e) => {            e.stopPropagation();
             npc.isAutonomous = true;
-            
+
             // Limpar controles existentes
             if (npc.movementTimer) {
                 npc.movementTimer.remove();
             }
-            
+
             this.cameras.main.stopFollow();
-            
+
             // Ajustar zoom padrão
             this.tweens.add({
                 targets: this.cameras.main,
@@ -930,7 +929,7 @@ export default class MainScene extends Phaser.Scene {
                     }
                 }
             });
-            
+
             // Ocultar controles no mobile
             if (this.inputManager.isMobile) {
                 const controlsPanel = document.getElementById('controls-panel');
@@ -940,7 +939,7 @@ export default class MainScene extends Phaser.Scene {
                     controlsPanel.style.pointerEvents = 'none';
                 }
             }
-            
+
             this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
         };
@@ -949,11 +948,11 @@ export default class MainScene extends Phaser.Scene {
             e.stopPropagation();
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
-            
+
             // Fazer câmera seguir o NPC suavemente
             this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
-            
+
             // Exibir controles no mobile
             if (this.inputManager.isMobile) {
                 const controlsPanel = document.getElementById('controls-panel');
@@ -964,7 +963,7 @@ export default class MainScene extends Phaser.Scene {
                     controlsPanel.style.opacity = '1';
                 }
             }
-            
+
             this.showFeedback('Modo controlado ativado', true);
             modal.remove();
         };
