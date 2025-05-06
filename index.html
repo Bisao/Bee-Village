@@ -206,5 +206,9 @@
     <script src="game/scenes/StartScene.js" type="module"></script>
     <script src="game/scenes/MainScene.js" type="module"></script>
     <script src="game/config.js" type="module"></script>
+    <script type="module">
+        import { startGameWithLoading } from './game/config.js';
+        window.startGameWithLoading = startGameWithLoading;
+    </script>
 </body>
 </html>
