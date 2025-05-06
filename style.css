@@ -297,20 +297,21 @@ html, body {
   top: 75px;
   left: 50%;
   transform: translateX(-50%);
-  width: min(90%, 1200px);
+  width: min(75%, 500px);
   height: auto;
   max-height: calc(100vh - 85px);
-  background-color: var(--panel-background);
+  background: var(--accent-color);
   backdrop-filter: blur(10px);
   border: 2px solid var(--primary-color);
   border-radius: 12px;
-  padding: clamp(10px, 2vw, 20px);
+  padding: 20px;
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 15px;
   z-index: 2000;
   overflow-y: auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 #side-panel::-webkit-scrollbar {
