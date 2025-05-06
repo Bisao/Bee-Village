@@ -17,6 +17,20 @@
             }
 
             preload() {
+
+    class MainScene extends Phaser.Scene {
+        constructor() {
+            super('MainScene');
+        }
+
+        create() {
+            this.add.text(400, 300, 'Main Game Scene', {
+                fontSize: '32px',
+                fill: '#fff'
+            }).setOrigin(0.5);
+        }
+    }
+
                 this.load.setBaseURL(window.location.href);
                 this.load.image('background', 'game/assets/tiles/tile_grass.png');
             }
@@ -61,7 +75,7 @@
             width: window.innerWidth,
             height: window.innerHeight,
             backgroundColor: '#1a1a1a',
-            scene: [StartScene],
+            scene: [StartScene, MainScene],
             scale: {
                 mode: Phaser.Scale.RESIZE,
                 autoCenter: Phaser.Scale.CENTER_BOTH
