@@ -394,6 +394,8 @@ export default class MainScene extends Phaser.Scene {
                     this.previewBuilding.destroy();
                     this.previewBuilding = null;
                 }
+                // Hide panel when structure is selected
+                document.getElementById('side-panel').style.display = 'none';
             });
         });
 
@@ -608,6 +610,9 @@ export default class MainScene extends Phaser.Scene {
                 gridY,
                 buildingType: this.selectedBuilding
             });
+
+            // Show panel after structure placement
+            document.getElementById('side-panel').style.display = 'flex';
 
         } catch (error) {
             console.error('Error placing building:', error);
