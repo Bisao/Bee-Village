@@ -911,10 +911,12 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
-        // Set current NPC back to autonomous if exists
-        if (this.currentControlledNPC && this.currentControlledNPC !== npc) {
+        // Return current controlled NPC to autonomous mode
+        if (this.currentControlledNPC) {
             this.currentControlledNPC.isAutonomous = true;
             this.startNPCMovement(this.currentControlledNPC);
+            // Remove existing keyboard event listener
+            this.input.keyboard.removeAllListeners('keydown');
         }
 
         const modal = document.createElement('div');
