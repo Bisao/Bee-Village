@@ -909,22 +909,28 @@ export default class MainScene extends Phaser.Scene {
         document.body.appendChild(modal);
 
         modal.querySelector('#autonomous').onclick = () => {
-            // Transição suave da câmera
+            npc.isAutonomous = true;
+            this.cameras.main.stopFollow();
+            
+            // Ajustar zoom padrão
             this.tweens.add({
                 targets: this.cameras.main,
                 zoom: 1.5,
                 duration: 500,
                 ease: 'Power2',
                 onComplete: () => {
-                    npc.isAutonomous = true;
-                    this.cameras.main.stopFollow();
                     this.startNPCMovement(npc);
-                    // Hide controls panel on mobile
-                    if (this.inputManager.isMobile) {
-                        document.getElementById('controls-panel').style.display = 'none';
-                    }
                 }
             });
+            
+            // Ocultar controles no mobile
+            if (this.inputManager.isMobile) {
+                const controlsPanel = document.getElementById('controls-panel');
+                if (controlsPanel) {
+                    controlsPanel.style.display = 'none';
+                }
+            }
+            
             this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
         };
@@ -932,16 +938,21 @@ export default class MainScene extends Phaser.Scene {
         modal.querySelector('#controlled').onclick = () => {
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
-            // Make camera follow the NPC
+            
+            // Fazer câmera seguir o NPC suavemente
             this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
-            // Show controls panel on mobile
-            const controlsPanel = document.getElementById('controls-panel');
-            if (this.inputManager.isMobile && controlsPanel) {
-                controlsPanel.style.display = 'flex !important';
-                controlsPanel.style.visibility = 'visible';
-                controlsPanel.style.pointerEvents = 'auto';
+            
+            // Exibir controles no mobile
+            if (this.inputManager.isMobile) {
+                const controlsPanel = document.getElementById('controls-panel');
+                if (controlsPanel) {
+                    controlsPanel.style.display = 'flex';
+                    controlsPanel.style.visibility = 'visible';
+                    controlsPanel.style.pointerEvents = 'auto';
+                }
             }
+            
             modal.remove();
         };
 
