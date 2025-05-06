@@ -584,10 +584,8 @@ export default class MainScene extends Phaser.Scene {
                 .filter(b => b.buildingType === this.selectedBuilding && b.npc)
                 .length;
 
-            if (isNPCHouse && existingNPCCount >= 1) {
-                this.showFeedback('Já existe um NPC deste tipo no jogo', false);
-                return;
-            }
+            // Permitir construir a casa, mas só criar NPC se ainda não existir um do mesmo tipo
+            const canCreateNPC = !(isNPCHouse && existingNPCCount >= 1);
 
             // Criar a estrutura
             const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
@@ -610,9 +608,11 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
-            // Create NPC if it's a valid house type
-            if (['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
+            // Create NPC only if we can and it's a valid house type
+            if (canCreateNPC && ['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
+            } else if (isNPCHouse) {
+                this.showFeedback('Casa construída sem NPC (limite atingido)', true);
             }
 
             // Efeito de partículas
