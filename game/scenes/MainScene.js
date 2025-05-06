@@ -777,16 +777,16 @@ export default class MainScene extends Phaser.Scene {
     startNPCMovement(npc) {
         if (!npc.isAutonomous) return;
 
-        // First step down if possible
-        const firstStep = () => {
-            const newY = npc.gridY + 1;
-            if (this.grid.isValidPosition(npc.gridX, newY) && !this.isTileOccupied(npc.gridX, newY)) {
-                this.moveNPCTo(npc, npc.gridX, newY);
+        // First step to the left if possible
+        const leftStep = () => {
+            const newX = npc.gridX - 1;
+            if (this.grid.isValidPosition(newX, npc.gridY) && !this.isTileOccupied(newX, npc.gridY)) {
+                this.moveNPCTo(npc, newX, npc.gridY);
             }
         };
 
-        // Execute initial down step
-        firstStep();
+        // Execute initial left step
+        leftStep();
 
         const moveNPC = () => {
             if (!npc.isAutonomous || npc.isMoving) return;
