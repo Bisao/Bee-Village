@@ -527,11 +527,11 @@ html, body {
 
 /* Settings Panel */
 .settings-panel {
-    position: fixed;
+    position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 2000;
+    z-index: 2001;
     display: none;
     width: 90%;
     max-width: 400px;
