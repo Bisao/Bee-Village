@@ -246,15 +246,29 @@ export default class BaseNPC {
 
         console.log(`[${this.config.name}] Procurando local para plantar...`);
 
+        // Tempo aleatório entre 5 e 10 segundos
+        const searchTime = Phaser.Math.Between(5000, 10000);
+        
         // Procura por um tile disponível
-        let foundTile = null;
-        for (let y = 0; y < this.scene.grid.height && !foundTile; y++) {
-            for (let x = 0; x < this.scene.grid.width && !foundTile; x++) {
+        let availableTiles = [];
+        for (let y = 0; y < this.scene.grid.height; y++) {
+            for (let x = 0; x < this.scene.grid.width; x++) {
                 if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
-                    foundTile = {x, y};
+                    availableTiles.push({x, y});
                 }
             }
         }
+
+        // Escolhe um tile aleatório durante o tempo de procura
+        this.scene.time.delayedCall(searchTime, () => {
+            if (availableTiles.length === 0) {
+                console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
+                this.config.emoji = originalEmoji;
+                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+                return;
+            }
+
+            const foundTile = Phaser.Math.RND.pick(availableTiles);
 
         if (!foundTile) {
             console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
