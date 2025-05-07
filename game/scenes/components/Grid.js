@@ -45,9 +45,17 @@ export default class Grid {
         const {tileX, tileY} = this.gridToIso(x, y);
         const randomTile = this.getRandomTile(x, y);
         
+        // Calcular o centro da viewport disponível
+        const viewportCenterX = this.scene.cameras.main.width / 2;
+        const viewportCenterY = this.scene.cameras.main.height / 2;
+        
+        // Offset para centralizar o grid
+        const gridOffsetX = -(this.width * this.tileWidth) / 4;
+        const gridOffsetY = -(this.height * this.tileHeight) / 4;
+        
         const tile = this.scene.add.image(
-            this.scene.cameras.main.centerX + tileX,
-            this.scene.cameras.main.centerY + tileY,
+            viewportCenterX + tileX + gridOffsetX,
+            viewportCenterY + tileY + gridOffsetY,
             randomTile
         );
 
