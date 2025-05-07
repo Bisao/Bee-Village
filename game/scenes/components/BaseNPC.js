@@ -67,7 +67,7 @@ export default class BaseNPC {
         this.energyBar = this.scene.add.graphics();
         this.updateEnergyBar = () => {
             this.energyBar.clear();
-            const nameWidth = this.nameText.width * 0.5; // 50% da largura do nome
+            const nameWidth = this.nameText.width * 0.1; // 10% da largura do nome
             const barHeight = 3; // Altura menor
             const x = this.nameText.x - (nameWidth/2);
             const y = this.nameText.y + 8; // Posição mais próxima do nome
@@ -76,14 +76,10 @@ export default class BaseNPC {
             this.energyBar.fillStyle(0x000000, 0.5);
             this.energyBar.fillRect(x, y, nameWidth, barHeight);
 
-            // Calcula cor baseada na energia (amarelo -> vermelho)
+            // Barra de energia (amarela)
             const energyRatio = this.config.energy / this.config.maxEnergy;
-            const color = Phaser.Display.Color.Interpolate.ColorWithColor(
-                Phaser.Display.Color.ValueToColor(0xff0000),
-                Phaser.Display.Color.ValueToColor(0xffff00),
-                100,
-                energyRatio * 100
-            );
+            this.energyBar.fillStyle(0xffff00, 1);
+            this.energyBar.fillRect(x, y, nameWidth * energyRatio, barHeight);
 
             // Barra de energia
             this.energyBar.fillStyle(color.color, 1);
