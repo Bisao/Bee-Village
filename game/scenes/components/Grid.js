@@ -165,11 +165,11 @@ export default class Grid {
 
     getCropGrowthTime(cropType) {
         const times = {
-            'potato': 20000,  // 20 segundos
+            'potato': 15000,  // 15 segundos para batata
             'tomato': 15000,  // 15 segundos
             'pumpkin': 25000  // 25 segundos
         };
-        return times[cropType] || 20000;
+        return times[cropType] || 15000;
     }
 
     harvestCrop(x, y) {
