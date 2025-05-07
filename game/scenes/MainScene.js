@@ -474,7 +474,14 @@ export default class MainScene extends Phaser.Scene {
                     randomType
                 );
 
-                object.setDepth(randomY + 1);
+                // Base depth é Y * 10 para ter espaço para camadas intermediárias
+                const baseDepth = randomY * 10;
+                // Adiciona offset baseado no tipo do objeto
+                const depthOffset = objectType === 'tree' ? 5 : 
+                                  objectType === 'building' ? 4 : 
+                                  objectType === 'character' ? 3 : 2;
+                
+                object.setDepth(baseDepth + depthOffset);
                 const scale = (this.grid.tileWidth * (objectType === 'tree' ? 1.8 : 0.8)) / Math.max(object.width, 1);
                 object.setScale(scale);
                 object.setOrigin(0.5, 0.8);
