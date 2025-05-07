@@ -8,24 +8,6 @@ html, body {
     background: var(--background-color);
 }
 
-/* Topbar */
-.topbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 65px;
-    background: var(--panel-background);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0 16px;
-    z-index: 1000;
-    border-bottom: 2px solid var(--primary-color);
-}
-
-
 
 @keyframes beeFloat {
     0% { transform: translate(0, 0) rotate(-2deg); }
@@ -585,10 +567,10 @@ html, body {
 }
 .npc-modal {
     position: fixed;
-    top: 65px;
+    top: 0; /* Adjusted top position */
     left: 0;
     width: 100%;
-    height: calc(100% - 65px);
+    height: 100%; /* Adjusted height */
     background: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
