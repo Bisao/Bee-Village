@@ -238,15 +238,38 @@ export default class BaseNPC {
     }
 
     findAndPlant() {
-        // Lógica para encontrar um local para plantar
-        console.log('Tentando plantar...');
-        // ...implementação para encontrar local e plantar...
+        console.log(`[${this.config.name}] Procurando local para plantar...`);
+        // Encontra tiles disponíveis em um raio de 3 blocos
+        for (let dy = -3; dy <= 3; dy++) {
+            for (let dx = -3; dx <= 3; dx++) {
+                const newX = this.gridX + dx;
+                const newY = this.gridY + dy;
+                if (this.scene.farmingSystem.isTilePlantable(newX, newY)) {
+                    console.log(`[${this.config.name}] Local encontrado em ${newX},${newY}`);
+                    if (this.scene.farmingSystem.plant(newX, newY)) {
+                        console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
+                        return;
+                    }
+                }
+            }
+        }
+        console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
     }
 
     checkAndHarvest() {
-        // Lógica para verificar e colher plantas
-        console.log('Verificando colheitas...');
-        // ...implementação para verificar e colher...
+        console.log(`[${this.config.name}] Verificando plantas prontas para colheita...`);
+        const readyCrops = this.scene.farmingSystem.getReadyCrops();
+        if (readyCrops.length > 0) {
+            console.log(`[${this.config.name}] Encontradas ${readyCrops.length} plantas prontas!`);
+            readyCrops.forEach(crop => {
+                const harvested = this.scene.farmingSystem.harvest(crop.x, crop.y);
+                if (harvested) {
+                    console.log(`[${this.config.name}] Colheita realizada em ${crop.x},${crop.y}`);
+                }
+            });
+        } else {
+            console.log(`[${this.config.name}] Nenhuma planta pronta para colheita.`);
+        }
     }
 
 
