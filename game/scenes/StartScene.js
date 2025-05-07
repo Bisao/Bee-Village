@@ -48,6 +48,7 @@ export default class StartScene extends Phaser.Scene {
         // Click handlers
         playButton.on('pointerdown', () => {
             this.scene.start('MainScene');
+            this.scene.remove('StartScene');
         });
 
         settingsButton.on('pointerdown', () => {
