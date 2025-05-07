@@ -334,6 +334,9 @@ export default class BaseNPC {
             loop: true
         });
 
+        // Define tempo de busca entre 5-8 segundos
+        const searchTime = Phaser.Math.Between(5000, 8000);
+
         // Animação de busca
         const searchParticles = this.scene.add.particles(0, 0, 'tile_grass', {
             x: this.sprite.x,
