@@ -45,6 +45,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
+        // Inicialização dos sistemas principais
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
         this.farmingSystem = new FarmingSystem(this);
@@ -52,8 +53,29 @@ export default class MainScene extends Phaser.Scene {
         this.inventorySystem = new InventorySystem(this);
         this.experienceSystem = new ExperienceSystem(this);
 
+        // Criação e inicialização
         this.grid.create();
         this.inputManager.init();
+
+        // Configurar eventos entre sistemas
+        this.events.on('buildingPlaced', this.handleBuildingPlaced, this);
+        this.events.on('weatherChanged', this.handleWeatherChanged, this);
+        this.events.on('experienceGained', this.handleExperienceGained, this);
+        this.events.on('levelUp', this.handleLevelUp, this);
+        this.events.on('cropPlanted', this.handleCropPlanted, this);
+        this.events.on('cropHarvested', this.handleCropHarvested, this);
+
+        // Iniciar sistema de clima com tempo aleatório
+        const weathers = ['sunny', 'rainy', 'drought'];
+        this.weatherSystem.setWeather(weathers[Math.floor(Math.random() * weathers.length)]);
+
+        // Configurar autosave
+        this.time.addEvent({
+            delay: 60000, // 1 minuto
+            callback: this.autoSave,
+            callbackScope: this,
+            loop: true
+        });
         this.setupUIHandlers();
 
         this.input.on('pointerdown', this.handleClick, this);
@@ -744,6 +766,87 @@ export default class MainScene extends Phaser.Scene {
         this.grid.grid.flat().forEach(tile => {
             tile.clearTint();
         });
+    }
+
+    handleBuildingPlaced(data) {
+        // Criar inventário para novos NPCs
+        if (['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(data.buildingType)) {
+            const key = `${data.gridX},${data.gridY}`;
+            const npc = this.grid.buildingGrid[key]?.npc;
+            if (npc) {
+                this.inventorySystem.createInventory(npc.id);
+                this.experienceSystem.initializeNPC(npc.id, npc.config.profession);
+            }
+        }
+    }
+
+    handleWeatherChanged(weather) {
+        const weatherEffects = {
+            'sunny': { tint: 0xFFFFFF },
+            'rainy': { tint: 0x8888FF },
+            'drought': { tint: 0xFFAA00 }
+        };
+
+        if (weatherEffects[weather]) {
+            this.grid.grid.flat().forEach(tile => {
+                tile.setTint(weatherEffects[weather].tint);
+            });
+        }
+    }
+
+    handleExperienceGained(data) {
+        const npc = this.findNPCById(data.npcId);
+        if (npc) {
+            this.showFeedback(`${npc.config.name} ganhou ${data.amount} XP!`, true);
+        }
+    }
+
+    handleLevelUp(data) {
+        const npc = this.findNPCById(data.npcId);
+        if (npc) {
+            npc.config.level = data.level;
+            
+            // Efeito visual de level up
+            const particles = this.add.particles(npc.sprite.x, npc.sprite.y, 'tile_grass', {
+                speed: 200,
+                scale: { start: 0.4, end: 0 },
+                alpha: { start: 1, end: 0 },
+                tint: 0xFFFF00,
+                lifespan: 800,
+                blendMode: 'ADD',
+                quantity: 20,
+                emitting: false
+            });
+
+            particles.start();
+            this.time.delayedCall(1000, () => particles.destroy());
+
+            this.showFeedback(`${npc.config.name} alcançou nível ${data.level}! 🎉`, true);
+        }
+    }
+
+    handleCropPlanted(data) {
+        const npc = this.findNPCById(data.npcId);
+        if (npc) {
+            this.experienceSystem.addExperience(data.npcId, 10);
+        }
+    }
+
+    handleCropHarvested(data) {
+        const npc = this.findNPCById(data.npcId);
+        if (npc) {
+            this.experienceSystem.addExperience(data.npcId, 20);
+            this.inventorySystem.addItem(data.npcId, data.crop);
+        }
+    }
+
+    findNPCById(npcId) {
+        for (const building of Object.values(this.grid.buildingGrid)) {
+            if (building.npc && building.npc.id === npcId) {
+                return building.npc;
+            }
+        }
+        return null;
     }
 
     updateTileHighlights() {
