@@ -64,17 +64,17 @@ export default class BaseNPC {
         ).setOrigin(0.5);
 
         // Criar barra de energia
-        const barWidth = 50;
-        const barHeight = 6;
         this.energyBar = this.scene.add.graphics();
         this.updateEnergyBar = () => {
             this.energyBar.clear();
-            const x = worldX - barWidth / 2;
-            const y = worldY - 52;
+            const nameWidth = this.nameText.width;
+            const barHeight = 4;
+            const x = this.nameText.x - nameWidth/2;
+            const y = this.nameText.y + 12;
             
             // Barra de fundo
             this.energyBar.fillStyle(0x000000, 0.5);
-            this.energyBar.fillRect(x, y, barWidth, barHeight);
+            this.energyBar.fillRect(x, y, nameWidth, barHeight);
             
             // Calcula cor baseada na energia (amarelo -> vermelho)
             const energyRatio = this.config.energy / this.config.maxEnergy;
@@ -87,7 +87,7 @@ export default class BaseNPC {
             
             // Barra de energia
             this.energyBar.fillStyle(color.color, 1);
-            this.energyBar.fillRect(x, y, barWidth * energyRatio, barHeight);
+            this.energyBar.fillRect(x, y, nameWidth * energyRatio, barHeight);
         };
         this.updateEnergyBar();
         this.energyBar.setDepth(1000);
@@ -117,9 +117,11 @@ export default class BaseNPC {
         this.scene.cameras.main.on('zoom', (zoom) => {
             if (this.nameText) {
                 this.nameText.setScale(baseScale / zoom);
+                this.updateEnergyBar();
             }
         });
-        this.nameText.setDepth(1000); // Valor alto para garantir que fique acima de tudo
+        this.nameText.setDepth(1000);
+        this.energyBar.setDepth(1000); // Valor alto para garantir que fique acima de tudo
 
         // Setup de eventos
         this.setupEvents();
