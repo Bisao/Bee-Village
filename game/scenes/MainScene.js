@@ -1,6 +1,9 @@
 import Grid from '../scenes/components/Grid.js';
 import InputManager from '../scenes/components/InputManager.js';
 import FarmingSystem from '../scenes/components/FarmingSystem.js';
+import WeatherSystem from '../scenes/components/WeatherSystem.js';
+import InventorySystem from '../scenes/components/InventorySystem.js';
+import ExperienceSystem from '../scenes/components/ExperienceSystem.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -45,6 +48,9 @@ export default class MainScene extends Phaser.Scene {
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
         this.farmingSystem = new FarmingSystem(this);
+        this.weatherSystem = new WeatherSystem(this);
+        this.inventorySystem = new InventorySystem(this);
+        this.experienceSystem = new ExperienceSystem(this);
 
         this.grid.create();
         this.inputManager.init();
