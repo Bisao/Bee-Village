@@ -216,7 +216,7 @@ export default class BaseNPC {
         console.log(`[${this.config.name}] Procurando local para plantar...`);
         for (let y = 0; y < this.scene.grid.height; y++) {
             for (let x = 0; x < this.scene.grid.width; x++) {
-                if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y) && this.scene.grid.isPlantable(x, y)) {
+                if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
                     console.log(`[${this.config.name}] Local para plantar encontrado em (${x}, ${y})`);
                     this.scene.plant(x, y);
                     console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
