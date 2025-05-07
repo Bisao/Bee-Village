@@ -1173,7 +1173,11 @@ export default class MainScene extends Phaser.Scene {
     startPlanting(npc) {
         // Inicia a busca por local para plantar
         npc.findAndPlant();
-        modal.remove();
+        // Remove o modal atual se existir
+        const existingModal = document.querySelector('.npc-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
     }
 
     plant(x, y) {
