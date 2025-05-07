@@ -149,9 +149,6 @@ export default class GameScene extends Phaser.Scene {
             { key: 'FishermanHouse', name: 'Casa do Pescador' }
         ];
 
-
-        const itemWidth = 120;
-        const itemHeight = 120;
         const padding = 10;
         const startY = centerY - panelHeight/2 + 80;
 
