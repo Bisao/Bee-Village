@@ -55,9 +55,18 @@ export default class BaseNPC {
                 fill: '#ffffff',
                 stroke: '#000000',
                 strokeThickness: 4,
-                resolution: 2
+                resolution: 2,
+                fontStyle: 'bold'
             }
-        ).setOrigin(0.5);
+        ).setOrigin(0.5)
+        .setScale(1 / this.scene.cameras.main.zoom);
+
+        // Update text scale when zoom changes
+        this.scene.cameras.main.on('zoom', (zoom) => {
+            if (this.nameText) {
+                this.nameText.setScale(1 / zoom);
+            }
+        });
         this.nameText.setDepth(this.gridY + 3);
 
         // Setup de eventos
