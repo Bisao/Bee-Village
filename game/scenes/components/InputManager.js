@@ -38,6 +38,7 @@ export default class InputManager {
         
         if (this.isMobile) {
             let prevDist = 0;
+            let pinchStartZoom = 0;
             
             this.scene.input.on('pointermove', (pointer) => {
                 if (this.scene.input.pointer1.isDown && this.scene.input.pointer2.isDown) {
@@ -48,32 +49,44 @@ export default class InputManager {
                         this.scene.input.pointer2.y
                     );
                     
-                    if (prevDist) {
-                        const diff = prevDist - dist;
-                        const zoom = this.scene.cameras.main.zoom;
-                        const newZoom = zoom - (diff * 0.0005);
-                        this.scene.cameras.main.setZoom(
-                            Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
-                        );
+                    if (!prevDist) {
+                        prevDist = dist;
+                        pinchStartZoom = this.scene.cameras.main.zoom;
                     }
                     
-                    prevDist = dist;
+                    const scaleFactor = dist / prevDist;
+                    if (scaleFactor !== 1) {
+                        const newZoom = Phaser.Math.Clamp(
+                            pinchStartZoom * scaleFactor,
+                            this.minZoom,
+                            this.maxZoom
+                        );
+                        this.scene.cameras.main.setZoom(newZoom);
+                    }
+                } else {
+                    prevDist = 0;
                 }
             });
         }
     }
 
     handlePointerDown(pointer) {
-        if (pointer.rightButtonDown()) {
+        // No mobile ou botão direito no desktop
+        if (this.isMobile || pointer.rightButtonDown()) {
             this.isDragging = true;
             this.scene.game.canvas.style.cursor = 'grabbing';
         }
     }
 
     handlePointerMove(pointer) {
-        if (this.isDragging) {
-            this.scene.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) / this.scene.cameras.main.zoom;
-            this.scene.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) / this.scene.cameras.main.zoom;
+        if (this.isDragging && pointer.prevPosition) {
+            const deltaX = pointer.x - pointer.prevPosition.x;
+            const deltaY = pointer.y - pointer.prevPosition.y;
+            
+            if (deltaX !== 0 || deltaY !== 0) {
+                this.scene.cameras.main.scrollX -= deltaX / this.scene.cameras.main.zoom;
+                this.scene.cameras.main.scrollY -= deltaY / this.scene.cameras.main.zoom;
+            }
         }
     }
 
