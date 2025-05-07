@@ -4,9 +4,9 @@ export default class BaseNPC {
         this.harvestTimer = null;
 
         if (config.profession === 'Farmer') {
-            // Timer para plantar a cada 2 minutos
+            // Timer para plantar a cada 30 segundos
             this.plantTimer = scene.time.addEvent({
-                delay: 120000, // 2 minutos
+                delay: 30000, // 30 segundos
                 callback: () => this.findAndPlant(),
                 loop: true
             });
