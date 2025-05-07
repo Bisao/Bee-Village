@@ -51,20 +51,23 @@ export default class BaseNPC {
         // Criar texto do nome
         this.nameText = this.scene.add.text(worldX, worldY - 64, 
             `${this.config.emoji} ${this.config.name}`, {
-                fontSize: '14px',
+                fontSize: '24px',
                 fill: '#ffffff',
                 stroke: '#000000',
                 strokeThickness: 4,
                 resolution: 2,
                 fontStyle: 'bold'
             }
-        ).setOrigin(0.5)
-        .setScale(1 / this.scene.cameras.main.zoom);
+        ).setOrigin(0.5);
+
+        // Ajusta escala inicial
+        const baseScale = 0.6;
+        this.nameText.setScale(baseScale / this.scene.cameras.main.zoom);
 
         // Update text scale when zoom changes
         this.scene.cameras.main.on('zoom', (zoom) => {
             if (this.nameText) {
-                this.nameText.setScale(1 / zoom);
+                this.nameText.setScale(baseScale / zoom);
             }
         });
         this.nameText.setDepth(this.gridY + 3);
