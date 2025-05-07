@@ -115,4 +115,37 @@ autoSave() {
             onComplete: () => feedback.destroy()
         });
     }
+
+    createFarmerAnimations() {
+        // Animation configurations
+        const animations = {
+            'farmer_up': [1, 2, 3, 4],
+            'farmer_down': [9, 10, 11, 12],
+            'farmer_left': [5, 6, 7, 8],
+            'farmer_right': [1, 2, 3, 4]
+        };
+
+        // Remove existing animations
+        Object.keys(animations).forEach(key => {
+            if (this.anims.exists(key)) {
+                this.anims.remove(key);
+            }
+        });
+
+        // Create new animations
+        Object.entries(animations).forEach(([key, frames]) => {
+            const animFrames = frames.map(i => ({
+                key: `farmer${i}`,
+                frame: 0,
+                duration: 200
+            }));
+
+            this.anims.create({
+                key: key,
+                frames: animFrames,
+                frameRate: 8,
+                repeat: -1
+            });
+        });
+    }
 }
