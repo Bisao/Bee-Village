@@ -263,8 +263,8 @@ export default class BaseNPC {
             return;
         }
 
-        // Tempo aleatório de busca entre 1 e 2 segundos
-        const searchTime = Phaser.Math.Between(1000, 2000);
+        // Tempo aleatório de busca entre 0.3 e 0.5 segundos
+        const searchTime = Phaser.Math.Between(300, 500);
 
         // Animação de busca
         const searchParticles = this.scene.add.particles(0, 0, 'tile_grass', {
@@ -314,8 +314,8 @@ export default class BaseNPC {
 
                     particles.start();
 
-                    // Após 2 segundos, finaliza o plantio
-                    this.scene.time.delayedCall(2000, () => {
+                    // Após 0.5 segundos, finaliza o plantio
+                    this.scene.time.delayedCall(500, () => {
                         this.scene.plant(foundTile.x, foundTile.y);
                         particles.destroy();
                         this.config.emoji = originalEmoji;
