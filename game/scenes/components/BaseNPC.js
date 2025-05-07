@@ -1,30 +1,12 @@
+
 export default class BaseNPC {
-    constructor(scene, x, y, config) {
-        this.plantTimer = null;
-        this.harvestTimer = null;
-
-        if (config.profession === 'Farmer') {
-            // Timer para plantar a cada 30 segundos
-            this.plantTimer = scene.time.addEvent({
-                delay: 30000, // 30 segundos
-                callback: () => this.findAndPlant(),
-                loop: true
-            });
-
-            // Timer para verificar colheitas a cada 5 segundos
-            this.harvestTimer = scene.time.addEvent({
-                delay: 5000, // 5 segundos
-                callback: () => this.checkAndHarvest(),
-                loop: true
-            });
-        }
-
+    constructor(scene, x, y, config = {}) {
         this.scene = scene;
         this.gridX = x;
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-
+        
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -47,13 +29,13 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-
+        
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-
+        
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
@@ -75,10 +57,10 @@ export default class BaseNPC {
 
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
-
+        
         // Esconder sprite inicialmente
         this.sprite.setVisible(false);
-
+        
         // Atrasar movimento para fora da casa em 10 segundos
         this.scene.time.delayedCall(10000, () => {
             const newY = this.gridY + 1;
@@ -93,7 +75,7 @@ export default class BaseNPC {
                     onStart: () => this.sprite.setVisible(true)
                 });
             }
-
+            
             if (this.isAutonomous) {
                 this.startAutonomousMovement();
             }
@@ -122,19 +104,8 @@ export default class BaseNPC {
             return;
         }
 
-        // Filtrar direções que mantêm o NPC dentro do grid
-        const validDirections = directions.filter(dir => {
-            const newX = this.gridX + dir.x;
-            const newY = this.gridY + dir.y;
-            return this.scene.grid.isValidPosition(newX, newY);
-        });
-
-        if (validDirections.length === 0) {
-            return; // Não há movimentos válidos disponíveis
-        }
-
         // Priorizar movimentos que não retornam à posição anterior
-        const filteredDirections = validDirections.filter(dir => {
+        const filteredDirections = directions.filter(dir => {
             const newX = this.gridX + dir.x;
             const newY = this.gridY + dir.y;
             return !(this.lastPosition && 
@@ -144,7 +115,7 @@ export default class BaseNPC {
 
         const directionToUse = filteredDirections.length > 0 ? 
             filteredDirections[Math.floor(Math.random() * filteredDirections.length)] :
-            validDirections[Math.floor(Math.random() * validDirections.length)];
+            directions[Math.floor(Math.random() * directions.length)];
 
         // Guardar posição atual antes de mover
         this.lastPosition = { x: this.gridX, y: this.gridY };
@@ -159,7 +130,7 @@ export default class BaseNPC {
     }
 
     moveTo(newX, newY) {
-        if (this.isMoving || !this.scene.grid.isValidPosition(newX, newY)) return;
+        if (this.isMoving) return;
 
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
         this.isMoving = true;
@@ -237,46 +208,8 @@ export default class BaseNPC {
         return toolsets[profession] || [];
     }
 
-    findAndPlant() {
-        console.log(`[${this.config.name}] Procurando local para plantar...`);
-        // Encontra tiles disponíveis em um raio de 3 blocos
-        for (let dy = -3; dy <= 3; dy++) {
-            for (let dx = -3; dx <= 3; dx++) {
-                const newX = this.gridX + dx;
-                const newY = this.gridY + dy;
-                if (this.scene.farmingSystem.isTilePlantable(newX, newY)) {
-                    console.log(`[${this.config.name}] Local encontrado em ${newX},${newY}`);
-                    if (this.scene.farmingSystem.plant(newX, newY)) {
-                        console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
-                        return;
-                    }
-                }
-            }
-        }
-        console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
-    }
-
-    checkAndHarvest() {
-        console.log(`[${this.config.name}] Verificando plantas prontas para colheita...`);
-        const readyCrops = this.scene.farmingSystem.getReadyCrops();
-        if (readyCrops.length > 0) {
-            console.log(`[${this.config.name}] Encontradas ${readyCrops.length} plantas prontas!`);
-            readyCrops.forEach(crop => {
-                const harvested = this.scene.farmingSystem.harvest(crop.x, crop.y);
-                if (harvested) {
-                    console.log(`[${this.config.name}] Colheita realizada em ${crop.x},${crop.y}`);
-                }
-            });
-        } else {
-            console.log(`[${this.config.name}] Nenhuma planta pronta para colheita.`);
-        }
-    }
-
-
     destroy() {
         this.sprite.destroy();
         this.nameText.destroy();
-        if (this.plantTimer) this.plantTimer.destroy();
-        if (this.harvestTimer) this.harvestTimer.destroy();
     }
 }
