@@ -14,7 +14,8 @@ export default class FarmingSystem {
             growing: '🌿'
         };
         this.growthTimes = {
-            firstStage: 15000,  // 15 segundos para primeira evolução
+            firstStage: 15000,    // 15 segundos para primeira evolução (🌱 -> 🌿)
+            finalStage: 30000,    // 30 segundos total (mais 15 segundos para 🌿 -> 🥔)
         };
     }
 
