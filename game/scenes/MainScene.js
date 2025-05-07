@@ -43,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
-        
+
         // Inicializa o gerenciador de tela
         import('./components/ScreenManager.js').then(({ default: ScreenManager }) => {
             this.screenManager = new ScreenManager(this);
@@ -430,7 +430,10 @@ export default class MainScene extends Phaser.Scene {
                     }
                 });
             });
-        }yId('side-panel');
+        }
+
+        const toggleButton = document.getElementById('toggle-button');
+        const sidePanel = document.getElementById('side-panel');
 
         if (toggleButton && sidePanel) {
             toggleButton.addEventListener('click', () => {
@@ -590,7 +593,7 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-            
+
 
             // Validar se é uma casa que pode ter NPC
             const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
