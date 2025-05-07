@@ -31,28 +31,15 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.isLoading = true;
-        this.loadingProgress = 0;
-
-        // Setup loading events
-        this.load.on('progress', (value) => {
-            this.loadingProgress = value;
-        });
-
+        this.loadAssets();
         this.load.on('complete', () => {
-            this.isLoading = false;
             this.game.events.emit('ready');
         });
-
-        // Load all assets
-        this.loadAssets();
     }
 
     create() {
-        if (this.isLoading || !this.textures.exists('tile_grass')) {
-            // Try again in next frame if still loading
-            this.time.delayedCall(100, () => this.scene.restart());
-            return;
+        if (!this.textures.exists('tile_grass')) {
+            return; // Wait for assets to load
         }
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
@@ -76,116 +63,122 @@ export default class MainScene extends Phaser.Scene {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
 
-        // Create a loading promise
-        return new Promise((resolve) => {
-            // Load all farmer images
-            const imagesToLoad = [];
-            for (let i = 1; i <= 12; i++) {
-                const key = `farmer${i}`;
-                if (!this.textures.exists(key)) {
-                    this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
-                    imagesToLoad.push(key);
-                }
+        const frames = [];
+        for (let i = 1; i <= 12; i++) {
+            const key = `farmer${i}`;
+            if (!this.textures.exists(key)) {
+                this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
             }
-
-            if (imagesToLoad.length > 0) {
-                this.load.once('complete', () => {
-                    this.createFarmerAnimations();
-                    resolve();
-                });
-                this.load.start();
-            } else {
-                this.createFarmerAnimations();
-                resolve();
-            }
-        });
-    }
-
-    createFarmerAnimations() {
-        // Animation configurations
-        const animations = {
-            'farmer_up': { frames: [1, 2, 3, 4] },
-            'farmer_down': { frames: [9, 10, 11, 12] },
-            'farmer_left': { frames: [5, 6, 7, 8] },
-            'farmer_right': { frames: [1, 2, 3, 4] }
-        };
-
-        // Remove existing animations
-        Object.keys(animations).forEach(key => {
-            if (this.anims.exists(key)) {
-                this.anims.remove(key);
-            }
-        });
-
-        // Create new animations with proper frame sequences
-        Object.entries(animations).forEach(([key, config]) => {
-            const frames = config.frames.map(i => ({ 
-                key: `farmer${i}`,
-                frame: 0
-            })).filter(frame => this.textures.exists(frame.key));
-
-            if (frames.length > 0) {
-                this.anims.create({
-                    key: key,
-                    frames: frames,
-                    frameRate: 8,
-                    repeat: -1,
-                    yoyo: false
-                });
-            } else {
-                console.warn(`Could not create animation ${key}: missing frames`);
-            }
-        });
-
-        // Create farmer sprite after animations are ready
-        const startX = Math.floor(this.grid.width / 2);
-        const startY = Math.floor(this.grid.height / 2);
-        const {tileX, tileY} = this.grid.gridToIso(startX, startY);
-
-        this.farmer = this.add.sprite(
-            this.cameras.main.centerX + tileX,
-            this.cameras.main.centerY + tileY - 16,
-            'farmer1'
-        );
-
-        this.farmer.gridX = startX;
-        this.farmer.gridY = startY;
-        this.farmer.setScale(0.8);
-        this.farmer.setDepth(startY + 1);
-
-        this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
-
-        this.keys = this.input.keyboard.addKeys({
-            w: Phaser.Input.Keyboard.KeyCodes.W,
-            a: Phaser.Input.Keyboard.KeyCodes.A,
-            s: Phaser.Input.Keyboard.KeyCodes.S,
-            d: Phaser.Input.Keyboard.KeyCodes.D
-        });
-
-        this.input.keyboard.on('keydown', this.handleKeyDown, this);
-
-        if ('ontouchstart' in window) {
-            const buttons = {
-                'mobile-up': 'W',
-                'mobile-down': 'S', 
-                'mobile-left': 'A',
-                'mobile-right': 'D'
-            };
-
-            Object.entries(buttons).forEach(([className, key]) => {
-                const button = document.querySelector(`.${className}`);
-                if (button) {
-                    button.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        this.keys[key.toLowerCase()].isDown = true;
-                    });
-                    button.addEventListener('touchend', (e) => {
-                        e.preventDefault();
-                        this.keys[key.toLowerCase()].isDown = false;
-                    });
-                }
-            });
+            frames.push({ key });
         }
+
+        this.load.once('complete', () => {
+            this.anims.create({
+                key: 'farmer_walk',
+                frames: frames,
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_up',
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_down',
+                frames: [
+                    { key: 'farmer9' },
+                    { key: 'farmer10' },
+                    { key: 'farmer11' },
+                    { key: 'farmer12' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_left',
+                frames: [
+                    { key: 'farmer5' },
+                    { key: 'farmer6' },
+                    { key: 'farmer7' },
+                    { key: 'farmer8' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_right',
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            const startX = Math.floor(this.grid.width / 2);
+            const startY = Math.floor(this.grid.height / 2);
+            const {tileX, tileY} = this.grid.gridToIso(startX, startY);
+
+            this.farmer = this.add.sprite(
+                this.cameras.main.centerX + tileX,
+                this.cameras.main.centerY + tileY - 16,
+                'farmer1'
+            );
+
+            this.farmer.gridX = startX;
+            this.farmer.gridY = startY;
+            this.farmer.setScale(0.8);
+            this.farmer.setDepth(startY + 1);
+
+            this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
+
+            this.keys = this.input.keyboard.addKeys({
+                w: Phaser.Input.Keyboard.KeyCodes.W,
+                a: Phaser.Input.Keyboard.KeyCodes.A,
+                s: Phaser.Input.Keyboard.KeyCodes.S,
+                d: Phaser.Input.Keyboard.KeyCodes.D
+            });
+
+            this.input.keyboard.on('keydown', this.handleKeyDown, this);
+
+            if ('ontouchstart' in window) {
+                const buttons = {
+                    'mobile-up': 'W',
+                    'mobile-down': 'S', 
+                    'mobile-left': 'A',
+                    'mobile-right': 'D'
+                };
+
+                Object.entries(buttons).forEach(([className, key]) => {
+                    const button = document.querySelector(`.${className}`);
+                    if (button) {
+                        button.addEventListener('touchstart', (e) => {
+                            e.preventDefault();
+                            this.keys[key.toLowerCase()].isDown = true;
+                        });
+                        button.addEventListener('touchend', (e) => {
+                            e.preventDefault();
+                            this.keys[key.toLowerCase()].isDown = false;
+                        });
+                    }
+                });
+            }
+        });
+
+        this.load.start();
     }
 
     update() {
@@ -357,92 +350,63 @@ export default class MainScene extends Phaser.Scene {
      * @private
      */
     loadAssets() {
-        // Return if assets are already loaded
+        // Cache de texturas para otimização
         if (this.textures.exists('tile_grass')) return;
 
-        // Asset manifests for better organization and tracking
-        const assets = {
-            farmers: Array.from({length: 12}, (_, i) => ({
-                key: `farmer${i + 1}`,
-                path: `attached_assets/Farmer_${i + 1}-ezgif.com-resize.png`
-            })),
-            tiles: [
-                'tile_grass',
-                'tile_grass_2',
-                'tile_grass_2_flowers',
-                'tile_grass_3_flowers'
-            ].map(tile => ({
-                key: tile,
-                path: `game/assets/tiles/${tile}.png`
-            })),
-            rocks: [
-                { key: 'rock_small', path: 'game/assets/rocks/small_rock.png' },
-                { key: 'rock_medium', path: 'game/assets/rocks/2_rock.png' },
-                { key: 'rock_large', path: 'game/assets/rocks/big_rock.png' }
-            ],
-            trees: [
-                { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
-                { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
-                { key: 'tree_fruit', path: 'game/assets/trees/tree_fruit.png' },
-                { key: 'tree_autumn', path: 'game/assets/trees/tree_autumn.png' }
-            ],
-            buildings: [
-                { key: 'chickenHouse', filename: 'ChickenHouse' },
-                { key: 'cowHouse', filename: 'CowHouse' },
-                { key: 'farmerHouse', filename: 'FarmerHouse' },
-                { key: 'minerHouse', filename: 'MinerHouse' },
-                { key: 'pigHouse', filename: 'PigHouse' },
-                { key: 'fishermanHouse', filename: 'fishermanHouse' }
-            ]
-        };
+        // Load farmer sprites
+        for (let i = 1; i <= 12; i++) {
+            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        }
 
-        // Track total assets for accurate loading progress
-        this.totalAssets = Object.values(assets).reduce((sum, group) => sum + group.length, 0);
-        this.loadedAssets = 0;
+        // Load tiles
+        const tiles = [
+            'tile_grass',
+            'tile_grass_2',
+            'tile_grass_2_flowers',
+            'tile_grass_3_flowers'
+        ];
 
-        // Setup better loading progress tracking
-        this.load.on('filecomplete', () => {
-            this.loadedAssets++;
-            this.loadingProgress = this.loadedAssets / this.totalAssets;
+        tiles.forEach(tile => {
+            this.load.image(tile, `game/assets/tiles/${tile}.png`);
         });
 
-        // Load all assets with error handling
-        try {
-            // Load farmer sprites
-            assets.farmers.forEach(farmer => {
-                this.load.image(farmer.key, farmer.path);
-            });
+        // Load rocks
+        const rocks = [
+            { key: 'rock_small', path: 'game/assets/rocks/small_rock.png' },
+            { key: 'rock_medium', path: 'game/assets/rocks/2_rock.png' },
+            { key: 'rock_large', path: 'game/assets/rocks/big_rock.png' }
+        ];
 
-            // Load tiles
-            assets.tiles.forEach(tile => {
-                this.load.image(tile.key, tile.path);
-            });
+        rocks.forEach(rock => {
+            this.load.image(rock.key, rock.path);
+        });
 
-            // Load rocks
-            assets.rocks.forEach(rock => {
-                this.load.image(rock.key, rock.path);
-            });
+        // Load trees
+        const trees = [
+            { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
+            { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
+            { key: 'tree_fruit', path: 'game/assets/trees/tree_fruit.png' },
+            { key: 'tree_autumn', path: 'game/assets/trees/tree_autumn.png' }
+        ];
 
-            // Load trees
-            assets.trees.forEach(tree => {
-                this.load.image(tree.key, tree.path);
-            });
+        trees.forEach(tree => {
+            this.load.image(tree.key, tree.path);
+        });
 
-            // Load buildings
-            assets.buildings.forEach(building => {
-                this.load.image(building.key, `game/assets/buildings/${building.filename}.png`);
-            });
+        // Load buildings
+        const buildings = [
+            'chickenHouse|ChickenHouse',
+            'cowHouse|CowHouse', 
+            'farmerHouse|FarmerHouse',
+            'minerHouse|MinerHouse',
+            'pigHouse|PigHouse',
+            'fishermanHouse|fishermanHouse'
+        ];
 
-            // Enable texture garbage collection for better memory management
-            this.textures.on('oncontextrestored', () => {
-                this.textures.removeAll();
-                this.loadAssets();
-            });
-
-        } catch (error) {
-            console.error('Error loading assets:', error);
-            this.showFeedback('Erro ao carregar recursos', false);
-        }
+        buildings.forEach(building => {
+            const [key, filename] = building.split('|');
+            this.load.image(key, `game/assets/buildings/${filename}.png`);
+        });
     }
 
     setupUIHandlers() {
@@ -579,17 +543,6 @@ export default class MainScene extends Phaser.Scene {
             this.cameras.main.centerX,
             this.cameras.main.centerY - 100,
             message,
-            {
-                fontSize: '24px',
-                fontFamily: 'Arial',
-                stroke: '#000',
-                strokeThickness: 4,
-                fill: success ? '#00ff00' : '#ff0000',
-                align: 'center',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: { x: 15, y: 10 },
-                borderRadius: 8
-            }
             { 
                 fontSize: '16px',
                 fill: success ? '#4CAF50' : '#f44336',
@@ -782,9 +735,9 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
-    async createFarmerNPC(houseX, houseY, worldX, worldY) {
-        try {
-            const { default: BaseNPC } = await import('./components/BaseNPC.js');
+    createFarmerNPC(houseX, houseY, worldX, worldY) {
+        // Import BaseNPC if not already imported
+        import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
             // Get building type and name data
             const buildingKey = `${houseX},${houseY}`;
             const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
@@ -806,16 +759,14 @@ export default class MainScene extends Phaser.Scene {
 
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
-
+            
             // Adiciona interatividade à casa
             const house = this.grid.buildingGrid[buildingKey].sprite;
             if (house) {
                 house.setInteractive();
                 house.on('pointerdown', () => this.showNPCControls(npc));
             }
-        } catch (error) {
-            console.error('Erro ao criar NPC:', error);
-        }
+        });
     }
 
     startNPCMovement(npc) {
@@ -823,7 +774,6 @@ export default class MainScene extends Phaser.Scene {
 
         // First step down if possible
         const firstStep = () => {
-            if (!npc.isAutonomous) return;
             const newY = npc.gridY + 1;
             if (this.grid.isValidPosition(npc.gridX, newY) && !this.isTileOccupied(npc.gridX, newY)) {
                 this.moveNPCTo(npc, npc.gridX, newY);
@@ -843,14 +793,9 @@ export default class MainScene extends Phaser.Scene {
             this.moveNPCTo(npc, npc.gridX + randomDir.x, npc.gridY + randomDir.y);
         };
 
-        // Store timer reference for cleanup
-        npc.movementTimer = this.time.addEvent({
+        this.time.addEvent({
             delay: 2000,
-            callback: () => {
-                if (npc.isAutonomous) {
-                    moveNPC();
-                }
-            },
+            callback: moveNPC,
             loop: true
         });
     }
@@ -961,64 +906,39 @@ export default class MainScene extends Phaser.Scene {
 
         document.body.appendChild(modal);
 
-        modal.querySelector('#autonomous').onclick = (e) => {            e.stopPropagation();
-            npc.isAutonomous = true;
-
-            // Limpar controles existentes
-            if (npc.movementTimer) {
-                npc.movementTimer.remove();
-            }
-
-            this.cameras.main.stopFollow();
-
-            // Ajustar zoom padrão
+        modal.querySelector('#autonomous').onclick = () => {
+            // Transição suave da câmera
             this.tweens.add({
                 targets: this.cameras.main,
                 zoom: 1.5,
                 duration: 500,
                 ease: 'Power2',
                 onComplete: () => {
-                    if (npc.isAutonomous) {
-                        this.startNPCMovement(npc);
+                    npc.isAutonomous = true;
+                    this.cameras.main.stopFollow();
+                    this.startNPCMovement(npc);
+                    // Hide controls panel on mobile
+                    if (this.inputManager.isMobile) {
+                        document.getElementById('controls-panel').style.display = 'none';
                     }
                 }
             });
-
-            // Ocultar controles no mobile
-            if (this.inputManager.isMobile) {
-                const controlsPanel = document.getElementById('controls-panel');
-                if (controlsPanel) {
-                    controlsPanel.style.display = 'none';
-                    controlsPanel.style.visibility = 'hidden';
-                    controlsPanel.style.pointerEvents = 'none';
-                }
-            }
-
             this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
         };
 
-        modal.querySelector('#controlled').onclick = (e) => {
-            e.stopPropagation();
+        modal.querySelector('#controlled').onclick = () => {
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
-
-            // Fazer câmera seguir o NPC suavemente
+            // Make camera follow the NPC
             this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
             this.enablePlayerControl(npc);
-
-            // Exibir controles no mobile
-            if (this.inputManager.isMobile) {
-                const controlsPanel = document.getElementById('controls-panel');
-                if (controlsPanel) {
-                    controlsPanel.style.display = 'flex';
-                    controlsPanel.style.visibility = 'visible';
-                    controlsPanel.style.pointerEvents = 'auto';
-                    controlsPanel.style.opacity = '1';
-                }
+            // Show controls panel on mobile
+            const controlsPanel = document.getElementById('controls-panel');
+            if (this.inputManager.isMobile && controlsPanel) {
+                controlsPanel.style.display = 'flex';
+                controlsPanel.style.zIndex = '2000';
             }
-
-            this.showFeedback('Modo controlado ativado', true);
             modal.remove();
         };
 

@@ -22,50 +22,13 @@ export default class InputManager {
         this.scene.input.on('pointermove', this.handlePointerMove, this);
         this.scene.input.on('pointerup', this.handlePointerUp, this);
 
-        // Configuração do zoom para desktop e mobile
         if (!this.isMobile) {
             this.scene.input.on('wheel', (pointer, gameObjects, deltaX, deltaY) => {
                 const zoom = this.scene.cameras.main.zoom;
-                const newZoom = zoom - (deltaY * 0.001);
+                const newZoom = zoom - (deltaY * (window.innerWidth < 768 ? 0.0005 : 0.001));
                 this.scene.cameras.main.setZoom(
                     Phaser.Math.Clamp(newZoom, this.minZoom, this.maxZoom)
                 );
-            });
-        } else {
-            let startTouchDistance = 0;
-            let currentZoom = 1;
-            
-            this.scene.input.on('pointerdown', (pointer) => {
-                if (this.scene.input.pointer1.isDown && this.scene.input.pointer2.isDown) {
-                    startTouchDistance = Phaser.Math.Distance.Between(
-                        this.scene.input.pointer1.x,
-                        this.scene.input.pointer1.y,
-                        this.scene.input.pointer2.x,
-                        this.scene.input.pointer2.y
-                    );
-                    currentZoom = this.scene.cameras.main.zoom;
-                }
-            });
-            
-            this.scene.input.on('pointermove', (pointer) => {
-                if (this.scene.input.pointer1.isDown && this.scene.input.pointer2.isDown) {
-                    const currentDistance = Phaser.Math.Distance.Between(
-                        this.scene.input.pointer1.x,
-                        this.scene.input.pointer1.y,
-                        this.scene.input.pointer2.x,
-                        this.scene.input.pointer2.y
-                    );
-                    
-                    if (startTouchDistance > 0) {
-                        const scaleFactor = currentDistance / startTouchDistance;
-                        const newZoom = Phaser.Math.Clamp(
-                            currentZoom * scaleFactor,
-                            this.minZoom,
-                            this.maxZoom
-                        );
-                        this.scene.cameras.main.setZoom(newZoom);
-                    }
-                }
             });
         }
     }
@@ -101,8 +64,7 @@ export default class InputManager {
     }
 
     handlePointerDown(pointer) {
-        // No mobile, permitir arrastar com um dedo quando não houver dois dedos pressionados
-        if (pointer.rightButtonDown() || (this.isMobile && !this.scene.input.pointer2.isDown)) {
+        if (pointer.rightButtonDown()) {
             this.isDragging = true;
             this.scene.game.canvas.style.cursor = 'grabbing';
         }
