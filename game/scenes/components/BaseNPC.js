@@ -1,4 +1,3 @@
-
 export default class BaseNPC {
     constructor(scene, x, y, config = {}) {
         this.scene = scene;
@@ -6,7 +5,7 @@ export default class BaseNPC {
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-        
+
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -29,13 +28,13 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-        
+
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-        
+
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
@@ -57,10 +56,10 @@ export default class BaseNPC {
 
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
-        
+
         // Esconder sprite inicialmente
         this.sprite.setVisible(false);
-        
+
         // Atrasar movimento para fora da casa em 10 segundos
         this.scene.time.delayedCall(10000, () => {
             const newY = this.gridY + 1;
@@ -75,7 +74,7 @@ export default class BaseNPC {
                     onStart: () => this.sprite.setVisible(true)
                 });
             }
-            
+
             if (this.isAutonomous) {
                 this.startAutonomousMovement();
             }
@@ -207,6 +206,31 @@ export default class BaseNPC {
         };
         return toolsets[profession] || [];
     }
+
+    findAndPlant() {
+        // Mudar o ícone temporariamente
+        const originalEmoji = this.config.emoji;
+        this.config.emoji = '👁️‍🗨️';
+        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+
+        console.log(`[${this.config.name}] Procurando local para plantar...`);
+        for (let y = 0; y < this.scene.grid.height; y++) {
+            for (let x = 0; x < this.scene.grid.width; x++) {
+                if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y) && this.scene.grid.isPlantable(x, y)) {
+                    console.log(`[${this.config.name}] Local para plantar encontrado em (${x}, ${y})`);
+                    this.scene.plant(x, y);
+                    console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
+                    this.config.emoji = originalEmoji;
+                    this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+                    return;
+                }
+            }
+        }
+        console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
+        this.config.emoji = originalEmoji;
+        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+    }
+
 
     destroy() {
         this.sprite.destroy();
