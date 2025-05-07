@@ -70,7 +70,7 @@ export default class BaseNPC {
                 this.nameText.setScale(baseScale / zoom);
             }
         });
-        this.nameText.setDepth(this.gridY + 3);
+        this.nameText.setDepth(1000); // Valor alto para garantir que fique acima de tudo
 
         // Setup de eventos
         this.setupEvents();
