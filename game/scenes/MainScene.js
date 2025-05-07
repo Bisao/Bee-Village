@@ -1171,30 +1171,16 @@ export default class MainScene extends Phaser.Scene {
     }
 
     startPlanting(npc) {
-        // Find a random valid and unoccupied tile within a 5-second timeframe
-        this.time.delayedCall(5000, () => {
-            this.plantAtRandomTile(npc);
-        });
+        // Inicia a busca por local para plantar
+        npc.findAndPlant();
+        modal.remove();
     }
 
-
-    plantAtRandomTile(npc) {
-        const validTiles = this.grid.grid.flat().filter(tile => {
-            const gridPosition = tile.data;
-            return this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY) && !this.isTileOccupied(gridPosition.gridX, gridPosition.gridY);
-        });
-
-        if(validTiles.length > 0){
-            const randomTile = validTiles[Math.floor(Math.random() * validTiles.length)];
-            const gridPosition = randomTile.data;
-            this.moveNPCTo(npc, gridPosition.gridX, gridPosition.gridY);
-
-            //Simulate planting action - replace with actual planting logic
-            console.log("NPC planted at:", gridPosition.gridX, gridPosition.gridY);
-
-            this.showFeedback(`${npc.config.name} plantou algo!`, true);
-        } else {
-            this.showFeedback("Nenhum local disponível para plantar.", false);
+    plant(x, y) {
+        if (this.farmingSystem.plant(x, y)) {
+            this.showFeedback("Plantação realizada com sucesso!", true);
+            return true;
         }
+        return false;
     }
 }
