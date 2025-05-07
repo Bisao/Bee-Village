@@ -5,6 +5,12 @@ export default class BaseNPC {
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
+        this.storage = [
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 }
+        ];
 
         // Configurações customizáveis
         this.config = {
@@ -94,9 +100,14 @@ export default class BaseNPC {
                     `).join('')}
                 </div>
                 <div class="storage-grid">
-                    ${Array(4).fill().map(() => `
+                    ${this.storage.map(slot => `
                         <div class="storage-slot">
-                            <div class="storage-empty">📦</div>
+                            ${slot.item ? `
+                                <div class="storage-item">
+                                    <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
+                                    <span class="item-quantity">${slot.quantity}/10</span>
+                                </div>
+                            ` : '<div class="storage-empty">📦</div>'}
                         </div>
                     `).join('')}
                 </div>
@@ -294,6 +305,34 @@ export default class BaseNPC {
         });
     }
 
+
+    getItemEmoji(item) {
+        const emojis = {
+            'potato': '🥔',
+            'carrot': '🥕',
+            'wheat': '🌾'
+        };
+        return emojis[item] || '❓';
+    }
+
+    addItemToStorage(item) {
+        // Procura um slot com o mesmo item e espaço
+        let slot = this.storage.find(s => s.item === item && s.quantity < 10);
+        if (slot) {
+            slot.quantity++;
+            return true;
+        }
+
+        // Procura um slot vazio
+        slot = this.storage.find(s => !s.item);
+        if (slot) {
+            slot.item = item;
+            slot.quantity = 1;
+            return true;
+        }
+
+        return false; // Inventário cheio
+    }
 
     destroy() {
         this.sprite.destroy();
