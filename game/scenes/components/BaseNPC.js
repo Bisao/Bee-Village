@@ -82,7 +82,27 @@ export default class BaseNPC {
     }
 
     showControls() {
-        this.scene.showNPCControls(this);
+        const html = `
+            <div class="inventory-container">
+                <div class="inventory-grid">
+                    ${this.config.tools.map(tool => `
+                        <div class="tool-slot">
+                            <div class="tool-emoji">${tool.emoji}</div>
+                            <div class="tool-name">${tool.name}</div>
+                            <div class="tool-description">${tool.description}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="storage-grid">
+                    ${Array(4).fill().map(() => `
+                        <div class="storage-slot">
+                            <div class="storage-empty">📦</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+        this.scene.showInventory(html); //Assumes a showInventory method exists in the scene
     }
 
     startAutonomousMovement() {
@@ -214,7 +234,7 @@ export default class BaseNPC {
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
 
         console.log(`[${this.config.name}] Procurando local para plantar...`);
-        
+
         // Procura por um tile disponível
         let foundTile = null;
         for (let y = 0; y < this.scene.grid.height && !foundTile; y++) {
