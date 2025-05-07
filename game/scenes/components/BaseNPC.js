@@ -87,8 +87,6 @@ export default class BaseNPC {
 
             if (this.isAutonomous) {
                 this.startAutonomousMovement();
-                // Inicia com o trabalho de coleta ativo
-                this.startCollecting();
             }
         });
     }
