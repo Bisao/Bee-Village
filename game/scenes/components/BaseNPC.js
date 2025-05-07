@@ -76,12 +76,14 @@ export default class BaseNPC {
             this.energyBar.fillStyle(0x000000, 0.5);
             this.energyBar.fillRect(x, y, nameWidth, barHeight);
 
-            // Barra de energia (amarela)
+            // Barra de energia com gradiente amarelo->vermelho
             const energyRatio = this.config.energy / this.config.maxEnergy;
-            this.energyBar.fillStyle(0xffff00, 1);
-            this.energyBar.fillRect(x, y, nameWidth * energyRatio, barHeight);
-
-            // Barra de energia
+            const color = Phaser.Display.Color.Interpolate.ColorWithColor(
+                Phaser.Display.Color.ValueToColor(0xff0000), // vermelho
+                Phaser.Display.Color.ValueToColor(0xffff00), // amarelo
+                100,
+                energyRatio * 100
+            );
             this.energyBar.fillStyle(color.color, 1);
             this.energyBar.fillRect(x, y, nameWidth * energyRatio, barHeight);
         };
