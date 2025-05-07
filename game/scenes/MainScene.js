@@ -66,7 +66,6 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
 
-        this.placeEnvironmentObjects();
 
         // Define zoom inicial diferente para mobile e desktop
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -452,110 +451,8 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    placeEnvironmentObjects() {
-        this.placeRocks();
-        this.placeTrees();
-    }
+    // Structure and positioning functions removed
 
-    placeRocks() {
-        const rockTypes = ['rock_small', 'rock_medium', 'rock_large'];
-        this.placeObjects(rockTypes, 8, 'rock');
-    }
-
-    placeTrees() {
-        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
-        this.placeObjects(treeTypes, 15, 'tree');
-    }
-
-    placeObjects(types, count, objectType) {
-        let placed = 0;
-        while (placed < count) {
-            const randomX = Math.floor(Math.random() * this.grid.width);
-            const randomY = Math.floor(Math.random() * this.grid.height);
-            const key = `${randomX},${randomY}`;
-
-            if (this.grid.buildingGrid[key]) continue;
-
-            try {
-                const randomType = types[Math.floor(Math.random() * types.length)];
-                const {tileX, tileY} = this.grid.gridToIso(randomX, randomY);
-
-                const object = this.add.image(
-                    this.cameras.main.centerX + tileX,
-                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
-                    randomType
-                );
-
-                // Base depth é Y * 10 para ter espaço para camadas intermediárias
-                const baseDepth = randomY * 10;
-                // Adiciona offset baseado no tipo do objeto
-                const depthOffset = objectType === 'tree' ? 5 : 
-                                  objectType === 'building' ? 4 : 
-                                  objectType === 'character' ? 3 : 2;
-
-                object.setDepth(baseDepth + depthOffset);
-                const scale = (this.grid.tileWidth * (objectType === 'tree' ? 1.8 : 0.8)) / Math.max(object.width, 1);
-                object.setScale(scale);
-                object.setOrigin(0.5, 0.8);
-
-                this.grid.buildingGrid[key] = {
-                    sprite: object,
-                    type: objectType,
-                    gridX: randomX,
-                    gridY: randomY
-                };
-
-                placed++;
-            } catch (error) {
-                console.error(`Error placing ${objectType}:`, error);
-                continue;
-            }
-        }
-    }
-    handleClick(pointer) {
-        if (!this.selectedBuilding || pointer.rightButtonDown()) return;
-
-        try {
-            const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
-            const hoveredTile = this.grid.grid.flat().find(tile => {
-                const bounds = new Phaser.Geom.Rectangle(
-                    tile.x - tile.displayWidth / 2,
-                    tile.y - tile.displayHeight / 2,
-                    tile.displayWidth,
-                    tile.displayHeight
-                );
-                return bounds.contains(worldPoint.x, worldPoint.y);
-            });
-
-            if (hoveredTile && hoveredTile.data) {
-                const gridPosition = hoveredTile.data;
-                const key = `${gridPosition.gridX},${gridPosition.gridY}`;
-
-                // Verifica se a posição está ocupada
-                if (this.grid.buildingGrid[key]) {
-                    this.showFeedback('Posição já ocupada', false);
-                    return;
-                }
-
-                // Verifica se a posição é válida
-                if (!this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY)) {
-                    this.showFeedback('Posição inválida', false);
-                    return;
-                }
-
-                // Usa a posição exata do preview para posicionar a estrutura
-                const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
-                const worldX = this.cameras.main.centerX + tileX;
-                const worldY = this.cameras.main.centerY + tileY;
-
-                this.placeBuilding(gridPosition.gridX, gridPosition.gridY, worldX, worldY);
-                console.log('Building placed at:', gridPosition.gridX, gridPosition.gridY);
-            }
-        } catch (error) {
-            console.error('Error placing building:', error);
-            this.showFeedback('Erro ao posicionar estrutura', false);
-        }
-    }
 
     showFeedback(message, success = true) {
         const text = this.add.text(
@@ -580,99 +477,6 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    placeBuilding(gridX, gridY, worldX, worldY) {
-        try {
-            // Validações iniciais
-            if (!this.selectedBuilding) {
-                console.log('No building selected');
-                return;
-            }
-
-            if (!this.grid.isValidPosition(gridX, gridY)) {
-                this.showFeedback('Posição inválida', false);
-                return;
-            }
-
-            const key = `${gridX},${gridY}`;
-            if (this.grid.buildingGrid[key]) {
-                this.showFeedback('Posição já ocupada', false);
-                return;
-            }
-
-
-
-            // Validar se é uma casa que pode ter NPC
-            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
-            const isNPCHouse = npcHouses.includes(this.selectedBuilding);
-
-            // Criar a estrutura
-            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
-            if (!building) {
-                throw new Error('Failed to create building sprite: sprite is null');
-            }
-
-            // Configurar a estrutura
-            const scale = (this.grid.tileWidth * 1.4) / building.width;
-            building.setScale(scale);
-            building.setOrigin(0.5, 0.75);
-            building.setDepth(gridY + 1);
-
-            // Registrar no grid
-            this.grid.buildingGrid[key] = {
-                sprite: building,
-                type: 'building',
-                buildingType: this.selectedBuilding,
-                gridX: gridX,
-                gridY: gridY
-            };
-
-            // Create NPC for each house if it's a valid house type
-            if (['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
-                this.createFarmerNPC(gridX, gridY, worldX, worldY);
-            }
-
-            // Efeito de partículas
-            const particles = this.add.particles(0, 0, 'tile_grass', {
-                x: worldX,
-                y: worldY,
-                speed: 150,
-                scale: { start: 0.3, end: 0 },
-                alpha: { start: 0.8, end: 0 },
-                lifespan: 400,
-                blendMode: 'ADD',
-                quantity: 6,
-                emitting: false
-            });
-
-            particles.start();
-
-            // Destruir o sistema de partículas após 500ms
-            this.time.delayedCall(500, () => {
-                particles.destroy();
-            });
-
-            // Feedback visual
-            this.showFeedback('Estrutura construída!', true);
-
-            // Limpar seleção e highlights
-            this.clearBuildingSelection();
-            this.clearTileHighlights();
-
-            // Notificar outros sistemas
-            this.events.emit('buildingPlaced', {
-                gridX,
-                gridY,
-                buildingType: this.selectedBuilding
-            });
-
-            // Show panel after structure placement
-            document.getElementById('side-panel').style.display = 'flex';
-
-        } catch (error) {
-            console.error('Error placing building:', error);
-            this.showFeedback('Erro ao construir estrutura', false);
-        }
-    }
 
     clearBuildingSelection() {
         const buttons = document.querySelectorAll('.building-btn');
@@ -756,6 +560,7 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
+
     createFarmerNPC(houseX, houseY, worldX, worldY) {
         // Import BaseNPC if not already imported
         import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
