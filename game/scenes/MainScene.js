@@ -905,16 +905,14 @@ export default class MainScene extends Phaser.Scene {
                     </button>
                 </div>
 
-                <div class="mode-info">
-                    <p class="autonomous-info ${npc.isAutonomous ? 'visible' : ''}">
-                        🔄 NPC se move livremente
-                    </p>
-                    <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
-                        📱 Use WASD ou controles mobile
-                    </p>
+                <div class="npc-tabs">
+                    <button class="npc-tab active" data-tab="inventory">Inventário</button>
+                    <button class="npc-tab" data-tab="work">Trabalhos</button>
+                    <button class="npc-tab" data-tab="skills">Skills</button>
                 </div>
 
-                <div class="npc-inventory">
+                <div class="tab-panel inventory-panel active" id="inventory-panel">
+                    <div class="inventory-grid">
                     ${npc.config.tools.map(tool => `
                         <div class="tool-slot">
                             <div class="tool-emoji">${tool.emoji}</div>
@@ -923,10 +921,62 @@ export default class MainScene extends Phaser.Scene {
                         </div>
                     `).join('')}
                 </div>
+                </div>
+
+                <div class="tab-panel work-panel" id="work-panel">
+                    <div class="work-list">
+                        <div class="work-item">
+                            <span>🌾 Plantar</span>
+                        </div>
+                        <div class="work-item">
+                            <span>🚿 Regar Plantas</span>
+                        </div>
+                        <div class="work-item">
+                            <span>🌟 Colher</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-panel skills-panel" id="skills-panel">
+                    <div class="skills-grid">
+                        <div class="skill-item">
+                            <span class="skill-name">Plantio</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 60%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Colheita</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 45%"></div>
+                            </div>
+                        </div>
+                        <div class="skill-item">
+                            <span class="skill-name">Irrigação</span>
+                            <div class="skill-bar">
+                                <div class="skill-progress" style="width: 30%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         `;
 
         document.body.appendChild(modal);
+
+        // Adicionar handlers para as abas
+        modal.querySelectorAll('.npc-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remover classe active de todas as abas e painéis
+                modal.querySelectorAll('.npc-tab').forEach(t => t.classList.remove('active'));
+                modal.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                
+                // Adicionar classe active na aba clicada e seu painel
+                tab.classList.add('active');
+                const panelId = `${tab.dataset.tab}-panel`;
+                modal.querySelector(`#${panelId}`).classList.add('active');
+            });
+        });
 
         modal.querySelector('#autonomous').onclick = () => {
             // Transição suave da câmera
