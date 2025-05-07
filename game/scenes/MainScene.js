@@ -104,10 +104,10 @@ export default class MainScene extends Phaser.Scene {
     createFarmerAnimations() {
         // Animation configurations
         const animations = {
-            'farmer_up': { start: 1, end: 4 },
-            'farmer_down': { start: 9, end: 12 },
-            'farmer_left': { start: 5, end: 8 },
-            'farmer_right': { start: 1, end: 4 }
+            'farmer_up': { frames: [1, 2, 3, 4] },
+            'farmer_down': { frames: [9, 10, 11, 12] },
+            'farmer_left': { frames: [5, 6, 7, 8] },
+            'farmer_right': { frames: [1, 2, 3, 4] }
         };
 
         // Remove existing animations
@@ -119,13 +119,10 @@ export default class MainScene extends Phaser.Scene {
 
         // Create new animations with proper frame sequences
         Object.entries(animations).forEach(([key, config]) => {
-            const frames = [];
-            for (let i = config.start; i <= config.end; i++) {
-                const frameName = `farmer${i}`;
-                if (this.textures.exists(frameName)) {
-                    frames.push({ key: frameName });
-                }
-            }
+            const frames = config.frames.map(i => ({ 
+                key: `farmer${i}`,
+                frame: 0
+            })).filter(frame => this.textures.exists(frame.key));
 
             if (frames.length > 0) {
                 this.anims.create({
@@ -582,6 +579,17 @@ export default class MainScene extends Phaser.Scene {
             this.cameras.main.centerX,
             this.cameras.main.centerY - 100,
             message,
+            {
+                fontSize: '24px',
+                fontFamily: 'Arial',
+                stroke: '#000',
+                strokeThickness: 4,
+                fill: success ? '#00ff00' : '#ff0000',
+                align: 'center',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: { x: 15, y: 10 },
+                borderRadius: 8
+            }
             { 
                 fontSize: '16px',
                 fill: success ? '#4CAF50' : '#f44336',
