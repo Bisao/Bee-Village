@@ -76,63 +76,60 @@ export default class MainScene extends Phaser.Scene {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
 
-        // Carrega todas as imagens primeiro
-        for (let i = 1; i <= 12; i++) {
-            const key = `farmer${i}`;
-            if (!this.textures.exists(key)) {
-                this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        // Create a loading promise
+        return new Promise((resolve) => {
+            // Load all farmer images
+            const imagesToLoad = [];
+            for (let i = 1; i <= 12; i++) {
+                const key = `farmer${i}`;
+                if (!this.textures.exists(key)) {
+                    this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+                    imagesToLoad.push(key);
+                }
             }
-        }
 
-        this.load.once('complete', () => {
-            // Cria as animações após carregar todas as imagens
+            if (imagesToLoad.length > 0) {
+                this.load.once('complete', () => {
+                    this.createFarmerAnimations();
+                    resolve();
+                });
+                this.load.start();
+            } else {
+                this.createFarmerAnimations();
+                resolve();
+            }
+        });
+    }
+
+    createFarmerAnimations() {
+        // Remove existing animations if they exist
+        ['farmer_up', 'farmer_down', 'farmer_left', 'farmer_right'].forEach(key => {
+            if (this.anims.exists(key)) {
+                this.anims.remove(key);
+            }
+        });
+
+        // Create animations
+        const animations = {
+            'farmer_up': [1, 2, 3, 4],
+            'farmer_down': [9, 10, 11, 12],
+            'farmer_left': [5, 6, 7, 8],
+            'farmer_right': [1, 2, 3, 4]
+        };
+
+        Object.entries(animations).forEach(([key, frames]) => {
             this.anims.create({
-                key: 'farmer_up',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
+                key: key,
+                frames: frames.map(num => ({ key: `farmer${num}` })),
                 frameRate: 8,
                 repeat: -1
             });
+        });
 
-            this.anims.create({
-                key: 'farmer_down',
-                frames: [
-                    { key: 'farmer9' },
-                    { key: 'farmer10' },
-                    { key: 'farmer11' },
-                    { key: 'farmer12' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_left',
-                frames: [
-                    { key: 'farmer5' },
-                    { key: 'farmer6' },
-                    { key: 'farmer7' },
-                    { key: 'farmer8' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_right',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
+        // Create farmer sprite after animations are ready
+        const startX = Math.floor(this.grid.width / 2);
+        const startY = Math.floor(this.grid.height / 2);
+        const {tileX, tileY} = this.grid.gridToIso(startX, startY);
 
             const startX = Math.floor(this.grid.width / 2);
             const startY = Math.floor(this.grid.height / 2);
