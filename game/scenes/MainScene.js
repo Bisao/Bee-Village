@@ -410,6 +410,19 @@ export default class MainScene extends Phaser.Scene {
     }
 
     setupUIHandlers() {
+        // Tree visibility toggle
+        const toggleTreesBtn = document.getElementById('toggleTrees');
+        if (toggleTreesBtn) {
+            toggleTreesBtn.addEventListener('click', () => {
+                const treesVisible = toggleTreesBtn.classList.toggle('active');
+                Object.values(this.grid.buildingGrid).forEach(obj => {
+                    if (obj.type === 'tree') {
+                        obj.sprite.setVisible(treesVisible);
+                    }
+                });
+            });
+        }
+
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(btn => {
             btn.addEventListener('click', () => {

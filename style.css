@@ -60,8 +60,9 @@ html, body {
 }
 
 .structure-button {
-    position: absolute;
-    right: 16px;
+    position: relative;
+    margin: 0 8px;
+    display: inline-flex;
     top: 50%;
     transform: translateY(-50%);
     background: var(--accent-color);
