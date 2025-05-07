@@ -191,7 +191,8 @@ export default class BaseNPC {
             'Farmer': [
                 { name: 'Enchada', emoji: '🦾', description: 'Para cultivar a terra' },
                 { name: 'Regador', emoji: '💧', description: 'Para regar as plantas' },
-                { name: 'Escopeta', emoji: '🔫', description: 'Para defesa da fazenda' }
+                { name: 'Escopeta', emoji: '🔫', description: 'Para defesa da fazenda' },
+                { name: 'Sementes', emoji: '🌱', description: 'Para plantar culturas' }
             ],
             'Miner': [
                 { name: 'Picareta', emoji: '⛏️', description: 'Para minerar' },
