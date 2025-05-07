@@ -1,13 +1,19 @@
 
-export default class StartScene extends Phaser.Scene {
+import BaseScene from './BaseScene.js';
+
+export default class StartScene extends BaseScene {
     constructor() {
         super({ key: 'StartScene' });
     }
 
     create() {
-        // Pega as dimensões atuais da tela
-        const width = this.scale.width;
-        const height = this.scale.height;
+        super.create();
+        this.createUI();
+    }
+
+    createUI() {
+        const width = this.screenDimensions.width;
+        const height = this.screenDimensions.height;
         const centerX = width / 2;
         const centerY = height / 2;
 
@@ -19,64 +25,51 @@ export default class StartScene extends Phaser.Scene {
         const fontSize = Math.min(32, width * 0.06);
 
         // Container para centralizar todos os elementos
-        const container = this.add.container(centerX, centerY);
+        this.container = this.add.container(centerX, centerY);
         
         // Painel central
-        const panel = this.add.rectangle(0, 0, panelWidth, panelHeight, 0x2d2d2d)
+        this.panel = this.add.rectangle(0, 0, panelWidth, panelHeight, 0x2d2d2d)
             .setStrokeStyle(2, 0xffffff);
         
         // Título
-        const title = this.add.text(0, -panelHeight * 0.25, 'My Village', {
+        this.title = this.add.text(0, -panelHeight * 0.25, 'My Village', {
             fontSize: `${fontSize}px`,
             fill: '#ffffff'
         }).setOrigin(0.5);
 
-        // Botão Play
-        const playButton = this.add.rectangle(0, 0, buttonWidth, buttonHeight, 0x4a4a4a)
-            .setInteractive()
-            .setStrokeStyle(2, 0xffffff);
-        
-        const playText = this.add.text(0, 0, 'Play', {
-            fontSize: `${fontSize * 0.75}px`,
-            fill: '#ffffff'
-        }).setOrigin(0.5);
-
-        // Botão Settings
-        const settingsButton = this.add.rectangle(0, buttonHeight * 1.5, buttonWidth, buttonHeight, 0x4a4a4a)
-            .setInteractive()
-            .setStrokeStyle(2, 0xffffff);
-        
-        const settingsText = this.add.text(0, buttonHeight * 1.5, 'Settings', {
-            fontSize: `${fontSize * 0.75}px`,
-            fill: '#ffffff'
-        }).setOrigin(0.5);
-
-        // Adiciona todos os elementos ao container
-        container.add([panel, title, playButton, playText, settingsButton, settingsText]);
-
-        // Efeitos de hover
-        [playButton, settingsButton].forEach(button => {
-            button.on('pointerover', () => button.setFillStyle(0x666666));
-            button.on('pointerout', () => button.setFillStyle(0x4a4a4a));
-        });
-
-        // Click handlers
-        playButton.on('pointerdown', () => {
+        // Botões
+        this.createButton(0, 0, buttonWidth, buttonHeight, 'Play', fontSize * 0.75, () => {
             this.scene.start('GameScene');
         });
 
-        settingsButton.on('pointerdown', () => {
+        this.createButton(0, buttonHeight * 1.5, buttonWidth, buttonHeight, 'Settings', fontSize * 0.75, () => {
             this.scene.start('SettingsScene');
         });
 
-        // Listener para redimensionamento
-        this.scale.on('resize', this.resize, this);
+        // Adiciona elementos ao container
+        this.container.add([this.panel, this.title]);
     }
 
-    resize(gameSize) {
-        // Atualiza posições quando a tela é redimensionada
-        if (this.scene.isActive()) {
-            this.scene.restart();
+    createButton(x, y, width, height, text, fontSize, callback) {
+        const button = this.add.rectangle(x, y, width, height, 0x4a4a4a)
+            .setInteractive()
+            .setStrokeStyle(2, 0xffffff);
+        
+        const buttonText = this.add.text(x, y, text, {
+            fontSize: `${fontSize}px`,
+            fill: '#ffffff'
+        }).setOrigin(0.5);
+
+        button.on('pointerover', () => button.setFillStyle(0x666666));
+        button.on('pointerout', () => button.setFillStyle(0x4a4a4a));
+        button.on('pointerdown', callback);
+
+        this.container.add([button, buttonText]);
+    }
+
+    onDimensionsUpdate() {
+        if (this.container) {
+            this.createUI();
         }
     }
 }
