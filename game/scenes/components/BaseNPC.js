@@ -64,18 +64,18 @@ export default class BaseNPC {
         ).setOrigin(0.5);
 
         // Criar barra de energia
-        const barWidth = 50;
-        const barHeight = 6;
         this.energyBar = this.scene.add.graphics();
         this.updateEnergyBar = () => {
             this.energyBar.clear();
-            const x = this.sprite.x - barWidth / 2;
-            const y = this.sprite.y - 20;
-            
+            const nameWidth = this.nameText.width * 0.8; // 80% da largura do nome
+            const barHeight = 3; // Altura reduzida
+            const x = this.nameText.x - (nameWidth/2);
+            const y = this.nameText.y + 10; // Posição ajustada
+
             // Barra de fundo
             this.energyBar.fillStyle(0x000000, 0.5);
-            this.energyBar.fillRect(x, y, barWidth, barHeight);
-            
+            this.energyBar.fillRect(x, y, nameWidth, barHeight);
+
             // Calcula cor baseada na energia (amarelo -> vermelho)
             const energyRatio = this.config.energy / this.config.maxEnergy;
             const color = Phaser.Display.Color.Interpolate.ColorWithColor(
@@ -84,10 +84,10 @@ export default class BaseNPC {
                 100,
                 energyRatio * 100
             );
-            
+
             // Barra de energia
             this.energyBar.fillStyle(color.color, 1);
-            this.energyBar.fillRect(x, y, barWidth * energyRatio, barHeight);
+            this.energyBar.fillRect(x, y, nameWidth * energyRatio, barHeight);
         };
         this.updateEnergyBar();
         this.energyBar.setDepth(1000);
@@ -548,7 +548,7 @@ export default class BaseNPC {
         this.config.isResting = true;
         this.config.emoji = '💤';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-        
+
         // Volta para casa
         const key = `${this.gridX},${this.gridY}`;
         const house = this.scene.grid.buildingGrid[key];
