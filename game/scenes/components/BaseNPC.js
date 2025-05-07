@@ -9,6 +9,10 @@ export default class BaseNPC {
             { item: null, quantity: 0 },
             { item: null, quantity: 0 },
             { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
             { item: null, quantity: 0 }
         ];
 
@@ -221,7 +225,7 @@ export default class BaseNPC {
         const toolsets = {
             'Farmer': [
                 { name: 'Enchada', emoji: '🦾', description: 'Para cultivar a terra' },
-                { name: 'Regador', emoji: '💧', description: 'Para regar as plantas' },
+                { name: 'Coletor', emoji: '🧺', description: 'Para coletar recursos' },
                 { name: 'Escopeta', emoji: '🔫', description: 'Para defesa da fazenda' },
                 { name: 'Sementes', emoji: '🌱', description: 'Para plantar culturas' }
             ],
