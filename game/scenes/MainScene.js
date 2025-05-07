@@ -759,6 +759,17 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
+    showInventory(html) {
+        const existingModal = document.querySelector('.npc-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'npc-modal';
+        modalDiv.innerHTML = html;
+        document.body.appendChild(modalDiv);
+    }
+
     createFarmerNPC(houseX, houseY, worldX, worldY) {
         // Import BaseNPC if not already imported
         import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
