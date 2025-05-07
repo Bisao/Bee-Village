@@ -122,8 +122,19 @@ export default class BaseNPC {
             return;
         }
 
+        // Filtrar direções que mantêm o NPC dentro do grid
+        const validDirections = directions.filter(dir => {
+            const newX = this.gridX + dir.x;
+            const newY = this.gridY + dir.y;
+            return this.scene.grid.isValidPosition(newX, newY);
+        });
+
+        if (validDirections.length === 0) {
+            return; // Não há movimentos válidos disponíveis
+        }
+
         // Priorizar movimentos que não retornam à posição anterior
-        const filteredDirections = directions.filter(dir => {
+        const filteredDirections = validDirections.filter(dir => {
             const newX = this.gridX + dir.x;
             const newY = this.gridY + dir.y;
             return !(this.lastPosition && 
@@ -133,7 +144,7 @@ export default class BaseNPC {
 
         const directionToUse = filteredDirections.length > 0 ? 
             filteredDirections[Math.floor(Math.random() * filteredDirections.length)] :
-            directions[Math.floor(Math.random() * directions.length)];
+            validDirections[Math.floor(Math.random() * validDirections.length)];
 
         // Guardar posição atual antes de mover
         this.lastPosition = { x: this.gridX, y: this.gridY };
@@ -148,7 +159,7 @@ export default class BaseNPC {
     }
 
     moveTo(newX, newY) {
-        if (this.isMoving) return;
+        if (this.isMoving || !this.scene.grid.isValidPosition(newX, newY)) return;
 
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
         this.isMoving = true;
