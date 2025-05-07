@@ -269,8 +269,15 @@ export default class BaseNPC {
             return;
         }
 
-        // Tempo aleatório de busca entre 0.3 e 0.5 segundos
-        const searchTime = Phaser.Math.Between(300, 500);
+        // Tempo aleatório de busca entre 10 e 15 segundos
+        const searchTime = Phaser.Math.Between(10000, 15000);
+
+        // Configurar repetição a cada 20 segundos
+        this.searchTimer = this.scene.time.addEvent({
+            delay: 20000,
+            callback: () => this.findAndPlant(),
+            loop: true
+        });
 
         // Animação de busca
         const searchParticles = this.scene.add.particles(0, 0, 'tile_grass', {
@@ -363,6 +370,9 @@ export default class BaseNPC {
     }
 
     destroy() {
+        if (this.searchTimer) {
+            this.searchTimer.remove();
+        }
         this.sprite.destroy();
         this.nameText.destroy();
     }
