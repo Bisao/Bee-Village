@@ -9,6 +9,10 @@ export default class BaseNPC {
             { item: null, quantity: 0 },
             { item: null, quantity: 0 },
             { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
+            { item: null, quantity: 0 },
             { item: null, quantity: 0 }
         ];
 
@@ -90,51 +94,30 @@ export default class BaseNPC {
     showControls() {
         const html = `
             <div class="inventory-container">
-                <div class="equipment-section">
-                    <h4>Equipamentos</h4>
-                    <div class="inventory-grid">
-                        ${this.config.tools.map(tool => `
-                            <div class="tool-slot">
-                                <div class="tool-emoji">${tool.emoji}</div>
-                                <div class="tool-name">${tool.name}</div>
-                                <div class="tool-description">${tool.description}</div>
-                            </div>
-                        `).join('')}
-                    </div>
+                <div class="inventory-grid">
+                    ${this.config.tools.map(tool => `
+                        <div class="tool-slot">
+                            <div class="tool-emoji">${tool.emoji}</div>
+                            <div class="tool-name">${tool.name}</div>
+                            <div class="tool-description">${tool.description}</div>
+                        </div>
+                    `).join('')}
                 </div>
-                <div class="storage-section">
-                    <h4>Armazenamento</h4>
-                    <div class="storage-grid">
-                        ${this.storage.map(slot => `
-                            <div class="storage-slot">
-                                ${slot.item ? `
-                                    <div class="storage-item">
-                                        <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
-                                        <span class="item-quantity">${slot.quantity}/10</span>
-                                    </div>
-                                ` : '<div class="storage-empty">📦</div>'}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-                <div class="storage-section">
-                    <h4>Armazenamento</h4>
-                    <div class="storage-grid">
-                        ${this.storage.map(slot => `
-                            <div class="storage-slot">
-                                ${slot.item ? `
-                                    <div class="storage-item">
-                                        <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
-                                        <span class="item-quantity">${slot.quantity}/10</span>
-                                    </div>
-                                ` : '<div class="storage-empty">📦</div>'}
-                            </div>
-                        `).join('')}
-                    </div>
+                <div class="storage-grid">
+                    ${this.storage.map(slot => `
+                        <div class="storage-slot">
+                            ${slot.item ? `
+                                <div class="storage-item">
+                                    <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
+                                    <span class="item-quantity">${slot.quantity}/10</span>
+                                </div>
+                            ` : '<div class="storage-empty">📦</div>'}
+                        </div>
+                    `).join('')}
                 </div>
             </div>
         `;
-        this.scene.showInventory(html);
+        this.scene.showInventory(html); //Assumes a showInventory method exists in the scene
     }
 
     startAutonomousMovement() {

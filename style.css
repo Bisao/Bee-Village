@@ -1101,22 +1101,7 @@ html, body {
 .inventory-container {
     display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-.equipment-section,
-.storage-section {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-}
-
-.equipment-section h4,
-.storage-section h4 {
-    color: var(--text-color);
-    margin: 0;
-    padding: 5px 0;
-    border-bottom: 1px solid var(--primary-color);
+    gap: 15px;
 }
 
 .inventory-grid {
