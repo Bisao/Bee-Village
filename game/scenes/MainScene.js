@@ -33,7 +33,7 @@ export default class MainScene extends Phaser.Scene {
     preload() {
         this.isLoading = true;
         this.loadingProgress = 0;
-        
+
         // Setup loading events
         this.load.on('progress', (value) => {
             this.loadingProgress = value;
@@ -131,57 +131,50 @@ export default class MainScene extends Phaser.Scene {
         const startY = Math.floor(this.grid.height / 2);
         const {tileX, tileY} = this.grid.gridToIso(startX, startY);
 
-            const startX = Math.floor(this.grid.width / 2);
-            const startY = Math.floor(this.grid.height / 2);
-            const {tileX, tileY} = this.grid.gridToIso(startX, startY);
+        this.farmer = this.add.sprite(
+            this.cameras.main.centerX + tileX,
+            this.cameras.main.centerY + tileY - 16,
+            'farmer1'
+        );
 
-            this.farmer = this.add.sprite(
-                this.cameras.main.centerX + tileX,
-                this.cameras.main.centerY + tileY - 16,
-                'farmer1'
-            );
+        this.farmer.gridX = startX;
+        this.farmer.gridY = startY;
+        this.farmer.setScale(0.8);
+        this.farmer.setDepth(startY + 1);
 
-            this.farmer.gridX = startX;
-            this.farmer.gridY = startY;
-            this.farmer.setScale(0.8);
-            this.farmer.setDepth(startY + 1);
+        this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
 
-            this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
-
-            this.keys = this.input.keyboard.addKeys({
-                w: Phaser.Input.Keyboard.KeyCodes.W,
-                a: Phaser.Input.Keyboard.KeyCodes.A,
-                s: Phaser.Input.Keyboard.KeyCodes.S,
-                d: Phaser.Input.Keyboard.KeyCodes.D
-            });
-
-            this.input.keyboard.on('keydown', this.handleKeyDown, this);
-
-            if ('ontouchstart' in window) {
-                const buttons = {
-                    'mobile-up': 'W',
-                    'mobile-down': 'S', 
-                    'mobile-left': 'A',
-                    'mobile-right': 'D'
-                };
-
-                Object.entries(buttons).forEach(([className, key]) => {
-                    const button = document.querySelector(`.${className}`);
-                    if (button) {
-                        button.addEventListener('touchstart', (e) => {
-                            e.preventDefault();
-                            this.keys[key.toLowerCase()].isDown = true;
-                        });
-                        button.addEventListener('touchend', (e) => {
-                            e.preventDefault();
-                            this.keys[key.toLowerCase()].isDown = false;
-                        });
-                    }
-                });
-            }
+        this.keys = this.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
         });
 
-        this.load.start();
+        this.input.keyboard.on('keydown', this.handleKeyDown, this);
+
+        if ('ontouchstart' in window) {
+            const buttons = {
+                'mobile-up': 'W',
+                'mobile-down': 'S', 
+                'mobile-left': 'A',
+                'mobile-right': 'D'
+            };
+
+            Object.entries(buttons).forEach(([className, key]) => {
+                const button = document.querySelector(`.${className}`);
+                if (button) {
+                    button.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        this.keys[key.toLowerCase()].isDown = true;
+                    });
+                    button.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        this.keys[key.toLowerCase()].isDown = false;
+                    });
+                }
+            });
+        }
     }
 
     update() {
