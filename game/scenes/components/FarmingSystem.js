@@ -23,22 +23,60 @@ export default class FarmingSystem {
         const key = `${x},${y}`;
         if (this.crops[key]) return false;
 
+        const position = this.scene.grid.gridToIso(x, y);
         this.crops[key] = {
             state: 'planted',
             plantedAt: Date.now(),
             x: x,
             y: y,
             display: this.scene.add.text(
-                this.scene.cameras.main.centerX + this.scene.grid.gridToIso(x, y).tileX,
-                this.scene.cameras.main.centerY + this.scene.grid.gridToIso(x, y).tileY - 32,
+                this.scene.cameras.main.centerX + position.tileX,
+                this.scene.cameras.main.centerY + position.tileY - 32,
                 this.growthStages.planted
-            ).setOrigin(0.5).setDepth(1000)
+            ).setOrigin(0.5).setDepth(1000),
+            progressBar: this.scene.add.graphics()
         };
 
+        this.updateGrowthProgress(key);
         // Primeira evolução (planted -> growing)
         setTimeout(() => this.evolve(key), this.growthTimes.firstStage);
 
         return true;
+    }
+
+    updateGrowthProgress(key) {
+        const crop = this.crops[key];
+        if (!crop) return;
+
+        const elapsed = Date.now() - crop.plantedAt;
+        const total = this.growthTimes.finalStage;
+        const progress = Math.min(elapsed / total, 1);
+
+        const position = this.scene.grid.gridToIso(crop.x, crop.y);
+        const barWidth = 32;
+        const barHeight = 4;
+
+        crop.progressBar.clear();
+        // Fundo da barra
+        crop.progressBar.fillStyle(0x000000, 0.5);
+        crop.progressBar.fillRect(
+            this.scene.cameras.main.centerX + position.tileX - barWidth/2,
+            this.scene.cameras.main.centerY + position.tileY - 40,
+            barWidth,
+            barHeight
+        );
+        // Progresso
+        crop.progressBar.fillStyle(0x00ff00, 1);
+        crop.progressBar.fillRect(
+            this.scene.cameras.main.centerX + position.tileX - barWidth/2,
+            this.scene.cameras.main.centerY + position.tileY - 40,
+            barWidth * progress,
+            barHeight
+        );
+
+        if (progress < 1) {
+            setTimeout(() => this.updateGrowthProgress(key), 1000);
+        }
     }
 
     evolve(key) {
