@@ -269,8 +269,8 @@ export default class BaseNPC {
             }
 
             const foundTile = Phaser.Math.RND.pick(availableTiles);
-
-        if (!foundTile) {
+            
+            if (!foundTile) {
             console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
             this.config.emoji = originalEmoji;
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
