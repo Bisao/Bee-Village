@@ -108,10 +108,15 @@ export default class GameScene extends Phaser.Scene {
                 .setDepth(1000)
                 .setInteractive();
 
-            const image = this.add.image(x, y - 20, structure.key)
+            const image = this.add.image(x, y, structure.key)
                 .setScrollFactor(0)
-                .setDepth(1000)
-                .setScale(0.5);
+                .setDepth(1000);
+            
+            // Ajusta a escala da imagem para caber no botão
+            const scaleX = (itemWidth - 20) / image.width;
+            const scaleY = (itemHeight - 20) / image.height;
+            const scale = Math.min(scaleX, scaleY);
+            image.setScale(scale);
 
             const text = this.add.text(x, y + 30, structure.name, {
                 fontSize: '14px',
