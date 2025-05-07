@@ -93,27 +93,69 @@ export default class BaseNPC {
 
     showControls() {
         const html = `
-            <div class="inventory-container">
-                <div class="inventory-grid">
-                    ${this.config.tools.map(tool => `
-                        <div class="tool-slot">
-                            <div class="tool-emoji">${tool.emoji}</div>
-                            <div class="tool-name">${tool.name}</div>
-                            <div class="tool-description">${tool.description}</div>
+            <div class="modal-content">
+                <button class="close-button">✕</button>
+                <div class="npc-header">
+                    <div class="npc-avatar">
+                        ${this.config.emoji}
+                    </div>
+                    <div class="npc-info">
+                        <h3>${this.config.name}</h3>
+                        <p class="npc-profession">${this.config.profession}</p>
+                        <div class="npc-level-info">
+                            <span class="level-text">Nível ${this.config.level}</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: ${(this.config.xp / this.config.maxXp) * 100}%"></div>
+                            </div>
+                            <span class="xp-text">${this.config.xp}/${this.config.maxXp} XP</span>
                         </div>
-                    `).join('')}
+                    </div>
                 </div>
-                <div class="storage-grid">
-                    ${this.storage.map(slot => `
-                        <div class="storage-slot">
-                            ${slot.item ? `
-                                <div class="storage-item">
-                                    <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
-                                    <span class="item-quantity">${slot.quantity}/10</span>
+
+                <div class="npc-tabs">
+                    <button class="npc-tab active" data-tab="inventory">Inventário</button>
+                    <button class="npc-tab" data-tab="work">Trabalhos</button>
+                    <button class="npc-tab" data-tab="skills">Skills</button>
+                </div>
+
+                <div class="tab-panel inventory-panel active" id="inventory-panel">
+                    <div class="equipment-section">
+                        <h4>Equipamentos</h4>
+                        <div class="inventory-grid">
+                            ${this.config.tools.map(tool => `
+                                <div class="tool-slot">
+                                    <div class="tool-emoji">${tool.emoji}</div>
+                                    <div class="tool-name">${tool.name}</div>
+                                    <div class="tool-description">${tool.description}</div>
                                 </div>
-                            ` : '<div class="storage-empty">📦</div>'}
+                            `).join('')}
                         </div>
-                    `).join('')}
+                    </div>
+                    
+                    <div class="storage-section">
+                        <h4>Armazenamento</h4>
+                        <div class="storage-grid">
+                            ${this.storage.map(slot => `
+                                <div class="storage-slot">
+                                    ${slot.item ? `
+                                        <div class="storage-item">
+                                            <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
+                                            <span class="item-quantity">${slot.quantity}/10</span>
+                                        </div>
+                                    ` : '<div class="storage-empty">📦</div>'}
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn ${this.isAutonomous ? 'active' : ''}" id="autonomous">
+                        🤖 Modo Autônomo
+                    </button>
+                    <button class="control-btn ${!this.isAutonomous ? 'active' : ''}" id="controlled">
+                        🕹️ Modo Controlado
+                    </button>
                 </div>
             </div>
         `;
