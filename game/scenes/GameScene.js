@@ -1,4 +1,3 @@
-
 import Grid from './components/Grid.js';
 import InputManager from './components/InputManager.js';
 
@@ -17,23 +16,23 @@ export default class GameScene extends Phaser.Scene {
 
     create() {
         console.log('GameScene iniciada');
-        
+
         // Inicializa o ScreenManager
         this.screenManager = new ScreenManager(this);
-        
+
         // Configurar a top bar
         this.createTopBar();
-        
+
         // Registra elementos UI com o ScreenManager
         this.registerUIElements();
-        
+
         // Configura viewport responsivo
         const topBarHeight = 50;
         const viewportWidth = this.scale.width;
         const viewportHeight = this.scale.height - topBarHeight;
-        
+
         this.cameras.main.setViewport(0, topBarHeight, viewportWidth, viewportHeight);
-        
+
         // Cria o grid com tamanho adaptativo
         const gridSize = Math.min(20, Math.floor(viewportWidth / 64)); // 64 é o tamanho base do tile
         this.grid = new Grid(this, gridSize, gridSize);
@@ -101,7 +100,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('tile_grass_2', 'game/assets/tiles/tile_grass_2.png');
         this.load.image('tile_grass_2_flowers', 'game/assets/tiles/tile_grass_2_flowers.png');
         this.load.image('tile_grass_3_flowers', 'game/assets/tiles/tile_grass_3_flowers.png');
-        
+
         // Carrega as texturas das estruturas
         this.load.image('ChickenHouse', 'game/assets/buildings/ChickenHouse.png');
         this.load.image('CowHouse', 'game/assets/buildings/CowHouse.png');
@@ -117,19 +116,19 @@ export default class GameScene extends Phaser.Scene {
         const panelHeight = Math.min(400, this.scale.height * 0.7);
         const centerX = this.scale.width / 2;
         const centerY = this.scale.height / 2;
-        
+
         // Ajusta tamanho dos itens baseado no painel
         const itemsPerRow = this.scale.width < 768 ? 1 : 2;
         const padding = Math.max(5, Math.min(10, panelWidth * 0.03));
         const itemWidth = (panelWidth - (padding * 3)) / itemsPerRow;
         const itemHeight = Math.min(itemWidth, panelHeight * 0.25);
-        
+
         // Container do painel
         const panel = this.add.rectangle(centerX, centerY, panelWidth, panelHeight, 0x2d2d2d)
             .setScrollFactor(0)
             .setDepth(1000)
             .setAlpha(0.9);
-        
+
         // Título do painel
         const title = this.add.text(centerX, centerY - panelHeight/2 + 30, 'Estruturas', {
             fontSize: '24px',
@@ -150,7 +149,7 @@ export default class GameScene extends Phaser.Scene {
             { key: 'FishermanHouse', name: 'Casa do Pescador' }
         ];
 
-        const itemsPerRow = 2;
+
         const itemWidth = 120;
         const itemHeight = 120;
         const padding = 10;
@@ -170,7 +169,7 @@ export default class GameScene extends Phaser.Scene {
             const image = this.add.image(x, y, structure.key)
                 .setScrollFactor(0)
                 .setDepth(1000);
-            
+
             // Ajusta a escala da imagem para caber no botão
             const scaleX = (itemWidth - 20) / image.width;
             const scaleY = (itemHeight - 20) / image.height;
@@ -244,8 +243,7 @@ export default class GameScene extends Phaser.Scene {
             this.grid.updateVisibleTiles();
         }
     }
-}
-registerUIElements() {
+    registerUIElements() {
         // Registra a top bar
         this.screenManager.registerElement('topBar', this.topBar, {
             dimensions: { width: '100%', height: 50 },
@@ -279,3 +277,5 @@ registerUIElements() {
             }
         });
     }
+
+}
