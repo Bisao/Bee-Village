@@ -93,3 +93,26 @@ autoSave() {
             }
         }
     }
+
+    showFeedback(message, success) {
+        const feedback = this.add.text(this.game.config.width / 2, this.game.config.height / 2, message, {
+            fontSize: '24px',
+            fontFamily: 'Arial',
+            stroke: '#000',
+            strokeThickness: 4,
+            fill: success ? '#00ff00' : '#ff0000',
+            align: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            padding: { x: 15, y: 10 },
+            borderRadius: 8
+        });
+        feedback.setOrigin(0.5);
+        this.tweens.add({
+            targets: feedback,
+            alpha: { from: 1, to: 0 },
+            duration: 2000,
+            ease: 'Power2',
+            onComplete: () => feedback.destroy()
+        });
+    }
+}
