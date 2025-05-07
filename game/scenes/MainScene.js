@@ -495,7 +495,7 @@ export default class MainScene extends Phaser.Scene {
                 const depthOffset = objectType === 'tree' ? 5 : 
                                   objectType === 'building' ? 4 : 
                                   objectType === 'character' ? 3 : 2;
-                
+
                 object.setDepth(baseDepth + depthOffset);
                 const scale = (this.grid.tileWidth * (objectType === 'tree' ? 1.8 : 0.8)) / Math.max(object.width, 1);
                 object.setScale(scale);
@@ -781,7 +781,7 @@ export default class MainScene extends Phaser.Scene {
 
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
-            
+
             // Adiciona interatividade à casa
             const house = this.grid.buildingGrid[buildingKey].sprite;
             if (house) {
@@ -925,7 +925,7 @@ export default class MainScene extends Phaser.Scene {
 
                 <div class="tab-panel work-panel" id="work-panel">
                     <div class="work-list">
-                        <div class="work-item">
+                        <div class="work-item" id="plant-work">
                             <span>🌾 Plantar</span>
                         </div>
                         <div class="work-item">
@@ -970,7 +970,7 @@ export default class MainScene extends Phaser.Scene {
                 // Remover classe active de todas as abas e painéis
                 modal.querySelectorAll('.npc-tab').forEach(t => t.classList.remove('active'));
                 modal.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-                
+
                 // Adicionar classe active na aba clicada e seu painel
                 tab.classList.add('active');
                 const panelId = `${tab.dataset.tab}-panel`;
@@ -1024,6 +1024,14 @@ export default class MainScene extends Phaser.Scene {
         modal.onclick = (e) => {
             if (e.target === modal) modal.remove();
         };
+
+        // Add event listener for "plant" work item
+        const plantWorkItem = modal.querySelector('#plant-work');
+        if(plantWorkItem){
+            plantWorkItem.addEventListener('click', () => {
+                this.startPlanting(npc);
+            });
+        }
     }
 
     cleanupNPCControls() {
@@ -1162,4 +1170,31 @@ export default class MainScene extends Phaser.Scene {
         this.events.on('update', npc.updateHandler);
     }
 
+    startPlanting(npc) {
+        // Find a random valid and unoccupied tile within a 5-second timeframe
+        this.time.delayedCall(5000, () => {
+            this.plantAtRandomTile(npc);
+        });
+    }
+
+
+    plantAtRandomTile(npc) {
+        const validTiles = this.grid.grid.flat().filter(tile => {
+            const gridPosition = tile.data;
+            return this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY) && !this.isTileOccupied(gridPosition.gridX, gridPosition.gridY);
+        });
+
+        if(validTiles.length > 0){
+            const randomTile = validTiles[Math.floor(Math.random() * validTiles.length)];
+            const gridPosition = randomTile.data;
+            this.moveNPCTo(npc, gridPosition.gridX, gridPosition.gridY);
+
+            //Simulate planting action - replace with actual planting logic
+            console.log("NPC planted at:", gridPosition.gridX, gridPosition.gridY);
+
+            this.showFeedback(`${npc.config.name} plantou algo!`, true);
+        } else {
+            this.showFeedback("Nenhum local disponível para plantar.", false);
+        }
+    }
 }
