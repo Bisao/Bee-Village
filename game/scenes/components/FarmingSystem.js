@@ -1,4 +1,3 @@
-
 export default class FarmingSystem {
     constructor(scene) {
         this.scene = scene;
@@ -11,7 +10,8 @@ export default class FarmingSystem {
         };
         this.growthStages = {
             planted: '🌱',
-            growing: '🌿'
+            growing: '🌿',
+            ready: ''  // Será definido dinamicamente baseado no tipo de cultura
         };
         this.growthTimes = {
             firstStage: 15000,    // 15 segundos para primeira evolução (🌱 -> 🌿)
@@ -86,11 +86,14 @@ export default class FarmingSystem {
         if (crop.state === 'planted') {
             crop.state = 'growing';
             crop.display.setText(this.growthStages.growing);
-            
+
             // Segunda evolução (growing -> ready)
             setTimeout(() => {
                 if (this.crops[key]) {
                     this.crops[key].state = 'ready';
+                    //Definindo o emoji correto para o estado 'ready'
+                    const cropType = Object.keys(this.cropTypes).find(type => this.cropTypes[type].time === this.growthTimes.finalStage);
+                    this.growthStages.ready = this.cropTypes[cropType].emoji;
                     this.crops[key].display.setText(this.growthStages.ready);
                 }
             }, this.growthTimes.finalStage - this.growthTimes.firstStage);
@@ -100,7 +103,7 @@ export default class FarmingSystem {
     harvest(x, y) {
         const key = `${x},${y}`;
         const crop = this.crops[key];
-        
+
         if (!crop || crop.state !== 'ready') return null;
 
         crop.display.destroy();
