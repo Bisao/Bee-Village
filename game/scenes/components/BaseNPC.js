@@ -9,10 +9,6 @@ export default class BaseNPC {
             { item: null, quantity: 0 },
             { item: null, quantity: 0 },
             { item: null, quantity: 0 },
-            { item: null, quantity: 0 },
-            { item: null, quantity: 0 },
-            { item: null, quantity: 0 },
-            { item: null, quantity: 0 },
             { item: null, quantity: 0 }
         ];
 
