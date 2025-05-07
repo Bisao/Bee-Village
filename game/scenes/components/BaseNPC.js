@@ -214,21 +214,45 @@ export default class BaseNPC {
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
 
         console.log(`[${this.config.name}] Procurando local para plantar...`);
-        for (let y = 0; y < this.scene.grid.height; y++) {
-            for (let x = 0; x < this.scene.grid.width; x++) {
-                if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
-                    console.log(`[${this.config.name}] Local para plantar encontrado em (${x}, ${y})`);
-                    this.scene.plant(x, y);
-                    console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
+        
+        const startTime = Date.now();
+        const timeout = 2000; // 2 segundos de timeout
+        
+        let x = 0, y = 0;
+        const searchInterval = setInterval(() => {
+            // Verifica timeout
+            if (Date.now() - startTime > timeout) {
+                clearInterval(searchInterval);
+                console.log(`[${this.config.name}] Tempo esgotado na busca por local para plantar.`);
+                this.config.emoji = originalEmoji;
+                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+                return;
+            }
+
+            // Tenta plantar na posição atual
+            if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
+                clearInterval(searchInterval);
+                console.log(`[${this.config.name}] Local para plantar encontrado em (${x}, ${y})`);
+                this.scene.plant(x, y);
+                console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
+                this.config.emoji = originalEmoji;
+                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+                return;
+            }
+
+            // Move para próxima posição
+            x++;
+            if (x >= this.scene.grid.width) {
+                x = 0;
+                y++;
+                if (y >= this.scene.grid.height) {
+                    clearInterval(searchInterval);
+                    console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
                     this.config.emoji = originalEmoji;
                     this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-                    return;
                 }
             }
-        }
-        console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
-        this.config.emoji = originalEmoji;
-        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+        }, 100); // Verifica 10 posições por segundo
     }
 
 
