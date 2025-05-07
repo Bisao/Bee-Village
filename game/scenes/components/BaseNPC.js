@@ -209,37 +209,45 @@ export default class BaseNPC {
     }
 
     findAndPlant() {
-        // Mudar o ícone temporariamente
         const originalEmoji = this.config.emoji;
         this.config.emoji = '👁️‍🗨️';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
 
         console.log(`[${this.config.name}] Procurando local para plantar...`);
         
-        const startTime = Date.now();
-        const timeout = 2000; // 2 segundos de timeout
-        
-        let x = 0, y = 0;
-        const searchInterval = setInterval(() => {
-            // Verifica timeout
-            if (Date.now() - startTime > timeout) {
-                clearInterval(searchInterval);
-                console.log(`[${this.config.name}] Tempo esgotado na busca por local para plantar.`);
-                this.config.emoji = originalEmoji;
-                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-                return;
+        // Procura por um tile disponível
+        let foundTile = null;
+        for (let y = 0; y < this.scene.grid.height && !foundTile; y++) {
+            for (let x = 0; x < this.scene.grid.width && !foundTile; x++) {
+                if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
+                    foundTile = {x, y};
+                }
             }
+        }
 
-            // Tenta plantar na posição atual
-            if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
-                clearInterval(searchInterval);
-                console.log(`[${this.config.name}] Local para plantar encontrado em (${x}, ${y})`);
-                
-                // Cria o efeito de partículas
-                const {tileX, tileY} = this.scene.grid.gridToIso(x, y);
+        if (!foundTile) {
+            console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
+            this.config.emoji = originalEmoji;
+            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+            return;
+        }
+
+        console.log(`[${this.config.name}] Local para plantar encontrado em (${foundTile.x}, ${foundTile.y})`);
+
+        // Move o NPC até o tile encontrado
+        this.moveTo(foundTile.x, foundTile.y);
+
+        // Quando chegar no destino, inicia o plantio
+        this.scene.time.delayedCall(600, () => { // 600ms é o tempo da animação de movimento
+            if (this.gridX === foundTile.x && this.gridY === foundTile.y) {
+                // Animação de plantio (5 segundos)
+                this.config.emoji = '🌱';
+                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+
+                const {tileX, tileY} = this.scene.grid.gridToIso(foundTile.x, foundTile.y);
                 const worldX = this.scene.cameras.main.centerX + tileX;
                 const worldY = this.scene.cameras.main.centerY + tileY;
-                
+
                 const particles = this.scene.add.particles(0, 0, 'tile_grass', {
                     x: worldX,
                     y: worldY - 16,
@@ -253,28 +261,17 @@ export default class BaseNPC {
                 });
 
                 particles.start();
-                this.scene.time.delayedCall(1000, () => particles.destroy());
-                
-                this.scene.plant(x, y);
-                console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
-                this.config.emoji = originalEmoji;
-                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-                return;
-            }
 
-            // Move para próxima posição
-            x++;
-            if (x >= this.scene.grid.width) {
-                x = 0;
-                y++;
-                if (y >= this.scene.grid.height) {
-                    clearInterval(searchInterval);
-                    console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
+                // Após 5 segundos, finaliza o plantio
+                this.scene.time.delayedCall(5000, () => {
+                    this.scene.plant(foundTile.x, foundTile.y);
+                    particles.destroy();
                     this.config.emoji = originalEmoji;
                     this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-                }
+                    console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
+                });
             }
-        }, 100); // Verifica 10 posições por segundo
+        });
     }
 
 
