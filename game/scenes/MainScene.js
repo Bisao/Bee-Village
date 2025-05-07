@@ -53,6 +53,12 @@ export default class MainScene extends Phaser.Scene {
         this.inputManager = new InputManager(this);
         this.farmingSystem = new FarmingSystem(this);
 
+        // Center camera
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+        this.cameras.main.scrollX = 0;
+        this.cameras.main.scrollY = 0;
+
         this.grid.create();
         this.inputManager.init();
         this.setupUIHandlers();
