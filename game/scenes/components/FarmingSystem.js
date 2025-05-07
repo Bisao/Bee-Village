@@ -9,8 +9,8 @@ export default class FarmingSystem {
             ready: '🥔'
         };
         this.growthTimes = {
-            firstStage: 7000,  // 7 segundos
-            finalStage: 15000  // 15 segundos
+            firstStage: 15000,  // 15 segundos
+            finalStage: 30000  // 30 segundos
         };
     }
 
