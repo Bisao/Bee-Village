@@ -349,9 +349,17 @@ export default class BaseNPC {
         const emojis = {
             'potato': '🥔',
             'carrot': '🥕',
-            'wheat': '🌾'
+            'wheat': '🌾',
+            'berry': '🫐',
+            'mushroom': '🍄',
+            'worm': '🪱',
+            'bug': '🐛'
         };
         return emojis[item] || '❓';
+    }
+
+    startCollecting() {
+        this.scene.collectionSystem.startCollecting(this);
     }
 
     addItemToStorage(item) {
