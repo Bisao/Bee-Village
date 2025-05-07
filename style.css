@@ -701,7 +701,7 @@ html, body {
     border-radius: 20px;
     border: 2px solid var(--primary-color);
     backdrop-filter: blur(5px);
-    z-index: 1000;
+    z-index: 2500;
     box-shadow: 0 4px 8px rgba(0,0,0,0.3);
 }
 
@@ -812,7 +812,9 @@ html, body {
 .control-btn:active {
     background: var(--primary-color);
     color: var(--button-text);
-    transform: scale(0.95);
+    transform: scale(0.90);
+    transition: transform 0.1s ease;
+    opacity: 0.8;
 }
 
 .mobile-up { grid-area: up; }
