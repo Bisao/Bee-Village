@@ -7,6 +7,7 @@ export default class ScreenManager {
             width: window.innerWidth,
             height: window.innerHeight
         };
+        this.uiElements = new Map();
         
         // Atualiza as dimensões quando a tela é redimensionada
         window.addEventListener('resize', () => {
@@ -14,7 +15,7 @@ export default class ScreenManager {
                 width: window.innerWidth,
                 height: window.innerHeight
             };
-            this.adjustUI();
+            this.adjustAllElements();
         });
     }
 
@@ -37,55 +38,97 @@ export default class ScreenManager {
         return browser;
     }
 
-    adjustUI() {
+    registerElement(key, element, config) {
+        this.uiElements.set(key, { element, config });
+        this.adjustElement(key);
+    }
+
+    adjustElement(key) {
+        const item = this.uiElements.get(key);
+        if (!item) return;
+
+        const { element, config } = item;
         const isMobile = this.dimensions.width <= 768;
         const isTablet = this.dimensions.width <= 1024 && this.dimensions.width > 768;
-        
-        // Ajusta o zoom da câmera baseado no dispositivo
-        const zoom = isMobile ? 0.8 : isTablet ? 1.2 : 1.5;
-        this.scene.cameras.main.setZoom(zoom);
 
-        // Ajusta a posição do painel lateral
-        const sidePanel = document.getElementById('side-panel');
-        if (sidePanel) {
-            if (isMobile) {
-                sidePanel.style.width = '90%';
-                sidePanel.style.left = '5%';
-                sidePanel.style.maxHeight = '60vh';
-            } else {
-                sidePanel.style.width = 'auto';
-                sidePanel.style.left = '20px';
-                sidePanel.style.maxHeight = '80vh';
+        // Ajusta escala
+        if (config.scale) {
+            const baseScale = config.scale.base || 1;
+            const mobileScale = config.scale.mobile || baseScale * 0.8;
+            const tabletScale = config.scale.tablet || baseScale * 0.9;
+            
+            element.setScale(isMobile ? mobileScale : isTablet ? tabletScale : baseScale);
+        }
+
+        // Ajusta posição
+        if (config.position) {
+            const x = this.calculatePosition(config.position.x, this.dimensions.width);
+            const y = this.calculatePosition(config.position.y, this.dimensions.height);
+            element.setPosition(x, y);
+        }
+
+        // Ajusta dimensões
+        if (config.dimensions) {
+            const width = this.calculateDimension(config.dimensions.width, this.dimensions.width);
+            const height = this.calculateDimension(config.dimensions.height, this.dimensions.height);
+            if (element.setSize) {
+                element.setSize(width, height);
             }
         }
 
-        // Ajusta o painel de controles
-        const controlsPanel = document.getElementById('controls-panel');
-        if (controlsPanel) {
-            if (isMobile) {
-                controlsPanel.style.display = 'flex';
-                controlsPanel.style.bottom = '10px';
-                controlsPanel.style.left = '10px';
-            } else {
-                controlsPanel.style.display = 'none';
-            }
+        // Ajusta profundidade
+        if (config.depth !== undefined) {
+            element.setDepth(config.depth);
         }
 
-        // Notifica sobre possíveis problemas de compatibilidade
-        if (this.browser === 'safari' && isMobile) {
-            console.warn('Safari mobile pode ter algumas limitações de desempenho');
+        // Ajusta visibilidade
+        if (config.visibility) {
+            element.setVisible(this.evaluateVisibilityCondition(config.visibility));
+        }
+    }
+
+    calculatePosition(pos, containerSize) {
+        if (typeof pos === 'number') return pos;
+        if (typeof pos === 'string') {
+            if (pos.endsWith('%')) {
+                return (parseFloat(pos) / 100) * containerSize;
+            }
+            if (pos === 'center') {
+                return containerSize / 2;
+            }
+        }
+        return 0;
+    }
+
+    calculateDimension(dim, containerSize) {
+        if (typeof dim === 'number') return dim;
+        if (typeof dim === 'string' && dim.endsWith('%')) {
+            return (parseFloat(dim) / 100) * containerSize;
+        }
+        return containerSize;
+    }
+
+    evaluateVisibilityCondition(condition) {
+        if (typeof condition === 'boolean') return condition;
+        if (typeof condition === 'function') {
+            return condition(this.dimensions);
+        }
+        return true;
+    }
+
+    adjustAllElements() {
+        for (const key of this.uiElements.keys()) {
+            this.adjustElement(key);
         }
     }
 
     getDeviceInfo() {
-        const width = Math.max(this.dimensions.width, window.innerWidth);
-        const height = Math.max(this.dimensions.height, window.innerHeight);
         return {
             browser: this.browser,
-            dimensions: { width, height },
-            isMobile: width <= 768,
-            isTablet: width <= 1024 && width > 768,
-            isDesktop: width > 1024,
+            dimensions: this.dimensions,
+            isMobile: this.dimensions.width <= 768,
+            isTablet: this.dimensions.width <= 1024 && this.dimensions.width > 768,
+            isDesktop: this.dimensions.width > 1024,
             pixelRatio: window.devicePixelRatio || 1
         };
     }

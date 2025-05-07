@@ -18,8 +18,14 @@ export default class GameScene extends Phaser.Scene {
     create() {
         console.log('GameScene iniciada');
         
+        // Inicializa o ScreenManager
+        this.screenManager = new ScreenManager(this);
+        
         // Configurar a top bar
         this.createTopBar();
+        
+        // Registra elementos UI com o ScreenManager
+        this.registerUIElements();
         
         // Configura viewport responsivo
         const topBarHeight = 50;
@@ -239,3 +245,37 @@ export default class GameScene extends Phaser.Scene {
         }
     }
 }
+registerUIElements() {
+        // Registra a top bar
+        this.screenManager.registerElement('topBar', this.topBar, {
+            dimensions: { width: '100%', height: 50 },
+            position: { x: '50%', y: 25 },
+            depth: 1000
+        });
+
+        // Registra o painel de estruturas
+        this.screenManager.registerElement('structuresPanel', this.structuresPanel, {
+            dimensions: {
+                width: (d) => Math.min(300, d.width * 0.8),
+                height: (d) => Math.min(400, d.height * 0.7)
+            },
+            position: { x: 'center', y: 'center' },
+            scale: {
+                base: 1,
+                mobile: 0.8,
+                tablet: 0.9
+            },
+            depth: 1000,
+            visibility: true
+        });
+
+        // Registra o grid
+        this.screenManager.registerElement('grid', this.grid, {
+            position: { x: 'center', y: 'center' },
+            scale: {
+                base: 1,
+                mobile: 0.8,
+                tablet: 0.9
+            }
+        });
+    }
