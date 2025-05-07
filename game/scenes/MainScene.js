@@ -602,16 +602,7 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-            // Verificar se já existe um NPC do mesmo tipo
-            const buildingType = this.selectedBuilding;
-            const hasNPCOfType = Object.values(this.grid.buildingGrid).some(
-                building => building.buildingType === buildingType && building.npc
-            );
-
-            if (hasNPCOfType) {
-                this.showFeedback('Já existe um NPC deste tipo!', false);
-                return;
-            }
+            
 
             // Validar se é uma casa que pode ter NPC
             const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
