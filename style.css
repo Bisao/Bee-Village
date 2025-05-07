@@ -295,12 +295,12 @@ html, body {
 #side-panel {
   display: none;
   position: fixed;
-  top: 50%;
+  top: 75px;
   left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80%;
-  max-width: 400px;
-  height: 80vh;
+  transform: translateX(-50%);
+  width: min(75%, 500px);
+  height: auto;
+  max-height: calc(100vh - 85px);
   background: var(--accent-color);
   backdrop-filter: blur(10px);
   border: 2px solid var(--primary-color);
