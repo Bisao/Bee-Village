@@ -602,7 +602,7 @@ export default class MainScene extends Phaser.Scene {
                 return;
             }
 
-
+            
 
             // Validar se é uma casa que pode ter NPC
             const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
@@ -759,17 +759,6 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
-    showInventory(html) {
-        const existingModal = document.querySelector('.npc-modal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        const modalDiv = document.createElement('div');
-        modalDiv.className = 'npc-modal';
-        modalDiv.innerHTML = html;
-        document.body.appendChild(modalDiv);
-    }
-
     createFarmerNPC(houseX, houseY, worldX, worldY) {
         // Import BaseNPC if not already imported
         import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
@@ -858,7 +847,7 @@ export default class MainScene extends Phaser.Scene {
 
         const scene = this;
         this.tweens.add({
-            targets: [npc.sprite, npc.nameText, npc.energyBar],
+            targets: [npc.sprite, npc.nameText],
             x: this.cameras.main.centerX + tileX,
             y: function (target, key, value, targetIndex) {
                 const baseY = scene.cameras.main.centerY + tileY;
@@ -870,19 +859,8 @@ export default class MainScene extends Phaser.Scene {
                 npc.gridX = newX;
                 npc.gridY = newY;
                 npc.sprite.setDepth(newY + 2);
-                npc.nameText.setDepth(newY + 3);
-                npc.energyBar.setDepth(newY + 3);
                 npc.isMoving = false;
                 npc.sprite.stop();
-                npc.checkIfInHouse();
-                npc.updateEnergyBar();
-
-                // Se estiver no modo controlado, a barra de energia segue o NPC
-                if (!npc.isAutonomous) {
-                    npc.nameText.setPosition(npc.sprite.x, npc.sprite.y - 32);
-                    npc.energyBar.setPosition(npc.sprite.x, npc.sprite.y - 16);
-                    npc.updateEnergyBar();
-                }
             }
         });
     }
@@ -911,7 +889,7 @@ export default class MainScene extends Phaser.Scene {
                         <h3>${npc.config.name}</h3>
                         <p class="npc-profession">${npc.config.profession}</p>
                         <div class="npc-level-info">
-                            <span class="level-text>Nível ${npc.config.level}</span>
+                            <span class="level-text">Nível ${npc.config.level}</span>
                             <div class="xp-bar">
                                 <div class="xp-progress" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
                             </div>
@@ -1210,16 +1188,5 @@ export default class MainScene extends Phaser.Scene {
             return true;
         }
         return false;
-    }
-
-    showInventory(html) {
-        const existingModal = document.querySelector('.npc-modal');
-        if (existingModal) {
-            existingModal.remove();
-        }
-        const modalDiv = document.createElement('div');
-        modalDiv.className = 'npc-modal';
-        modalDiv.innerHTML = html;
-        document.body.appendChild(modalDiv);
     }
 }
