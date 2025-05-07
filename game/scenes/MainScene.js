@@ -501,7 +501,46 @@ export default class MainScene extends Phaser.Scene {
         }
     }
     handleClick(pointer) {
-        if (!this.selectedBuilding || pointer.rightButtonDown()) return;
+        // Plantio com botão direito
+        if (pointer.rightButtonDown()) {
+            const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+            const hoveredTile = this.grid.grid.flat().find(tile => {
+                const bounds = new Phaser.Geom.Rectangle(
+                    tile.x - tile.displayWidth / 2,
+                    tile.y - tile.displayHeight / 2,
+                    tile.displayWidth,
+                    tile.displayHeight
+                );
+                return bounds.contains(worldPoint.x, worldPoint.y);
+            });
+
+            if (hoveredTile && hoveredTile.data) {
+                const {gridX, gridY} = hoveredTile.data;
+                
+                // Se não for cultivável, torna cultivável
+                if (!this.grid.farmableTiles || !this.grid.farmableTiles[`${gridX},${gridY}`]) {
+                    this.grid.makeTileFarmable(gridX, gridY);
+                    this.showFeedback('Terra preparada para plantio!', true);
+                }
+                // Se for cultivável mas não plantado, planta
+                else if (this.grid.farmableTiles[`${gridX},${gridY}`].state === 'tilled') {
+                    const randomCrop = ['potato', 'tomato', 'pumpkin'][Math.floor(Math.random() * 3)];
+                    if (this.grid.plantCrop(gridX, gridY, randomCrop)) {
+                        this.showFeedback(`Plantando ${randomCrop}!`, true);
+                    }
+                }
+                // Se estiver pronto para colheita
+                else if (this.grid.farmableTiles[`${gridX},${gridY}`].state === 'ready') {
+                    const harvested = this.grid.harvestCrop(gridX, gridY);
+                    if (harvested) {
+                        this.showFeedback(`Colheu ${harvested}!`, true);
+                    }
+                }
+            }
+            return;
+        }
+
+        if (!this.selectedBuilding) return;
 
         try {
             const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);

@@ -113,4 +113,80 @@ export default class Grid {
     isValidPosition(x, y) {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
     }
+
+    makeTileFarmable(x, y) {
+        const key = `${x},${y}`;
+        if (!this.farmableTiles) this.farmableTiles = {};
+        
+        this.farmableTiles[key] = {
+            state: 'tilled', // tilled, seeded, growing, ready
+            crop: null,
+            plantedAt: null,
+            tile: this.grid[y][x]
+        };
+
+        // Atualizar visual do tile
+        this.grid[y][x].setTint(0x886644);
+    }
+
+    plantCrop(x, y, cropType) {
+        const key = `${x},${y}`;
+        if (!this.farmableTiles || !this.farmableTiles[key]) return false;
+        
+        const farmTile = this.farmableTiles[key];
+        if (farmTile.state !== 'tilled') return false;
+
+        farmTile.state = 'seeded';
+        farmTile.crop = cropType;
+        farmTile.plantedAt = Date.now();
+        
+        // Atualizar visual
+        this.grid[y][x].setTint(0x558833);
+        
+        // Iniciar crescimento
+        this.startGrowthCycle(x, y);
+        return true;
+    }
+
+    startGrowthCycle(x, y) {
+        const key = `${x},${y}`;
+        const farmTile = this.farmableTiles[key];
+        if (!farmTile) return;
+
+        const growthTime = this.getCropGrowthTime(farmTile.crop);
+        
+        this.scene.time.delayedCall(growthTime, () => {
+            if (farmTile.state === 'seeded') {
+                farmTile.state = 'ready';
+                this.grid[y][x].setTint(0x44FF44);
+            }
+        });
+    }
+
+    getCropGrowthTime(cropType) {
+        const times = {
+            'potato': 20000,  // 20 segundos
+            'tomato': 15000,  // 15 segundos
+            'pumpkin': 25000  // 25 segundos
+        };
+        return times[cropType] || 20000;
+    }
+
+    harvestCrop(x, y) {
+        const key = `${x},${y}`;
+        if (!this.farmableTiles || !this.farmableTiles[key]) return null;
+        
+        const farmTile = this.farmableTiles[key];
+        if (farmTile.state !== 'ready') return null;
+        
+        const harvestedCrop = farmTile.crop;
+        farmTile.state = 'tilled';
+        farmTile.crop = null;
+        farmTile.plantedAt = null;
+        
+        // Resetar visual
+        this.grid[y][x].setTint(0x886644);
+        
+        return harvestedCrop;
+    }
 }
