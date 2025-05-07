@@ -1,12 +1,30 @@
-
 export default class BaseNPC {
-    constructor(scene, x, y, config = {}) {
+    constructor(scene, x, y, config) {
+        this.plantTimer = null;
+        this.harvestTimer = null;
+
+        if (config.profession === 'Farmer') {
+            // Timer para plantar a cada 2 minutos
+            this.plantTimer = scene.time.addEvent({
+                delay: 120000, // 2 minutos
+                callback: () => this.findAndPlant(),
+                loop: true
+            });
+
+            // Timer para verificar colheitas a cada 5 segundos
+            this.harvestTimer = scene.time.addEvent({
+                delay: 5000, // 5 segundos
+                callback: () => this.checkAndHarvest(),
+                loop: true
+            });
+        }
+
         this.scene = scene;
         this.gridX = x;
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-        
+
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -29,13 +47,13 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-        
+
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-        
+
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
@@ -57,10 +75,10 @@ export default class BaseNPC {
 
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
-        
+
         // Esconder sprite inicialmente
         this.sprite.setVisible(false);
-        
+
         // Atrasar movimento para fora da casa em 10 segundos
         this.scene.time.delayedCall(10000, () => {
             const newY = this.gridY + 1;
@@ -75,7 +93,7 @@ export default class BaseNPC {
                     onStart: () => this.sprite.setVisible(true)
                 });
             }
-            
+
             if (this.isAutonomous) {
                 this.startAutonomousMovement();
             }
@@ -208,8 +226,23 @@ export default class BaseNPC {
         return toolsets[profession] || [];
     }
 
+    findAndPlant() {
+        // Lógica para encontrar um local para plantar
+        console.log('Tentando plantar...');
+        // ...implementação para encontrar local e plantar...
+    }
+
+    checkAndHarvest() {
+        // Lógica para verificar e colher plantas
+        console.log('Verificando colheitas...');
+        // ...implementação para verificar e colher...
+    }
+
+
     destroy() {
         this.sprite.destroy();
         this.nameText.destroy();
+        if (this.plantTimer) this.plantTimer.destroy();
+        if (this.harvestTimer) this.harvestTimer.destroy();
     }
 }
