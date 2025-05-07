@@ -131,7 +131,7 @@ export default class BaseNPC {
                             `).join('')}
                         </div>
                     </div>
-                    
+
                     <div class="storage-section">
                         <h4>Armazenamento</h4>
                         <div class="storage-grid">
@@ -146,6 +146,12 @@ export default class BaseNPC {
                                 </div>
                             `).join('')}
                         </div>
+                    </div>
+                </div>
+
+                <div class="tab-panel work-panel" id="work-panel">
+                    <div class="work-list">
+                        ${this.getWorksByProfession()}
                     </div>
                 </div>
 
@@ -433,6 +439,43 @@ export default class BaseNPC {
         }
 
         return false; // Inventário cheio
+    }
+
+    getWorksByProfession() {
+        switch (this.config.profession) {
+            case 'Farmer':
+                return `
+                    <div class="work-item" id="plant-work">
+                        <span>🌾 Plantar</span>
+                    </div>
+                    <div class="work-item">
+                        <span>🚿 Regar Plantas</span>
+                    </div>
+                    <div class="work-item">
+                        <span>🌟 Colher</span>
+                    </div>
+                `;
+            case 'Miner':
+                return `
+                    <div class="work-item">
+                        <span>⛏️ Minerar</span>
+                    </div>
+                    <div class="work-item">
+                        <span>🚧 Construir Túnel</span>
+                    </div>
+                `;
+            case 'Fisher':
+                return `
+                    <div class="work-item">
+                        <span>🎣 Pescar</span>
+                    </div>
+                    <div class="work-item">
+                        <span>🐠 Limpar Peixes</span>
+                    </div>
+                `;
+            default:
+                return '<div class="work-item"><span>Sem trabalhos disponíveis</span></div>';
+        }
     }
 
     destroy() {
