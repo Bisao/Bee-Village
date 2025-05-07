@@ -246,13 +246,19 @@ export default class BaseNPC {
 
         console.log(`[${this.config.name}] Procurando local para plantar...`);
 
-        // Procura por um tile disponível
+        // Procura por tiles disponíveis ao redor da posição atual
         let availableTiles = [];
-        for (let y = 0; y < this.scene.grid.height; y++) {
-            for (let x = 0; x < this.scene.grid.width; x++) {
-                if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
-                    availableTiles.push({x, y});
-                }
+        const adjacentPositions = [
+            {x: this.gridX, y: this.gridY},     // Posição atual
+            {x: this.gridX + 1, y: this.gridY}, // Direita
+            {x: this.gridX - 1, y: this.gridY}, // Esquerda
+            {x: this.gridX, y: this.gridY + 1}, // Baixo
+            {x: this.gridX, y: this.gridY - 1}  // Cima
+        ];
+
+        for (const pos of adjacentPositions) {
+            if (this.scene.grid.isValidPosition(pos.x, pos.y) && !this.scene.isTileOccupied(pos.x, pos.y)) {
+                availableTiles.push(pos);
             }
         }
 
