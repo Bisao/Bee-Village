@@ -290,15 +290,19 @@ export default class BaseNPC {
             frames.push({ key: `${this.config.spritesheet}${i}` });
         }
 
-        // Cria e toca animação temporária
-        const animKey = `temp_move_${Date.now()}`;
-        this.scene.anims.create({
-            key: animKey,
-            frames: frames,
-            frameRate: 8,
-            repeat: -1
-        });
-        this.sprite.play(animKey);
+        // Determina a animação baseada na direção
+        let animKey;
+        if (newY < this.gridY) animKey = 'farmer_up';
+        else if (newY > this.gridY) animKey = 'farmer_down';
+        else if (newX < this.gridX) animKey = 'farmer_left';
+        else animKey = 'farmer_right';
+
+        // Toca a animação se existir, ou usa o frame estático
+        if (this.scene.anims.exists(animKey)) {
+            this.sprite.play(animKey);
+        } else {
+            this.sprite.setTexture(`farmer${frameRange[0]}`);
+        }
 
         // Move o NPC
         this.scene.tweens.add({

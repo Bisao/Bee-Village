@@ -1189,4 +1189,15 @@ export default class MainScene extends Phaser.Scene {
         }
         return false;
     }
+
+    showInventory(html) {
+        const existingModal = document.querySelector('.npc-modal');
+        if (existingModal) {
+            existingModal.remove();
+        }
+        const modalDiv = document.createElement('div');
+        modalDiv.className = 'npc-modal';
+        modalDiv.innerHTML = html;
+        document.body.appendChild(modalDiv);
+    }
 }
