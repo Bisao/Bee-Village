@@ -27,7 +27,7 @@ export default class FarmingSystem {
                 this.scene.cameras.main.centerX + this.scene.grid.gridToIso(x, y).tileX,
                 this.scene.cameras.main.centerY + this.scene.grid.gridToIso(x, y).tileY - 32,
                 this.growthStages.planted
-            ).setOrigin(0.5)
+            ).setOrigin(0.5).setDepth(1000)
         };
 
         // Primeira evolução (planted -> growing)
