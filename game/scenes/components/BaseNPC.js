@@ -27,6 +27,9 @@ export default class BaseNPC {
             level: config.level || 1,
             xp: config.xp || 0,
             maxXp: config.maxXp || 100,
+            energy: 100,
+            maxEnergy: 100,
+            isResting: false,
             tools: this.getToolsByProfession(config.profession),
             ...config
         };
@@ -59,6 +62,52 @@ export default class BaseNPC {
                 fontStyle: 'bold'
             }
         ).setOrigin(0.5);
+
+        // Criar barra de energia
+        const barWidth = 50;
+        const barHeight = 6;
+        this.energyBar = this.scene.add.graphics();
+        this.updateEnergyBar = () => {
+            this.energyBar.clear();
+            const x = worldX - barWidth / 2;
+            const y = worldY - 52;
+            
+            // Barra de fundo
+            this.energyBar.fillStyle(0x000000, 0.5);
+            this.energyBar.fillRect(x, y, barWidth, barHeight);
+            
+            // Calcula cor baseada na energia (amarelo -> vermelho)
+            const energyRatio = this.config.energy / this.config.maxEnergy;
+            const color = Phaser.Display.Color.Interpolate.ColorWithColor(
+                Phaser.Display.Color.ValueToColor(0xff0000),
+                Phaser.Display.Color.ValueToColor(0xffff00),
+                100,
+                energyRatio * 100
+            );
+            
+            // Barra de energia
+            this.energyBar.fillStyle(color.color, 1);
+            this.energyBar.fillRect(x, y, barWidth * energyRatio, barHeight);
+        };
+        this.updateEnergyBar();
+        this.energyBar.setDepth(1000);
+
+        // Timer para consumo de energia
+        this.energyTimer = this.scene.time.addEvent({
+            delay: 20000,
+            callback: () => {
+                if (!this.config.isResting && this.config.energy > 0) {
+                    this.config.energy = Math.max(0, this.config.energy - 1);
+                    this.updateEnergyBar();
+
+                    // Verifica se precisa descansar
+                    if (this.config.energy <= 25) {
+                        this.rest();
+                    }
+                }
+            },
+            loop: true
+        });
 
         // Ajusta escala inicial
         const baseScale = 0.6;
@@ -490,11 +539,51 @@ export default class BaseNPC {
         }
     }
 
+    rest() {
+        this.config.isResting = true;
+        this.config.emoji = '💤';
+        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+        
+        // Volta para casa
+        const key = `${this.gridX},${this.gridY}`;
+        const house = this.scene.grid.buildingGrid[key];
+        if (house && house.type === 'building') {
+            // Já está em casa
+            this.startResting();
+        } else {
+            // Procura a casa do NPC
+            for (const [pos, building] of Object.entries(this.scene.grid.buildingGrid)) {
+                if (building.npc === this) {
+                    const [x, y] = pos.split(',').map(Number);
+                    this.moveTo(x, y);
+                    this.scene.time.delayedCall(1000, () => this.startResting());
+                    break;
+                }
+            }
+        }
+    }
+
+    startResting() {
+        this.sprite.setVisible(false);
+        this.scene.time.delayedCall(120000, () => { // 2 minutos
+            this.config.energy = this.config.maxEnergy;
+            this.config.isResting = false;
+            this.config.emoji = this.getProfessionEmoji(this.config.profession);
+            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+            this.updateEnergyBar();
+            this.sprite.setVisible(true);
+        });
+    }
+
     destroy() {
         if (this.searchTimer) {
             this.searchTimer.remove();
         }
+        if (this.energyTimer) {
+            this.energyTimer.remove();
+        }
         this.sprite.destroy();
         this.nameText.destroy();
+        this.energyBar.destroy();
     }
 }
