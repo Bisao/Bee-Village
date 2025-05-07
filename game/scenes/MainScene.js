@@ -1,6 +1,7 @@
 import Grid from '../scenes/components/Grid.js';
 import InputManager from '../scenes/components/InputManager.js';
 import FarmingSystem from '../scenes/components/FarmingSystem.js';
+import CollectionSystem from '../scenes/components/CollectionSystem.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -42,9 +43,10 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
-        this.grid = new Grid(this, 10, 10);
+        this.grid = new Grid(this);
         this.inputManager = new InputManager(this);
         this.farmingSystem = new FarmingSystem(this);
+        this.collectionSystem = new CollectionSystem(this);
 
         this.grid.create();
         this.inputManager.init();
