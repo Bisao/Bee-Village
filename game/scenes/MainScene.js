@@ -102,28 +102,42 @@ export default class MainScene extends Phaser.Scene {
     }
 
     createFarmerAnimations() {
-        // Remove existing animations if they exist
-        ['farmer_up', 'farmer_down', 'farmer_left', 'farmer_right'].forEach(key => {
+        // Animation configurations
+        const animations = {
+            'farmer_up': { start: 1, end: 4 },
+            'farmer_down': { start: 9, end: 12 },
+            'farmer_left': { start: 5, end: 8 },
+            'farmer_right': { start: 1, end: 4 }
+        };
+
+        // Remove existing animations
+        Object.keys(animations).forEach(key => {
             if (this.anims.exists(key)) {
                 this.anims.remove(key);
             }
         });
 
-        // Create animations
-        const animations = {
-            'farmer_up': [1, 2, 3, 4],
-            'farmer_down': [9, 10, 11, 12],
-            'farmer_left': [5, 6, 7, 8],
-            'farmer_right': [1, 2, 3, 4]
-        };
+        // Create new animations with proper frame sequences
+        Object.entries(animations).forEach(([key, config]) => {
+            const frames = [];
+            for (let i = config.start; i <= config.end; i++) {
+                const frameName = `farmer${i}`;
+                if (this.textures.exists(frameName)) {
+                    frames.push({ key: frameName });
+                }
+            }
 
-        Object.entries(animations).forEach(([key, frames]) => {
-            this.anims.create({
-                key: key,
-                frames: frames.map(num => ({ key: `farmer${num}` })),
-                frameRate: 8,
-                repeat: -1
-            });
+            if (frames.length > 0) {
+                this.anims.create({
+                    key: key,
+                    frames: frames,
+                    frameRate: 8,
+                    repeat: -1,
+                    yoyo: false
+                });
+            } else {
+                console.warn(`Could not create animation ${key}: missing frames`);
+            }
         });
 
         // Create farmer sprite after animations are ready
@@ -346,63 +360,92 @@ export default class MainScene extends Phaser.Scene {
      * @private
      */
     loadAssets() {
-        // Cache de texturas para otimização
+        // Return if assets are already loaded
         if (this.textures.exists('tile_grass')) return;
 
-        // Load farmer sprites
-        for (let i = 1; i <= 12; i++) {
-            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+        // Asset manifests for better organization and tracking
+        const assets = {
+            farmers: Array.from({length: 12}, (_, i) => ({
+                key: `farmer${i + 1}`,
+                path: `attached_assets/Farmer_${i + 1}-ezgif.com-resize.png`
+            })),
+            tiles: [
+                'tile_grass',
+                'tile_grass_2',
+                'tile_grass_2_flowers',
+                'tile_grass_3_flowers'
+            ].map(tile => ({
+                key: tile,
+                path: `game/assets/tiles/${tile}.png`
+            })),
+            rocks: [
+                { key: 'rock_small', path: 'game/assets/rocks/small_rock.png' },
+                { key: 'rock_medium', path: 'game/assets/rocks/2_rock.png' },
+                { key: 'rock_large', path: 'game/assets/rocks/big_rock.png' }
+            ],
+            trees: [
+                { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
+                { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
+                { key: 'tree_fruit', path: 'game/assets/trees/tree_fruit.png' },
+                { key: 'tree_autumn', path: 'game/assets/trees/tree_autumn.png' }
+            ],
+            buildings: [
+                { key: 'chickenHouse', filename: 'ChickenHouse' },
+                { key: 'cowHouse', filename: 'CowHouse' },
+                { key: 'farmerHouse', filename: 'FarmerHouse' },
+                { key: 'minerHouse', filename: 'MinerHouse' },
+                { key: 'pigHouse', filename: 'PigHouse' },
+                { key: 'fishermanHouse', filename: 'fishermanHouse' }
+            ]
+        };
+
+        // Track total assets for accurate loading progress
+        this.totalAssets = Object.values(assets).reduce((sum, group) => sum + group.length, 0);
+        this.loadedAssets = 0;
+
+        // Setup better loading progress tracking
+        this.load.on('filecomplete', () => {
+            this.loadedAssets++;
+            this.loadingProgress = this.loadedAssets / this.totalAssets;
+        });
+
+        // Load all assets with error handling
+        try {
+            // Load farmer sprites
+            assets.farmers.forEach(farmer => {
+                this.load.image(farmer.key, farmer.path);
+            });
+
+            // Load tiles
+            assets.tiles.forEach(tile => {
+                this.load.image(tile.key, tile.path);
+            });
+
+            // Load rocks
+            assets.rocks.forEach(rock => {
+                this.load.image(rock.key, rock.path);
+            });
+
+            // Load trees
+            assets.trees.forEach(tree => {
+                this.load.image(tree.key, tree.path);
+            });
+
+            // Load buildings
+            assets.buildings.forEach(building => {
+                this.load.image(building.key, `game/assets/buildings/${building.filename}.png`);
+            });
+
+            // Enable texture garbage collection for better memory management
+            this.textures.on('oncontextrestored', () => {
+                this.textures.removeAll();
+                this.loadAssets();
+            });
+
+        } catch (error) {
+            console.error('Error loading assets:', error);
+            this.showFeedback('Erro ao carregar recursos', false);
         }
-
-        // Load tiles
-        const tiles = [
-            'tile_grass',
-            'tile_grass_2',
-            'tile_grass_2_flowers',
-            'tile_grass_3_flowers'
-        ];
-
-        tiles.forEach(tile => {
-            this.load.image(tile, `game/assets/tiles/${tile}.png`);
-        });
-
-        // Load rocks
-        const rocks = [
-            { key: 'rock_small', path: 'game/assets/rocks/small_rock.png' },
-            { key: 'rock_medium', path: 'game/assets/rocks/2_rock.png' },
-            { key: 'rock_large', path: 'game/assets/rocks/big_rock.png' }
-        ];
-
-        rocks.forEach(rock => {
-            this.load.image(rock.key, rock.path);
-        });
-
-        // Load trees
-        const trees = [
-            { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
-            { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
-            { key: 'tree_fruit', path: 'game/assets/trees/tree_fruit.png' },
-            { key: 'tree_autumn', path: 'game/assets/trees/tree_autumn.png' }
-        ];
-
-        trees.forEach(tree => {
-            this.load.image(tree.key, tree.path);
-        });
-
-        // Load buildings
-        const buildings = [
-            'chickenHouse|ChickenHouse',
-            'cowHouse|CowHouse', 
-            'farmerHouse|FarmerHouse',
-            'minerHouse|MinerHouse',
-            'pigHouse|PigHouse',
-            'fishermanHouse|fishermanHouse'
-        ];
-
-        buildings.forEach(building => {
-            const [key, filename] = building.split('|');
-            this.load.image(key, `game/assets/buildings/${filename}.png`);
-        });
     }
 
     setupUIHandlers() {
