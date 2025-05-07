@@ -1,61 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>Isometric Game</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Village</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
-    
-
-    <div id="settings-panel" class="settings-panel">
-        <div class="settings-header">
-            <button class="back-button">🔙</button>
-            <h2>Configurações</h2>
-        </div>
-        <div class="settings-content">
-            <!-- Add settings options here -->
-            <div class="setting-item">
-                <label>Som</label>
-                <input type="range" min="0" max="100" value="50">
-            </div>
-            <div class="setting-item">
-                <label>Música</label>
-                <input type="range" min="0" max="100" value="50">
-            </div>
-            <div class="setting-item themes">
-                <label>Temas</label>
-                <div class="theme-options">
-                    <button class="theme-btn selected" data-theme="bee" data-emoji="🐝">🐝 Abelha</button>
-                    <button class="theme-btn" data-theme="pig" data-emoji="🐖">🐖 Porco</button>
-                    <button class="theme-btn" data-theme="cow" data-emoji="🐄">🐄 Vaca</button>
-                </div>
-            </div>
-            <button id="apply-theme" class="apply-theme-btn">Aplicar Tema</button>
-        </div>
-    </div>
-    <div id="loading-screen" class="loading-overlay" style="display: none;">
-        <div class="loading-container">
-            <div class="loading-bar">
-                <div class="loading-progress"></div>
-            </div>
-            <div class="loading-text">Carregando...</div>
-        </div>
-    </div>
-    <div id="game-ui">
-        
-        <div id="controls-panel">
-            <div class="controls-grid">
-                <button class="control-btn mobile-up">W</button>
-                <button class="control-btn mobile-left">A</button>
-                <button class="control-btn mobile-down">S</button>
-                <button class="control-btn mobile-right">D</button>
-            </div>
-        </div>
-        
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
-    <script src="game/config.js" type="module"></script>
+    <div id="game"></div>
+    <script type="module" src="game/config.js"></script>
 </body>
 </html>
