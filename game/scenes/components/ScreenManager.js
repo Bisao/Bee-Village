@@ -78,12 +78,15 @@ export default class ScreenManager {
     }
 
     getDeviceInfo() {
+        const width = Math.max(this.dimensions.width, window.innerWidth);
+        const height = Math.max(this.dimensions.height, window.innerHeight);
         return {
             browser: this.browser,
-            dimensions: this.dimensions,
-            isMobile: this.dimensions.width <= 768,
-            isTablet: this.dimensions.width <= 1024 && this.dimensions.width > 768,
-            isDesktop: this.dimensions.width > 1024
+            dimensions: { width, height },
+            isMobile: width <= 768,
+            isTablet: width <= 1024 && width > 768,
+            isDesktop: width > 1024,
+            pixelRatio: window.devicePixelRatio || 1
         };
     }
 }

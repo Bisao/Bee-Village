@@ -83,7 +83,9 @@ export default class InputManager {
             const deltaX = pointer.x - pointer.prevPosition.x;
             const deltaY = pointer.y - pointer.prevPosition.y;
             
-            if (deltaX !== 0 || deltaY !== 0) {
+            // Adiciona um threshold para movimentos pequenos
+            const moveThreshold = 2;
+            if (Math.abs(deltaX) > moveThreshold || Math.abs(deltaY) > moveThreshold) {
                 this.scene.cameras.main.scrollX -= deltaX / this.scene.cameras.main.zoom;
                 this.scene.cameras.main.scrollY -= deltaY / this.scene.cameras.main.zoom;
             }
