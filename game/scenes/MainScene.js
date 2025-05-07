@@ -7,6 +7,7 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
+        this.screenManager = null;
 
         // Emoji mapping for professions
         this.professionEmojis = {
@@ -42,6 +43,12 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
+        
+        // Inicializa o gerenciador de tela
+        import('./components/ScreenManager.js').then(({ default: ScreenManager }) => {
+            this.screenManager = new ScreenManager(this);
+            this.screenManager.adjustUI();
+        });
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
         this.farmingSystem = new FarmingSystem(this);
