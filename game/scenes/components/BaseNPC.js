@@ -247,61 +247,83 @@ export default class BaseNPC {
         console.log(`[${this.config.name}] Procurando local para plantar...`);
 
         // Procura por um tile disponível
-        let foundTile = null;
-        for (let y = 0; y < this.scene.grid.height && !foundTile; y++) {
-            for (let x = 0; x < this.scene.grid.width && !foundTile; x++) {
+        let availableTiles = [];
+        for (let y = 0; y < this.scene.grid.height; y++) {
+            for (let x = 0; x < this.scene.grid.width; x++) {
                 if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
-                    foundTile = {x, y};
+                    availableTiles.push({x, y});
                 }
             }
         }
 
-        if (!foundTile) {
+        if (availableTiles.length === 0) {
             console.log(`[${this.config.name}] Nenhum local adequado encontrado para plantar.`);
             this.config.emoji = originalEmoji;
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
             return;
         }
 
-        console.log(`[${this.config.name}] Local para plantar encontrado em (${foundTile.x}, ${foundTile.y})`);
+        // Tempo aleatório de busca entre 5 e 10 segundos
+        const searchTime = Phaser.Math.Between(5000, 10000);
 
-        // Move o NPC até o tile encontrado
-        this.moveTo(foundTile.x, foundTile.y);
+        // Animação de busca
+        const searchParticles = this.scene.add.particles(0, 0, 'tile_grass', {
+            x: this.sprite.x,
+            y: this.sprite.y,
+            speed: { min: 20, max: 50 },
+            scale: { start: 0.1, end: 0 },
+            alpha: { start: 0.6, end: 0 },
+            lifespan: 1000,
+            blendMode: 'ADD',
+            quantity: 1,
+            frequency: 200
+        });
 
-        // Quando chegar no destino, inicia o plantio
-        this.scene.time.delayedCall(600, () => { // 600ms é o tempo da animação de movimento
-            if (this.gridX === foundTile.x && this.gridY === foundTile.y) {
-                // Animação de plantio (5 segundos)
-                this.config.emoji = '🌱';
-                this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+        // Após o tempo de busca, escolhe um tile e planta
+        this.scene.time.delayedCall(searchTime, () => {
+            searchParticles.destroy();
+            const foundTile = Phaser.Math.RND.pick(availableTiles);
 
-                const {tileX, tileY} = this.scene.grid.gridToIso(foundTile.x, foundTile.y);
-                const worldX = this.scene.cameras.main.centerX + tileX;
-                const worldY = this.scene.cameras.main.centerY + tileY;
+            console.log(`[${this.config.name}] Local para plantar encontrado em (${foundTile.x}, ${foundTile.y})`);
 
-                const particles = this.scene.add.particles(0, 0, 'tile_grass', {
-                    x: worldX,
-                    y: worldY - 16,
-                    speed: { min: 50, max: 100 },
-                    scale: { start: 0.2, end: 0 },
-                    alpha: { start: 0.6, end: 0 },
-                    lifespan: 800,
-                    blendMode: 'ADD',
-                    quantity: 10,
-                    emitting: false
-                });
+            // Move o NPC até o tile encontrado
+            this.moveTo(foundTile.x, foundTile.y);
 
-                particles.start();
-
-                // Após 5 segundos, finaliza o plantio
-                this.scene.time.delayedCall(5000, () => {
-                    this.scene.plant(foundTile.x, foundTile.y);
-                    particles.destroy();
-                    this.config.emoji = originalEmoji;
+            // Quando chegar no destino, inicia o plantio
+            this.scene.time.delayedCall(600, () => { // 600ms é o tempo da animação de movimento
+                if (this.gridX === foundTile.x && this.gridY === foundTile.y) {
+                    // Animação de plantio (5 segundos)
+                    this.config.emoji = '🌱';
                     this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-                    console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
-                });
-            }
+
+                    const {tileX, tileY} = this.scene.grid.gridToIso(foundTile.x, foundTile.y);
+                    const worldX = this.scene.cameras.main.centerX + tileX;
+                    const worldY = this.scene.cameras.main.centerY + tileY;
+
+                    const particles = this.scene.add.particles(0, 0, 'tile_grass', {
+                        x: worldX,
+                        y: worldY - 16,
+                        speed: { min: 50, max: 100 },
+                        scale: { start: 0.2, end: 0 },
+                        alpha: { start: 0.6, end: 0 },
+                        lifespan: 800,
+                        blendMode: 'ADD',
+                        quantity: 10,
+                        emitting: false
+                    });
+
+                    particles.start();
+
+                    // Após 5 segundos, finaliza o plantio
+                    this.scene.time.delayedCall(5000, () => {
+                        this.scene.plant(foundTile.x, foundTile.y);
+                        particles.destroy();
+                        this.config.emoji = originalEmoji;
+                        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+                        console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
+                    });
+                }
+            });
         });
     }
 

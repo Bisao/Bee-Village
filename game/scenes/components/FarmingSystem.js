@@ -3,14 +3,18 @@ export default class FarmingSystem {
     constructor(scene) {
         this.scene = scene;
         this.crops = {};
+        this.cropTypes = {
+            potato: { emoji: '🥔', time: 30000, value: 50 },
+            carrot: { emoji: '🥕', time: 25000, value: 40 },
+            wheat: { emoji: '🌾', time: 20000, value: 30 },
+            corn: { emoji: '🌽', time: 35000, value: 60 }
+        };
         this.growthStages = {
             planted: '🌱',
-            growing: '🌿',
-            ready: '🥔'
+            growing: '🌿'
         };
         this.growthTimes = {
-            firstStage: 15000,  // 15 segundos
-            finalStage: 30000  // 30 segundos
+            firstStage: 15000,  // 15 segundos para primeira evolução
         };
     }
 
