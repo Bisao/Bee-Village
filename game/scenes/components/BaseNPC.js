@@ -233,6 +233,27 @@ export default class BaseNPC {
             if (this.scene.grid.isValidPosition(x, y) && !this.scene.isTileOccupied(x, y)) {
                 clearInterval(searchInterval);
                 console.log(`[${this.config.name}] Local para plantar encontrado em (${x}, ${y})`);
+                
+                // Cria o efeito de partículas
+                const {tileX, tileY} = this.scene.grid.gridToIso(x, y);
+                const worldX = this.scene.cameras.main.centerX + tileX;
+                const worldY = this.scene.cameras.main.centerY + tileY;
+                
+                const particles = this.scene.add.particles(0, 0, 'tile_grass', {
+                    x: worldX,
+                    y: worldY - 16,
+                    speed: { min: 50, max: 100 },
+                    scale: { start: 0.2, end: 0 },
+                    alpha: { start: 0.6, end: 0 },
+                    lifespan: 800,
+                    blendMode: 'ADD',
+                    quantity: 10,
+                    emitting: false
+                });
+
+                particles.start();
+                this.scene.time.delayedCall(1000, () => particles.destroy());
+                
                 this.scene.plant(x, y);
                 console.log(`[${this.config.name}] Plantação realizada com sucesso!`);
                 this.config.emoji = originalEmoji;
