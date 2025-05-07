@@ -69,8 +69,8 @@ export default class BaseNPC {
         this.energyBar = this.scene.add.graphics();
         this.updateEnergyBar = () => {
             this.energyBar.clear();
-            const x = worldX - barWidth / 2;
-            const y = worldY - 52;
+            const x = this.sprite.x - barWidth / 2;
+            const y = this.sprite.y - 20;
             
             // Barra de fundo
             this.energyBar.fillStyle(0x000000, 0.5);
@@ -318,14 +318,19 @@ export default class BaseNPC {
             },
             duration: 600,
             ease: 'Linear',
+            onUpdate: () => {
+                this.updateEnergyBar();
+            },
             onComplete: () => {
                 this.gridX = newX;
                 this.gridY = newY;
                 this.sprite.setDepth(newY + 2);
                 this.nameText.setDepth(newY + 3);
+                this.energyBar.setDepth(newY + 3);
                 this.isMoving = false;
                 this.sprite.stop();
                 this.checkIfInHouse();
+                this.updateEnergyBar();
             }
         });
     }
