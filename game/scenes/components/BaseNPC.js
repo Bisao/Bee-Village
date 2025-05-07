@@ -117,6 +117,21 @@ export default class BaseNPC {
                         `).join('')}
                     </div>
                 </div>
+                <div class="storage-section">
+                    <h4>Armazenamento</h4>
+                    <div class="storage-grid">
+                        ${this.storage.map(slot => `
+                            <div class="storage-slot">
+                                ${slot.item ? `
+                                    <div class="storage-item">
+                                        <span class="item-emoji">${this.getItemEmoji(slot.item)}</span>
+                                        <span class="item-quantity">${slot.quantity}/10</span>
+                                    </div>
+                                ` : '<div class="storage-empty">📦</div>'}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
             </div>
         `;
         this.scene.showInventory(html);
