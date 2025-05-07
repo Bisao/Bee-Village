@@ -67,8 +67,8 @@ export default class BaseNPC {
         this.energyBar = this.scene.add.graphics();
         this.updateEnergyBar = () => {
             this.energyBar.clear();
-            const nameWidth = this.nameText.width * 0.8; // 80% da largura do nome
-            const barHeight = 3; // Altura reduzida
+            const nameWidth = this.nameText.width;
+            const barHeight = 3;
             const x = this.nameText.x - (nameWidth/2);
             const y = this.nameText.y + 10; // Posição ajustada
 
