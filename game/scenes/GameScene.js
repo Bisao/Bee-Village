@@ -21,11 +21,16 @@ export default class GameScene extends Phaser.Scene {
         // Configurar a top bar
         this.createTopBar();
         
-        // Cria o grid 20x20
-        const gridOffsetY = 50; // Offset para compensar a top bar
-        this.cameras.main.setViewport(0, gridOffsetY, window.innerWidth, window.innerHeight - gridOffsetY);
+        // Configura viewport responsivo
+        const topBarHeight = 50;
+        const viewportWidth = this.scale.width;
+        const viewportHeight = this.scale.height - topBarHeight;
         
-        this.grid = new Grid(this, 20, 20);
+        this.cameras.main.setViewport(0, topBarHeight, viewportWidth, viewportHeight);
+        
+        // Cria o grid com tamanho adaptativo
+        const gridSize = Math.min(20, Math.floor(viewportWidth / 64)); // 64 é o tamanho base do tile
+        this.grid = new Grid(this, gridSize, gridSize);
         this.grid.create();
 
         // Centraliza a câmera no grid
@@ -35,11 +40,52 @@ export default class GameScene extends Phaser.Scene {
         };
         this.cameras.main.centerOn(gridCenter.x, gridCenter.y);
 
+        // Configura zoom inicial baseado no tamanho da tela
+        const initialZoom = Math.min(
+            viewportWidth / (this.grid.width * this.grid.tileWidth),
+            viewportHeight / (this.grid.height * this.grid.tileHeight)
+        ) * 0.9; // 90% do zoom máximo para dar margem
+        this.cameras.main.setZoom(initialZoom);
+
         // Configura o input manager para controle da câmera
         this.inputManager = new InputManager(this);
         this.inputManager.init();
 
         // Cria o painel de estruturas
+        this.createStructuresPanel();
+
+        // Adiciona listener para redimensionamento
+        this.scale.on('resize', (gameSize) => {
+            this.handleResize(gameSize);
+        });
+    }
+
+    handleResize(gameSize) {
+        const topBarHeight = 50;
+        const viewportWidth = gameSize.width;
+        const viewportHeight = gameSize.height - topBarHeight;
+
+        // Atualiza viewport
+        this.cameras.main.setViewport(0, topBarHeight, viewportWidth, viewportHeight);
+
+        // Recentraliza a câmera
+        const gridCenter = {
+            x: (this.grid.width * this.grid.tileWidth) / 2,
+            y: (this.grid.height * this.grid.tileHeight) / 2
+        };
+        this.cameras.main.centerOn(gridCenter.x, gridCenter.y);
+
+        // Atualiza zoom
+        const newZoom = Math.min(
+            viewportWidth / (this.grid.width * this.grid.tileWidth),
+            viewportHeight / (this.grid.height * this.grid.tileHeight)
+        ) * 0.9;
+        this.cameras.main.setZoom(newZoom);
+
+        // Recria o painel de estruturas para ajustar ao novo tamanho
+        this.children.list
+            .filter(child => child.depth === 1000)
+            .forEach(child => child.destroy());
         this.createStructuresPanel();
     }
 
@@ -60,10 +106,17 @@ export default class GameScene extends Phaser.Scene {
     }
 
     createStructuresPanel() {
-        const panelWidth = 300;
-        const panelHeight = 400;
+        // Calcula dimensões responsivas
+        const panelWidth = Math.min(300, this.scale.width * 0.8);
+        const panelHeight = Math.min(400, this.scale.height * 0.7);
         const centerX = this.scale.width / 2;
         const centerY = this.scale.height / 2;
+        
+        // Ajusta tamanho dos itens baseado no painel
+        const itemsPerRow = this.scale.width < 768 ? 1 : 2;
+        const padding = Math.max(5, Math.min(10, panelWidth * 0.03));
+        const itemWidth = (panelWidth - (padding * 3)) / itemsPerRow;
+        const itemHeight = Math.min(itemWidth, panelHeight * 0.25);
         
         // Container do painel
         const panel = this.add.rectangle(centerX, centerY, panelWidth, panelHeight, 0x2d2d2d)
