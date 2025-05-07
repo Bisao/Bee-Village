@@ -286,6 +286,12 @@ export default class BaseNPC {
     }
 
     findAndPlant() {
+        // Remover timer anterior se existir
+        if (this.searchTimer) {
+            this.searchTimer.remove();
+            this.searchTimer = null;
+        }
+
         const originalEmoji = this.config.emoji;
         this.config.emoji = '👁️‍🗨️';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
@@ -315,13 +321,16 @@ export default class BaseNPC {
             return;
         }
 
-        // Tempo aleatório de busca entre 10 e 15 segundos
-        const searchTime = Phaser.Math.Between(10000, 15000);
-
-        // Configurar repetição a cada 20 segundos
+        // Configurar novo timer de plantio
         this.searchTimer = this.scene.time.addEvent({
-            delay: 20000,
-            callback: () => this.findAndPlant(),
+            delay: this.config.movementDelay,
+            callback: () => {
+                if (!this.isMoving && this.isAutonomous) {
+                    const foundTile = Phaser.Math.RND.pick(availableTiles);
+                    console.log(`[${this.config.name}] Local para plantar encontrado em (${foundTile.x}, ${foundTile.y})`);
+                    this.moveTo(foundTile.x, foundTile.y);
+                }
+            },
             loop: true
         });
 
