@@ -90,14 +90,21 @@ export default class InputManager {
     }
 
     handlePointerDown(pointer) {
-        if (pointer.rightButtonDown()) {
+        if (this.isMobile) {
+            // Single finger drag on mobile
+            if (this.scene.input.pointer1.isDown && !this.scene.input.pointer2.isDown) {
+                this.isDragging = true;
+            }
+        } else if (pointer.rightButtonDown()) {
+            // Right click drag on desktop
             this.isDragging = true;
             this.scene.game.canvas.style.cursor = 'grabbing';
         }
     }
 
     handlePointerMove(pointer) {
-        if (this.isDragging) {
+        if (this.isDragging && !this.scene.input.pointer2.isDown) {
+            // Move grid with single finger or right click
             this.scene.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) / this.scene.cameras.main.zoom;
             this.scene.cameras.main.scrollY -= (pointer.y - pointer.prevPosition.y) / this.scene.cameras.main.zoom;
         }
@@ -105,6 +112,8 @@ export default class InputManager {
 
     handlePointerUp() {
         this.isDragging = false;
-        this.scene.game.canvas.style.cursor = 'default';
+        if (!this.isMobile) {
+            this.scene.game.canvas.style.cursor = 'default';
+        }
     }
 }
