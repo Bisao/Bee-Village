@@ -64,7 +64,7 @@ export default class StartScene extends BaseScene {
             playButton.setFillStyle(0x4a4a4a);
         });
         playButton.on('pointerdown', () => {
-            this.scene.start('GameScene');
+            this.scene.start('MainScene');
         });
 
         settingsButton.on('pointerover', () => {
