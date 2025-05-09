@@ -410,20 +410,21 @@ export default class MainScene extends Phaser.Scene {
     }
 
     setupUIHandlers() {
-        const buttons = document.querySelectorAll('.building-btn');
-        buttons.forEach(btn => {
-            btn.addEventListener('click', () => {
-                buttons.forEach(b => b.classList.remove('selected'));
-                btn.classList.add('selected');
-                this.selectedBuilding = btn.dataset.building;
-                if (this.previewBuilding) {
-                    this.previewBuilding.destroy();
-                    this.previewBuilding = null;
-                }
-                // Hide panel when structure is selected
-                document.getElementById('side-panel').style.display = 'none';
+        const isMobile = this.inputManager.isMobile;
+        
+        if (isMobile) {
+            import('./components/UI/MobileUI.js').then(module => {
+                const MobileUI = module.default;
+                this.ui = new MobileUI(this);
+                this.ui.createUI();
             });
-        });
+        } else {
+            import('./components/UI/DesktopUI.js').then(module => {
+                const DesktopUI = module.default;
+                this.ui = new DesktopUI(this);
+                this.ui.createUI();
+            });
+        }
 
         // Add toggle panel functionality
         const toggleButton = document.getElementById('toggleStructures');
