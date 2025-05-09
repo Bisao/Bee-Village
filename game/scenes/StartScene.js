@@ -6,70 +6,80 @@ export default class StartScene extends BaseScene {
         super({ key: 'StartScene' });
     }
 
-    create() {
-        super.create();
-        this.createUI();
+    preload() {
+        // Load any assets needed for the start scene
     }
 
-    createUI() {
-        const width = this.screenDimensions.width;
-        const height = this.screenDimensions.height;
-        const centerX = width / 2;
-        const centerY = height / 2;
-
-        // Calcula tamanhos relativos
-        const panelWidth = Math.min(400, width * 0.8);
-        const panelHeight = Math.min(300, height * 0.6);
-        const buttonWidth = Math.min(200, panelWidth * 0.8);
-        const buttonHeight = Math.min(50, panelHeight * 0.2);
-        const fontSize = Math.min(32, width * 0.06);
-
-        // Container para centralizar todos os elementos
-        this.container = this.add.container(centerX, centerY);
+    create() {
+        super.create();
         
-        // Painel central
-        this.panel = this.add.rectangle(0, 0, panelWidth, panelHeight, 0x2d2d2d)
-            .setStrokeStyle(2, 0xffffff);
-        
-        // Título
-        this.title = this.add.text(0, -panelHeight * 0.25, 'My Village', {
-            fontSize: `${fontSize}px`,
-            fill: '#ffffff'
+        const centerX = this.cameras.main.centerX;
+        const centerY = this.cameras.main.centerY;
+
+        // Title
+        const title = this.add.text(centerX, centerY - 100, 'My Village', {
+            fontSize: '64px',
+            fill: '#FFD700',
+            fontFamily: 'Arial',
+            stroke: '#000000',
+            strokeThickness: 6
         }).setOrigin(0.5);
 
-        // Botões
-        this.createButton(0, 0, buttonWidth, buttonHeight, 'Play', fontSize * 0.75, () => {
+        // Create animated title
+        this.tweens.add({
+            targets: title,
+            scaleX: 1.1,
+            scaleY: 1.1,
+            duration: 1000,
+            yoyo: true,
+            repeat: -1,
+            ease: 'Sine.easeInOut'
+        });
+
+        // Play Button
+        const playButton = this.add.rectangle(centerX, centerY, 200, 50, 0x4a4a4a)
+            .setInteractive()
+            .setStrokeStyle(2, 0xFFD700);
+
+        const playText = this.add.text(centerX, centerY, 'Play', {
+            fontSize: '32px',
+            fill: '#FFD700'
+        }).setOrigin(0.5);
+
+        // Settings Button
+        const settingsButton = this.add.rectangle(centerX, centerY + 70, 200, 50, 0x4a4a4a)
+            .setInteractive()
+            .setStrokeStyle(2, 0xFFD700);
+
+        const settingsText = this.add.text(centerX, centerY + 70, 'Settings', {
+            fontSize: '32px',
+            fill: '#FFD700'
+        }).setOrigin(0.5);
+
+        // Button interactions
+        playButton.on('pointerover', () => {
+            playButton.setFillStyle(0x666666);
+        });
+        playButton.on('pointerout', () => {
+            playButton.setFillStyle(0x4a4a4a);
+        });
+        playButton.on('pointerdown', () => {
             this.scene.start('GameScene');
         });
 
-        this.createButton(0, buttonHeight * 1.5, buttonWidth, buttonHeight, 'Settings', fontSize * 0.75, () => {
+        settingsButton.on('pointerover', () => {
+            settingsButton.setFillStyle(0x666666);
+        });
+        settingsButton.on('pointerout', () => {
+            settingsButton.setFillStyle(0x4a4a4a);
+        });
+        settingsButton.on('pointerdown', () => {
             this.scene.start('SettingsScene');
         });
-
-        // Adiciona elementos ao container
-        this.container.add([this.panel, this.title]);
-    }
-
-    createButton(x, y, width, height, text, fontSize, callback) {
-        const button = this.add.rectangle(x, y, width, height, 0x4a4a4a)
-            .setInteractive()
-            .setStrokeStyle(2, 0xffffff);
-        
-        const buttonText = this.add.text(x, y, text, {
-            fontSize: `${fontSize}px`,
-            fill: '#ffffff'
-        }).setOrigin(0.5);
-
-        button.on('pointerover', () => button.setFillStyle(0x666666));
-        button.on('pointerout', () => button.setFillStyle(0x4a4a4a));
-        button.on('pointerdown', callback);
-
-        this.container.add([button, buttonText]);
     }
 
     onDimensionsUpdate() {
-        if (this.container) {
-            this.createUI();
-        }
+        // Handle screen resize if needed
+        this.create();
     }
 }
