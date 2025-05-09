@@ -1,6 +1,4 @@
 import MainScene from './scenes/MainScene.js';
-import StartScene from './scenes/StartScene.js';
-import SettingsScene from './scenes/SettingsScene.js';
 
 // Game configuration
 const config = {
@@ -8,7 +6,7 @@ const config = {
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: '#1a1a1a',
-    scene: [StartScene, MainScene, SettingsScene],
+    scene: [MainScene],
     scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
