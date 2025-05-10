@@ -1,4 +1,3 @@
-
 export default class AssetCacheManager {
     constructor(scene) {
         this.scene = scene;
@@ -29,7 +28,7 @@ export default class AssetCacheManager {
         if (this.cache.size > this.maxCacheSize) {
             const sortedAssets = Array.from(this.cache.entries())
                 .sort((a, b) => a[1].lastUsed - b[1].lastUsed);
-            
+
             // Remove os 20% mais antigos
             const removeCount = Math.floor(this.cache.size * 0.2);
             for (let i = 0; i < removeCount; i++) {
@@ -38,19 +37,5 @@ export default class AssetCacheManager {
                 this.scene.textures.remove(key);
             }
         }
-    }
-}
-export default class AssetCacheManager {
-    constructor(scene) {
-        this.scene = scene;
-        this.assetCache = new Map();
-    }
-
-    preloadAssets() {
-        // Asset preloading will be implemented here
-    }
-
-    getAsset(key) {
-        return this.assetCache.get(key);
     }
 }
