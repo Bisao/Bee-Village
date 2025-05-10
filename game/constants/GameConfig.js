@@ -1,7 +1,7 @@
 
 export const GRID_CONFIG = {
-    DEFAULT_WIDTH: 20,
-    DEFAULT_HEIGHT: 20,
+    DEFAULT_WIDTH: 50,
+    DEFAULT_HEIGHT: 50,
     TILE_WIDTH: 64,
     TILE_HEIGHT: 64
 };
