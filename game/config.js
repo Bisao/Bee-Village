@@ -1,4 +1,4 @@
-const Phaser = window.Phaser;
+import Phaser from 'https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.esm.js';
 import MainScene from './scenes/MainScene.js';
 import StartScene from './scenes/StartScene.js';
 import GameScene from './scenes/GameScene.js';
