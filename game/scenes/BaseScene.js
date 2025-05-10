@@ -6,6 +6,12 @@ export default class BaseScene extends Phaser.Scene {
             width: window.innerWidth,
             height: window.innerHeight
         };
+        this.assetCache = new AssetCacheManager();
+    }
+
+    init() {
+        this.mobileManager = new MobileManager(this);
+        this.assetCache.preloadAssets(this);
     }
 
     create() {

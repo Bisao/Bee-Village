@@ -910,6 +910,41 @@ html, body {
 .control-btn {
     width: 70px;
     height: 70px;
+    transform: scale(1);
+    transition: transform 0.15s ease-in-out;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+    background: var(--accent-color-dark);
+}
+
+@media (hover: hover) {
+    .control-btn:hover {
+        transform: scale(1.05);
+    }
+}
+
+.touch-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    animation: ripple 0.5s ease-out;
+}
+
+@keyframes ripple {
+    from {
+        transform: scale(0);
+        opacity: 1;
+    }
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.control-btn {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     background: var(--accent-color);
@@ -1026,7 +1061,7 @@ html, body {
     font-size: 1.1em;
     cursor: pointer;
     display: none;
-    transition: all all 0.3s ease;
+    transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -1653,6 +1688,41 @@ html, body {
 .control-btn {
     width: 70px;
     height: 70px;
+    transform: scale(1);
+    transition: transform 0.15s ease-in-out;
+}
+
+.control-btn:active {
+    transform: scale(0.95);
+    background: var(--accent-color-dark);
+}
+
+@media (hover: hover) {
+    .control-btn:hover {
+        transform: scale(1.05);
+    }
+}
+
+.touch-ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    pointer-events: none;
+    animation: ripple 0.5s ease-out;
+}
+
+@keyframes ripple {
+    from {
+        transform: scale(0);
+        opacity: 1;
+    }
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.control-btn {
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
     background: var(--accent-color);
@@ -1671,4 +1741,150 @@ html, body {
     align-items: center;
     justify-content: center;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.control-btn:active {
+    background: var(--primary-color);
+    color: var(--button-text);
+    transform: scale(0.95);
+}
+
+.mobile-up { grid-area: up; }
+.mobile-down { grid-area: down; }
+.mobile-left { grid-area: left; }
+.mobile-right { grid-area: right; }
+
+@media (hover: hover) {
+    .control-btn:hover {
+        background: rgba(255, 215, 0, 0.3);
+    }
+}
+
+@media (max-width: 768px) {
+    #side-panel {
+        left: 50%;
+        transform: translateX(-50%);
+        top: 70px;
+        width: 80%;
+        flex-direction: column;
+        height: calc(100vh - 180px);
+        padding: 8px;
+        overflow-y: auto;
+        bottom: 90px;
+    }
+
+    .building-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+        gap: 8px;
+        padding: 4px;
+        margin-bottom: 80px;
+    }
+
+    .building-btn {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 1;
+        padding: 4px;
+    }
+
+    .building-btn .tooltip {
+        left: 50%;
+        top: auto;
+        bottom: 100%;
+        transform: translateX(-50%);
+        margin-bottom: 8px;
+    }
+
+    .building-btn:hover .tooltip {
+        transform: translateX(-50%) translateY(-5px);
+    }
+}
+
+.theme-options {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.theme-btn {
+    background: var(--accent-color);
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    padding: 8px 16px;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.theme-btn:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.theme-btn.selected {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.apply-theme-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    display: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.apply-theme-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.apply-theme-btn.visible {
+    display: block;
+}
+
+.theme-icon {
+    position: absolute;
+    font-size: 1.5em;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    right: 15px;
+    opacity: 0;
+}
+
+.theme-icon.visible {
+    opacity: 1;
+    right: 15px;
+}
+
+.theme-icon.play {
+    top: 26px;
+}
+
+.theme-icon.settings {
+    top: calc(50% + 30px);
+    transform: translateY(-50%);
+}
+.npc-modal {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 65px);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 3000;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
 }

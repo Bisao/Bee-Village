@@ -45,17 +45,7 @@ export default class MobileUI {
     }
 
     createCompactTopBar() {
-        const topBar = this.scene.add.rectangle(0, 0, window.innerWidth, 40, 0x2d2d2d);
-        topBar.setOrigin(0, 0);
-        topBar.setScrollFactor(0);
-        topBar.setDepth(1000);
-
-        const titleText = this.scene.add.text(10, 10, '🌻 My Village', {
-            fontSize: '16px',
-            color: '#ffffff',
-            fontFamily: 'Arial'
-        });
-        titleText.setScrollFactor(0);
-        titleText.setDepth(1000);
+        // Mobile usa a mesma topbar do HTML
+        return;
     }
 }
