@@ -9,6 +9,7 @@ const config = {
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: '#1a1a1a',
+    parent: 'game',
     scene: [StartScene, GameScene, SettingsScene],
     scale: {
         mode: Phaser.Scale.RESIZE,
@@ -22,6 +23,9 @@ const config = {
         }
     }
 };
+
+const game = new Phaser.Game(config);
+window.game = game;
 
 // Theme handling
 const currentTheme = localStorage.getItem('selectedTheme') || 'cow';
@@ -158,4 +162,4 @@ function startGameWithLoading() {
 }
 
 
-export default config;
+export default game;

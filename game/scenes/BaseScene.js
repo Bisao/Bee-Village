@@ -5,10 +5,11 @@ export default class BaseScene extends Phaser.Scene {
     constructor(config) {
         super(config);
         this.screenDimensions = {
-            width: window.innerWidth,
-            height: window.innerHeight
+            width: window.innerWidth || 800,
+            height: window.innerHeight || 600
         };
-        this.assetCache = new AssetCacheManager();
+        this.assetCache = new AssetCacheManager(this);
+        this.mobileManager = new MobileManager(this);
     }
 
     init() {
