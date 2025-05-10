@@ -111,7 +111,7 @@ createTopBar() {
         villageText.setDepth(1000);
 
         // Adicionar botão da loja
-        const shopButton = this.add.text(window.innerWidth - 50, 15, '🏪', {
+        const shopButton = this.add.text(window.innerWidth - 150, 15, '🏪', {
             fontSize: '24px',
             color: '#ffffff'
         })
