@@ -294,24 +294,24 @@ html, body {
 #side-panel {
   display: none;
   position: fixed;
-  top: 75px;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: min(75%, 500px);
+  transform: translate(-50%, -50%);
+  width: min(90%, 600px);
   height: auto;
-  max-height: calc(100vh - 85px);
+  max-height: 80vh;
   background: var(--accent-color);
   backdrop-filter: blur(10px);
   border: 2px solid var(--primary-color);
   border-radius: 12px;
   padding: 20px;
   flex-direction: column;
-  align-items: stretch;
+  align-items: center;
   justify-content: flex-start;
   gap: 15px;
   z-index: 2000;
   overflow-y: auto;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
 }
 
 #side-panel::-webkit-scrollbar {
@@ -364,11 +364,10 @@ html, body {
 
 @media (max-width: 768px) {
     #side-panel {
-        left: 50%;
-        transform: translateX(-50%);
-        top: 70px;
-        width: 90%;
-        max-width: 400px;
+        width: 95%;
+        max-width: 450px;
+        padding: 15px;
+        max-height: 85vh;
     }
 
     .building-btn {
