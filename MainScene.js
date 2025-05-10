@@ -116,8 +116,9 @@ createTopBar() {
             color: '#ffffff'
         })
         .setScrollFactor(0)
-        .setDepth(1000)
-        .setInteractive();
+        .setDepth(2000)
+        .setInteractive()
+        .setOrigin(0, 0);
 
         shopButton.on('pointerdown', () => {
             this.shopSystem.openShop();
