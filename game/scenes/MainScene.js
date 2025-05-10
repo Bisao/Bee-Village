@@ -897,8 +897,8 @@ export default class MainScene extends Phaser.Scene {
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
             modal.remove();
-        };nup previous NPC controls
-        this.cleanupNPCControls();
+            this.cleanupNPCControls();
+        };
 
         // Exemplo de inventário (pode ser expandido para um sistema real)
         const inventory = [
