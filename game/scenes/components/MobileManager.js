@@ -1,4 +1,5 @@
-export default class MobileManager {
+
+export class MobileManager {
     constructor(scene) {
         this.scene = scene;
         this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -68,8 +69,10 @@ export default class MobileManager {
             targets: circle,
             scale: 1.5,
             alpha: 0,
-            duration: 150,
-            onComplete: () => circle.destroy()
+            duration: 300,
+            onComplete: () => {
+                circle.destroy();
+            }
         });
     }
 
@@ -83,12 +86,5 @@ export default class MobileManager {
 
         const zoom = isLandscape ? 0.8 : 0.6;
         this.scene.cameras.main.setZoom(zoom);
-    }
-
-    destroy() {
-        const controlsPanel = document.getElementById('controls-panel');
-        if (controlsPanel) {
-            controlsPanel.style.display = 'none';
-        }
     }
 }
