@@ -851,7 +851,53 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
-        // Cleanup previous NPC controls
+        // Limpar controles anteriores
+        this.cleanupNPCControls();
+
+        // Criar modal de controle
+        const modal = document.createElement('div');
+        modal.className = 'npc-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="close-button">✕</button>
+                <div class="npc-header">
+                    <div class="npc-avatar">
+                        ${npc.config.emoji}
+                    </div>
+                    <div class="npc-info">
+                        <h3>${npc.config.name}</h3>
+                        <p class="npc-profession">${npc.config.profession}</p>
+                    </div>
+                </div>
+                <div class="control-buttons">
+                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
+                        🤖 Modo Autônomo
+                    </button>
+                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                        🕹️ Modo Controlado
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Adicionar eventos
+        modal.querySelector('.close-button').onclick = () => {
+            modal.remove();
+        };
+
+        modal.querySelector('#autonomous').onclick = () => {
+            npc.isAutonomous = true;
+            this.currentControlledNPC = null;
+            modal.remove();
+        };
+
+        modal.querySelector('#controlled').onclick = () => {
+            npc.isAutonomous = false;
+            this.currentControlledNPC = npc;
+            modal.remove();
+        };nup previous NPC controls
         this.cleanupNPCControls();
 
         // Exemplo de inventário (pode ser expandido para um sistema real)

@@ -83,7 +83,11 @@ export default class BaseNPC {
     }
 
     showControls() {
-        this.scene.showNPCControls(this);
+        if (this.scene && typeof this.scene.showNPCControls === 'function') {
+            this.scene.showNPCControls(this);
+        } else {
+            console.warn('showNPCControls não está definido na cena');
+        }
     }
 
     startAutonomousMovement() {
