@@ -34,7 +34,8 @@ export default class BaseNPC {
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
-        this.sprite.setInteractive();
+        this.sprite.setInteractive({ useHandCursor: true });
+        this.sprite.on('pointerdown', () => this.showControls());
         
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
@@ -83,10 +84,8 @@ export default class BaseNPC {
     }
 
     showControls() {
-        if (this.scene && typeof this.scene.showNPCControls === 'function') {
+        if (this.scene) {
             this.scene.showNPCControls(this);
-        } else {
-            console.warn('showNPCControls não está definido na cena');
         }
     }
 
