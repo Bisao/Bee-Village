@@ -748,7 +748,7 @@ html, body {
 
 
 /* Theme Variables */
-::root {
+:root {
   /* Cores Base */
   --color-black: #1a1a1a;
   --color-white: #FFFFFF;
@@ -1346,18 +1346,7 @@ html, body {
     background: var(--success-color);
 }
 
-.control-btn {
-    display: block;
-    width: 100%;
-    padding: 10px;
-    margin: 10px 0;
-    background: var(--primary-color);
-    border: none;
-    border-radius: 4px;
-    color: white;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+/* Control button styles moved to unified section */
 
 .control-btn:hover {
     opacity: 0.8;
