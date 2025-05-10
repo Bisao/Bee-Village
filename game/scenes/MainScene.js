@@ -901,14 +901,52 @@ export default class MainScene extends Phaser.Scene {
                     </p>
                 </div>
 
-                <div class="npc-inventory">
-                    ${npc.config.tools.map(tool => `
-                        <div class="tool-slot">
-                            <div class="tool-emoji">${tool.emoji}</div>
-                            <div class="tool-name">${tool.name}</div>
-                            <div class="tool-description">${tool.description}</div>
+                <div class="npc-tabs">
+                    <button class="tab-button active" data-tab="inventory">Inventário</button>
+                    <button class="tab-button" data-tab="work">Trabalho</button>
+                </div>
+
+                <div class="tab-content inventory-tab active">
+                    <div class="npc-inventory">
+                        ${npc.config.tools.map(tool => `
+                            <div class="tool-slot">
+                                <div class="tool-emoji">${tool.emoji}</div>
+                                <div class="tool-name">${tool.name}</div>
+                                <div class="tool-description">${tool.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="tab-content work-tab">
+                    <div class="work-stats">
+                        <div class="work-stat">
+                            <span class="stat-label">Produtividade</span>
+                            <div class="stat-bar">
+                                <div class="stat-progress" style="width: 75%"></div>
+                            </div>
                         </div>
-                    `).join('')}
+                        <div class="work-stat">
+                            <span class="stat-label">Energia</span>
+                            <div class="stat-bar">
+                                <div class="stat-progress" style="width: 60%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="work-actions">
+                        <button class="work-action">
+                            <span class="action-emoji">🌾</span>
+                            <span class="action-name">Cultivar</span>
+                        </button>
+                        <button class="work-action">
+                            <span class="action-emoji">🪴</span>
+                            <span class="action-name">Plantar</span>
+                        </button>
+                        <button class="work-action">
+                            <span class="action-emoji">💧</span>
+                            <span class="action-name">Regar</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -969,6 +1007,21 @@ export default class MainScene extends Phaser.Scene {
             this.showFeedback(`Você está controlando ${npc.config.name}!`, true);
             modal.remove();
         };
+
+        // Configure tab buttons
+        const tabButtons = modal.querySelectorAll('.tab-button');
+        const tabContents = modal.querySelectorAll('.tab-content');
+        
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+                
+                button.classList.add('active');
+                const tabName = button.dataset.tab;
+                modal.querySelector(`.${tabName}-tab`).classList.add('active');
+            });
+        });
 
         // Configure close button
         const closeButton = modal.querySelector('.close-button');
