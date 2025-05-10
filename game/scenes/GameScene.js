@@ -24,8 +24,10 @@ export default class GameScene extends BaseScene {
 
     create() {
         super.create();
-        this.createStructuresPanel();
+        this.grid = new Grid(this, 10, 10);
+        this.grid.create();
         this.setupViewport();
+        this.createStructuresPanel();
         this.setupEventListeners();
     }
 
