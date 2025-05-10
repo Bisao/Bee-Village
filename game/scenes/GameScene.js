@@ -1,3 +1,4 @@
+
 import BaseScene from './BaseScene.js';
 
 export default class GameScene extends BaseScene {
@@ -8,18 +9,31 @@ export default class GameScene extends BaseScene {
 
     preload() {
         // Load building textures
-        this.load.image('ChickenHouse', 'game/assets/buildings/ChickenHouse.png');
-        this.load.image('CowHouse', 'game/assets/buildings/CowHouse.png');
-        this.load.image('FarmerHouse', 'game/assets/buildings/FarmerHouse.png');
-        this.load.image('MinerHouse', 'game/assets/buildings/MinerHouse.png');
-        this.load.image('PigHouse', 'game/assets/buildings/PigHouse.png');
-        this.load.image('FishermanHouse', 'game/assets/buildings/fishermanHouse.png');
+        const buildings = [
+            'ChickenHouse', 'CowHouse', 'FarmerHouse',
+            'MinerHouse', 'PigHouse', 'FishermanHouse'
+        ];
 
-        // Carrega as texturas dos tiles
-        this.load.image('tile_grass', 'game/assets/tiles/tile_grass.png');
-        this.load.image('tile_grass_2', 'game/assets/tiles/tile_grass_2.png');
-        this.load.image('tile_grass_2_flowers', 'game/assets/tiles/tile_grass_2_flowers.png');
-        this.load.image('tile_grass_3_flowers', 'game/assets/tiles/tile_grass_3_flowers.png');
+        buildings.forEach(building => {
+            this.load.image(building, `game/assets/buildings/${building}.png`);
+        });
+
+        // Load tile textures
+        const tiles = [
+            'tile_grass',
+            'tile_grass_2',
+            'tile_grass_2_flowers',
+            'tile_grass_3_flowers'
+        ];
+
+        tiles.forEach(tile => {
+            this.load.image(tile, `game/assets/tiles/${tile}.png`);
+        });
+
+        // Call parent preload if exists
+        if (super.preload) {
+            super.preload();
+        }
     }
 
     create() {
@@ -35,11 +49,13 @@ export default class GameScene extends BaseScene {
         const viewportHeight = this.scale.height - topBarHeight;
 
         // Center camera on grid
-        const gridCenter = {
-            x: (this.grid.width * this.grid.tileWidth) / 2,
-            y: (this.grid.height * this.grid.tileHeight) / 2
-        };
-        this.cameras.main.centerOn(gridCenter.x, gridCenter.y);
+        if (this.grid) {
+            const gridCenter = {
+                x: (this.grid.width * this.grid.tileWidth) / 2,
+                y: (this.grid.height * this.grid.tileHeight) / 2
+            };
+            this.cameras.main.centerOn(gridCenter.x, gridCenter.y);
+        }
 
         // Set initial zoom
         const initialZoom = this.calculateInitialZoom(viewportWidth, viewportHeight);
@@ -52,6 +68,10 @@ export default class GameScene extends BaseScene {
     }
 
     createStructuresPanel() {
+        if (this.structuresPanel) {
+            this.structuresPanel.destroy();
+        }
+
         const panelWidth = Math.min(300, this.scale.width * 0.8);
         const panelHeight = Math.min(400, this.scale.height * 0.7);
         const centerX = this.scale.width / 2;
@@ -72,13 +92,15 @@ export default class GameScene extends BaseScene {
     setupEventListeners() {
         this.scale.on('resize', this.handleResize, this);
 
-        // Add other event listeners as needed
-        this.events.on('shutdown', () => {
+        // Cleanup on scene shutdown
+        this.events.once('shutdown', () => {
             this.scale.off('resize', this.handleResize, this);
         });
     }
 
     handleResize(gameSize) {
+        if (!gameSize) return;
+
         const topBarHeight = 50;
         const viewportWidth = gameSize.width;
         const viewportHeight = gameSize.height - topBarHeight;
