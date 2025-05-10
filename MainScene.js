@@ -111,7 +111,7 @@ createTopBar() {
         villageText.setDepth(1000);
 
         // Adicionar botão da loja
-        const shopButton = this.add.text(window.innerWidth - 100, 15, '🏪', {
+        const shopButton = this.add.text(10, window.innerHeight / 2, '🏪', {
             fontSize: '24px',
             color: '#ffffff'
         })
@@ -135,7 +135,8 @@ createTopBar() {
         // Atualizar posição quando a tela for redimensionada
         this.scale.on('resize', (gameSize) => {
             const width = gameSize.width;
+            const height = gameSize.height;
             topBar.width = width;
-            shopButton.setPosition(width - 100, 15);
+            shopButton.setPosition(10, height / 2);
         });
     }
