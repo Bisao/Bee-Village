@@ -365,14 +365,16 @@ html, body {
 @media (max-width: 768px) {
     #side-panel {
         width: 100%;
-        height: calc(100vh - 70px);
+        height: 100vh;
         padding: 10px;
         margin: 0;
         border-radius: 0;
-        top: 65px;
+        top: 0;
         transform: none;
         left: 0;
         max-height: none;
+        position: fixed;
+        z-index: 2500;
     }
 
     .panel-tabs {
