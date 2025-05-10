@@ -918,19 +918,6 @@ export default class MainScene extends Phaser.Scene {
             modal.remove();
             backdrop.remove();
         };
-        // Limpar controles anteriores
-        this.cleanupNPCControls();
-
-        // Criar backdrop e modal
-        const backdrop = document.createElement('div');
-        backdrop.className = 'modal-backdrop';
-        document.body.appendChild(backdrop);
-        
-        const modal = document.createElement('div');
-        modal.className = 'npc-modal';
-        
-        // Definir o conteúdo do modal
-        modal.innerHTML = `
             <div class="modal-content">
                 <button class="close-button">✕</button>
                 <div class="npc-header">
