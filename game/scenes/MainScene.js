@@ -861,6 +861,7 @@ export default class MainScene extends Phaser.Scene {
 
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
+        document.body.appendChild(modal);
 
         // Definir o conteúdo do modal
         modal.innerHTML = `
@@ -904,7 +905,7 @@ export default class MainScene extends Phaser.Scene {
                 <div class="npc-tabs">
                     <button class="tab-button active" data-tab="inventory">🎒 Inventário</button>
                     <button class="tab-button" data-tab="jobs">💼 Trabalhos</button>
-                    <button class="tab-button" data-tab="skills">🌟 Skills</button>
+                    <button class="tab-button" data-tab="skills">🌟 Skillss</button>
                 </div>
 
                 <div class="tab-content" id="inventory-tab">
