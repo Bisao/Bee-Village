@@ -901,6 +901,57 @@ export default class MainScene extends Phaser.Scene {
                     </p>
                 </div>
 
+                <div class="npc-tabs">
+                    <button class="tab-button active" data-tab="inventory">🎒 Inventário</button>
+                    <button class="tab-button" data-tab="jobs">💼 Trabalhos</button>
+                    <button class="tab-button" data-tab="skills">🌟 Skills</button>
+                </div>
+
+                <div class="tab-content" id="inventory-tab">
+                    <div class="inventory-grid">
+                        ${Array(12).fill(null).map((_, i) => `
+                            <div class="inventory-slot ${inventory[i] ? '' : 'empty'}">
+                                ${inventory[i] || ''}
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="tab-content" id="jobs-tab" style="display: none;">
+                    <div class="jobs-list">
+                        <div class="job-item">
+                            <span class="job-icon">🌾</span>
+                            <span class="job-name">Agricultura</span>
+                            <div class="job-progress"><div style="width: 60%"></div></div>
+                        </div>
+                        <div class="job-item">
+                            <span class="job-icon">⛏️</span>
+                            <span class="job-name">Mineração</span>
+                            <div class="job-progress"><div style="width: 30%"></div></div>
+                        </div>
+                        <div class="job-item">
+                            <span class="job-icon">🎣</span>
+                            <span class="job-name">Pesca</span>
+                            <div class="job-progress"><div style="width: 45%"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tab-content" id="skills-tab" style="display: none;">
+                    <div class="skills-tree">
+                        <div class="skill-branch">
+                            <div class="skill-node active">🌱 Cultivo Básico</div>
+                            <div class="skill-node">🌿 Cultivo Avançado</div>
+                            <div class="skill-node locked">🌳 Mestre Agricultor</div>
+                        </div>
+                        <div class="skill-branch">
+                            <div class="skill-node active">⛏️ Mineração Básica</div>
+                            <div class="skill-node locked">💎 Mineração Avançada</div>
+                            <div class="skill-node locked">⚒️ Mestre Minerador</div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="npc-inventory">
                     ${npc.config.tools.map(tool => `
                         <div class="tool-slot">
