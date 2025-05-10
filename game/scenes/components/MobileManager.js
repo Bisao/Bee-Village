@@ -44,7 +44,6 @@ export default class MobileManager {
 
     handlePanGesture(deltaX, deltaY) {
         if (Math.abs(deltaX) > 50) {
-            // Pan camera
             this.scene.cameras.main.scrollX -= deltaX / 2;
         }
         if (Math.abs(deltaY) > 50) {
@@ -56,8 +55,7 @@ export default class MobileManager {
         if (window.navigator.vibrate) {
             window.navigator.vibrate(50);
         }
-        
-        // Visual feedback
+
         const circle = this.scene.add.circle(
             this.touchStartPos.x,
             this.touchStartPos.y,
@@ -65,7 +63,7 @@ export default class MobileManager {
             0xffffff,
             0.5
         );
-        
+
         this.scene.tweens.add({
             targets: circle,
             scale: 1.5,
@@ -78,12 +76,11 @@ export default class MobileManager {
     handleOrientation() {
         const orientation = window.orientation;
         const isLandscape = Math.abs(orientation) === 90;
-        
+
         if (this.scene.screenManager) {
             this.scene.screenManager.adjustAllElements();
         }
-        
-        // Adjust camera zoom based on orientation
+
         const zoom = isLandscape ? 0.8 : 0.6;
         this.scene.cameras.main.setZoom(zoom);
     }
@@ -93,21 +90,5 @@ export default class MobileManager {
         if (controlsPanel) {
             controlsPanel.style.display = 'none';
         }
-    }
-}
-export default class MobileManager {
-    constructor(scene) {
-        this.scene = scene;
-        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    }
-
-    init() {
-        if (this.isMobile) {
-            this.setupMobileControls();
-        }
-    }
-
-    setupMobileControls() {
-        // Mobile controls setup will be implemented here
     }
 }
