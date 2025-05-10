@@ -861,65 +861,6 @@ export default class MainScene extends Phaser.Scene {
         
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
-        
-        // Definir o conteúdo do modal
-        modal.innerHTML = `
-            <div class="modal-content">
-                <button class="close-button">✕</button>
-                <div class="npc-header">
-                    <div class="npc-avatar">
-                        ${npc.config.emoji}
-                    </div>
-                    <div class="npc-info">
-                        <h3>${npc.config.name}</h3>
-                        <p class="npc-profession">${npc.config.profession}</p>
-                        <div class="npc-level-info">
-                            <span class="level-text">Nível ${npc.config.level}</span>
-                            <div class="xp-bar">
-                                <div class="xp-progress" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
-                            </div>
-                            <span class="xp-text">${npc.config.xp}/${npc.config.maxXp} XP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-buttons">
-                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
-                        🤖 Modo Autônomo
-                    </button>
-                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
-                        🕹️ Modo Controlado
-                    </button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Adicionar eventos
-        modal.querySelector('.close-button').onclick = () => {
-            modal.remove();
-            backdrop.remove();
-        };
-
-        modal.querySelector('#autonomous').onclick = () => {
-            npc.isAutonomous = true;
-            this.cameras.main.stopFollow();
-            this.startNPCMovement(npc);
-            modal.remove();
-            backdrop.remove();
-        };
-
-        modal.querySelector('#controlled').onclick = () => {
-            npc.isAutonomous = false;
-            this.currentControlledNPC = npc;
-            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
-            this.enablePlayerControl(npc);
-            modal.remove();
-            backdrop.remove();
-        };
-        // Limpar controles anteriores
-        this.cleanupNPCControls();
 
         // Criar backdrop e modal
         const backdrop = document.createElement('div');
