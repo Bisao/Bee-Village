@@ -1,10 +1,20 @@
-
 export default class MobileManager {
     constructor(scene) {
         this.scene = scene;
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         this.touchStartPos = null;
+        this.setupMobileControls();
         this.setupTouchHandlers();
         this.setupOrientationHandler();
+    }
+
+    setupMobileControls() {
+        if (!this.isMobile) return;
+
+        const controlsPanel = document.getElementById('controls-panel');
+        if (controlsPanel) {
+            controlsPanel.style.display = 'flex';
+        }
     }
 
     setupTouchHandlers() {
@@ -76,5 +86,12 @@ export default class MobileManager {
         // Adjust camera zoom based on orientation
         const zoom = isLandscape ? 0.8 : 0.6;
         this.scene.cameras.main.setZoom(zoom);
+    }
+
+    destroy() {
+        const controlsPanel = document.getElementById('controls-panel');
+        if (controlsPanel) {
+            controlsPanel.style.display = 'none';
+        }
     }
 }
