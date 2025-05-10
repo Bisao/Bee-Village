@@ -21,5 +21,6 @@ export const BUILDING_TYPES = {
     COW: 'CowHouse',
     PIG: 'PigHouse',
     MINER: 'MinerHouse',
-    FISHERMAN: 'FishermanHouse'
+    FISHERMAN: 'FishermanHouse',
+    LUMBERJACK: 'LumberJackHouse'
 };
