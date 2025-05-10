@@ -1,40 +1,42 @@
 
 export default class AssetCacheManager {
-    constructor() {
-        this.textureCache = new Map();
-        this.audioCache = new Map();
-        this.maxCacheSize = 50;
+    constructor(scene) {
+        this.scene = scene;
+        this.cache = new Map();
+        this.maxCacheSize = 100;
     }
 
-    preloadAssets(scene) {
-        const commonAssets = [
-            'tile_grass',
-            'tile_grass_2',
-            'tile_grass_2_flowers',
-            'tile_grass_3_flowers',
-            'Farmer',
-            'tree_simple',
-            'tree_pine'
-        ];
-
-        commonAssets.forEach(key => {
-            if (!this.textureCache.has(key)) {
-                scene.load.once(`filecomplete-image-${key}`, () => {
-                    this.textureCache.set(key, true);
-                });
-            }
-        });
-    }
-
-    clearUnusedAssets(scene) {
-        if (this.textureCache.size > this.maxCacheSize) {
-            const keysToRemove = Array.from(this.textureCache.keys())
-                .slice(0, this.textureCache.size - this.maxCacheSize);
-            
-            keysToRemove.forEach(key => {
-                scene.textures.remove(key);
-                this.textureCache.delete(key);
+    preloadAsset(key, path) {
+        if (!this.cache.has(key)) {
+            this.scene.load.image(key, path);
+            this.cache.set(key, {
+                path: path,
+                lastUsed: Date.now()
             });
+        }
+    }
+
+    getAsset(key) {
+        if (this.cache.has(key)) {
+            const asset = this.cache.get(key);
+            asset.lastUsed = Date.now();
+            return this.scene.textures.get(key);
+        }
+        return null;
+    }
+
+    clearOldCache() {
+        if (this.cache.size > this.maxCacheSize) {
+            const sortedAssets = Array.from(this.cache.entries())
+                .sort((a, b) => a[1].lastUsed - b[1].lastUsed);
+            
+            // Remove os 20% mais antigos
+            const removeCount = Math.floor(this.cache.size * 0.2);
+            for (let i = 0; i < removeCount; i++) {
+                const [key] = sortedAssets[i];
+                this.cache.delete(key);
+                this.scene.textures.remove(key);
+            }
         }
     }
 }
