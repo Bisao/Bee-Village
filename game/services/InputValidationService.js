@@ -1,42 +1,58 @@
 
 export default class InputValidationService {
-    static validateGridPosition(x, y, gridWidth, gridHeight) {
-        return {
-            isValid: x >= 0 && x < gridWidth && y >= 0 && y < gridHeight,
-            message: 'Posição inválida no grid'
+    constructor() {
+        this.lastActionTimestamp = {};
+        this.actionLimits = {
+            movement: 100, // ms entre movimentos
+            building: 500, // ms entre construções
+            shop: 1000 // ms entre interações com loja
         };
     }
 
-    static validateBuildingPlacement(building, position, resources) {
-        const validations = {
-            isValid: true,
-            messages: []
-        };
-
-        if (!building) {
-            validations.isValid = false;
-            validations.messages.push('Construção inválida');
-        }
-
-        if (!resources || resources < building?.cost) {
-            validations.isValid = false;
-            validations.messages.push('Recursos insuficientes');
-        }
-
-        return validations;
+    validateGridPosition(x, y, gridWidth, gridHeight) {
+        return x >= 0 && x < gridWidth && y >= 0 && y < gridHeight;
     }
 
-    static rateLimiter = new Map();
-
-    static checkRateLimit(actionType, cooldown = 1000) {
+    validateAction(actionType, entityId) {
+        const key = `${actionType}_${entityId}`;
         const now = Date.now();
-        const lastAction = this.rateLimiter.get(actionType);
-        
-        if (lastAction && now - lastAction < cooldown) {
+        const lastAction = this.lastActionTimestamp[key] || 0;
+        const limit = this.actionLimits[actionType];
+
+        if (now - lastAction < limit) {
             return false;
         }
-        
-        this.rateLimiter.set(actionType, now);
+
+        this.lastActionTimestamp[key] = now;
         return true;
+    }
+
+    validateBuildingPlacement(gridX, gridY, buildingType, resources) {
+        if (!this.validateAction('building', 'player')) {
+            return { valid: false, reason: 'Aguarde para construir novamente' };
+        }
+
+        // Adicione suas validações específicas de construção aqui
+        return { valid: true };
+    }
+
+    validateMovement(entity, newX, newY, grid) {
+        if (!this.validateAction('movement', entity.id)) {
+            return { valid: false, reason: 'Movimento muito rápido' };
+        }
+
+        if (!this.validateGridPosition(newX, newY, grid.width, grid.height)) {
+            return { valid: false, reason: 'Posição inválida' };
+        }
+
+        return { valid: true };
+    }
+
+    validateShopInteraction(player, item) {
+        if (!this.validateAction('shop', player.id)) {
+            return { valid: false, reason: 'Aguarde para interagir com a loja' };
+        }
+
+        return { valid: true };
     }
 }

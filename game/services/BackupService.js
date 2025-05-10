@@ -1,56 +1,117 @@
 
 export default class BackupService {
-    constructor() {
-        this.MAX_BACKUPS = 5;
-        this.BACKUP_PREFIX = 'game_backup_';
+    constructor(scene) {
+        this.scene = scene;
+        this.backupInterval = 5 * 60 * 1000; // 5 minutos
+        this.maxBackups = 5;
+        this.backupPrefix = 'game_backup_';
+        this.setupAutoBackup();
     }
 
-    createBackup(gameState) {
-        try {
-            const timestamp = Date.now();
-            const backupKey = `${this.BACKUP_PREFIX}${timestamp}`;
-            
-            // Salva novo backup
-            localStorage.setItem(backupKey, JSON.stringify({
-                timestamp,
-                state: gameState
-            }));
+    setupAutoBackup() {
+        setInterval(() => this.createBackup(), this.backupInterval);
+    }
 
-            // Gerencia backups antigos
-            this.manageBackups();
+    async createBackup() {
+        try {
+            const gameState = this.getGameState();
+            const timestamp = Date.now();
+            const backupKey = `${this.backupPrefix}${timestamp}`;
             
+            // Salvar backup
+            localStorage.setItem(backupKey, JSON.stringify(gameState));
+            
+            // Gerenciar backups antigos
+            this.cleanOldBackups();
+            
+            console.log(`Backup created: ${backupKey}`);
             return true;
         } catch (error) {
-            console.error('Erro ao criar backup:', error);
+            console.error('Backup failed:', error);
             return false;
         }
     }
 
-    manageBackups() {
-        const backups = this.getAllBackups();
-        while (backups.length > this.MAX_BACKUPS) {
-            const oldestBackup = backups.shift();
-            localStorage.removeItem(oldestBackup.key);
+    getGameState() {
+        const { grid, farmer } = this.scene;
+        return {
+            version: '1.0',
+            timestamp: Date.now(),
+            grid: this.serializeGrid(grid),
+            farmer: this.serializeEntity(farmer),
+            resources: this.scene.resources,
+            buildings: this.serializeBuildings()
+        };
+    }
+
+    serializeGrid(grid) {
+        if (!grid) return null;
+        return {
+            width: grid.width,
+            height: grid.height,
+            buildings: Object.fromEntries(
+                Object.entries(grid.buildingGrid).map(([key, value]) => [
+                    key,
+                    {
+                        type: value.type,
+                        buildingType: value.buildingType,
+                        gridX: value.gridX,
+                        gridY: value.gridY
+                    }
+                ])
+            )
+        };
+    }
+
+    serializeEntity(entity) {
+        if (!entity) return null;
+        return {
+            gridX: entity.gridX,
+            gridY: entity.gridY,
+            type: entity.type
+        };
+    }
+
+    serializeBuildings() {
+        const buildings = {};
+        this.scene.grid.buildingGrid.forEach((building, key) => {
+            buildings[key] = {
+                type: building.type,
+                gridX: building.gridX,
+                gridY: building.gridY,
+                state: building.state
+            };
+        });
+        return buildings;
+    }
+
+    cleanOldBackups() {
+        const backups = this.getBackupsList();
+        if (backups.length > this.maxBackups) {
+            backups
+                .slice(this.maxBackups)
+                .forEach(key => localStorage.removeItem(key));
         }
     }
 
-    getAllBackups() {
+    getBackupsList() {
         return Object.keys(localStorage)
-            .filter(key => key.startsWith(this.BACKUP_PREFIX))
-            .map(key => ({
-                key,
-                timestamp: parseInt(key.replace(this.BACKUP_PREFIX, ''))
-            }))
-            .sort((a, b) => a.timestamp - b.timestamp);
+            .filter(key => key.startsWith(this.backupPrefix))
+            .sort()
+            .reverse();
     }
 
-    restoreBackup(timestamp) {
-        const backupKey = `${this.BACKUP_PREFIX}${timestamp}`;
-        const backup = localStorage.getItem(backupKey);
-        
-        if (backup) {
-            return JSON.parse(backup).state;
+    async restoreFromBackup(backupKey) {
+        try {
+            const backup = localStorage.getItem(backupKey);
+            if (!backup) return false;
+
+            const state = JSON.parse(backup);
+            await this.scene.loadGameState(state);
+            return true;
+        } catch (error) {
+            console.error('Restore failed:', error);
+            return false;
         }
-        return null;
     }
 }
