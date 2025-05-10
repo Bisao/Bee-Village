@@ -43,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
         console.log('GameScene iniciada');
         this.eventCleanupList = new Set();
         this.shopSystem = new ShopSystem(this);
-        
+
         // Cleanup no shutdown da cena
         this.events.on('shutdown', this.cleanupEvents, this);
         if (!this.textures.exists('tile_grass')) {
@@ -908,7 +908,8 @@ export default class MainScene extends Phaser.Scene {
                             <div class="tool-name">${tool.name}</div>
                             <div class="tool-description">${tool.description}</div>
                         </div>
-                    `).join('')}
+                    `).join('')```text
+}
                 </div>
             </div>
         `;
@@ -1129,16 +1130,37 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-cleanupEvents() {
-        // Limpa todos os eventos registrados
-        if (this.eventCleanupList) {
-            this.eventCleanupList.forEach(cleanup => cleanup());
-            this.eventCleanupList.clear();
-        }
-        
-        // Remove listeners globais
-        this.events.off('shutdown', this.cleanupEvents);
+    shutdown() {
+        this.cleanupEvents();
+        super.shutdown();
+    }
+
+    cleanupEvents() {
+        if (!this.eventCleanupList) return;
+
+        // Clear registered events
+        this.eventCleanupList.forEach(cleanup => {
+            if (typeof cleanup === 'function') {
+                try {
+                    cleanup();
+                } catch (err) {
+                    console.warn('Error cleaning up event:', err);
+                }
+            }
+        });
+        this.eventCleanupList.clear();
+
+        // Remove global listeners
+        this.events.off('shutdown', this.cleanupEvents, this);
+        this.input.keyboard.removeAllKeys(true);
         this.input.keyboard.removeAllListeners();
         this.input.removeAllListeners();
+
+        // Stop all animations and tweens
+        this.anims.removeAll();
+        this.tweens.killAll();
+
+        // Clear any running timers
+        this.time.removeAllEvents();
     }
 }

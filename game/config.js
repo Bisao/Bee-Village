@@ -6,7 +6,12 @@ const config = {
     width: window.innerWidth,
     height: window.innerHeight,
     backgroundColor: '#1a1a1a',
-    scene: MainScene,
+    scene: {
+        key: 'MainScene',
+        active: true,
+        visible: true,
+        class: MainScene
+    },
     scale: {
         mode: Phaser.Scale.RESIZE,
         autoCenter: Phaser.Scale.CENTER_BOTH
