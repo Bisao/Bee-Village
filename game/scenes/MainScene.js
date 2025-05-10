@@ -1,9 +1,11 @@
-import Grid from '../scenes/components/Grid.js';
-import InputManager from '../scenes/components/InputManager.js';
+import Grid from './components/Grid.js';
+import InputManager from './components/InputManager.js';
+import ShopSystem from './components/ShopSystem.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
+        this.shopSystem = null;
         this.selectedBuilding = null;
         this.previewBuilding = null;
 
@@ -38,6 +40,8 @@ export default class MainScene extends Phaser.Scene {
     }
 
     create() {
+        console.log('GameScene iniciada');
+        this.shopSystem = new ShopSystem(this);
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
@@ -411,7 +415,7 @@ export default class MainScene extends Phaser.Scene {
 
     setupUIHandlers() {
         const isMobile = this.inputManager.isMobile;
-        
+
         if (isMobile) {
             import('./components/UI/MobileUI.js').then(module => {
                 const MobileUI = module.default;
@@ -760,7 +764,7 @@ export default class MainScene extends Phaser.Scene {
 
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
-            
+
             // Adiciona interatividade à casa
             const house = this.grid.buildingGrid[buildingKey].sprite;
             if (house) {
@@ -1089,6 +1093,36 @@ export default class MainScene extends Phaser.Scene {
 
         // Add update handler
         this.events.on('update', npc.updateHandler);
+    }
+
+    createTopBar() {
+        // Criar container da top bar fixo na câmera
+        const topBar = this.add.rectangle(0, 0, window.innerWidth, 50, 0x2d2d2d);
+        topBar.setOrigin(0, 0);
+        topBar.setScrollFactor(0);
+        topBar.setDepth(1000);
+
+        // Adicionar texto exemplo
+        const villageText = this.add.text(10, 15, 'My Village', {
+            fontSize: '20px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        });
+        villageText.setScrollFactor(0);
+        villageText.setDepth(1000);
+
+        // Adicionar botão da loja
+        const shopButton = this.add.text(window.innerWidth - 100, 15, '🏪', {
+            fontSize: '24px',
+            color: '#ffffff'
+        })
+        .setScrollFactor(0)
+        .setDepth(1000)
+        .setInteractive();
+
+        shopButton.on('pointerdown', () => {
+            this.shopSystem.openShop();
+        });
     }
 
 }
