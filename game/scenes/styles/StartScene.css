@@ -1,0 +1,30 @@
+
+.start-screen {
+    --primary-color: #ffffff;
+    --background-color: #2d2d2d;
+    --button-color: #4a4a4a;
+    --button-hover: #666666;
+    --transition-speed: 0.3s;
+}
+
+.start-screen button {
+    transition: all var(--transition-speed) ease;
+    transform-origin: center;
+}
+
+.start-screen button:hover {
+    transform: scale(1.05);
+}
+
+.start-screen button:active {
+    transform: scale(0.95);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.start-screen {
+    animation: fadeIn 0.5s ease-in;
+}
