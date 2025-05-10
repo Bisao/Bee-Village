@@ -909,8 +909,6 @@ export default class MainScene extends Phaser.Scene {
                 </div>
 
                 <div class="tab-content" id="inventory-tab">
-                    ```text
-
                     <div class="inventory-grid">
                         ${Array(12).fill(null).map((_, i) => `
                             <div class="inventory-slot ${npc.inventory?.[i] ? '' : 'empty'}">
