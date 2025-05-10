@@ -41,7 +41,11 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         console.log('GameScene iniciada');
+        this.eventCleanupList = new Set();
         this.shopSystem = new ShopSystem(this);
+        
+        // Cleanup no shutdown da cena
+        this.events.on('shutdown', this.cleanupEvents, this);
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
@@ -1126,3 +1130,13 @@ export default class MainScene extends Phaser.Scene {
     }
 
 }
+    cleanupEvents() {
+        // Limpa todos os eventos registrados
+        this.eventCleanupList.forEach(cleanup => cleanup());
+        this.eventCleanupList.clear();
+        
+        // Remove listeners globais
+        this.events.off('shutdown', this.cleanupEvents);
+        this.input.keyboard.removeAllListeners();
+        this.input.removeAllListeners();
+    }
