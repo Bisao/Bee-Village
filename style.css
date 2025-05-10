@@ -1,4 +1,3 @@
-
 /* Shop Styles */
 .game-modal {
     position: fixed;
@@ -367,7 +366,6 @@ html, body {
 }
 
 .loading-progress {
-    width: 0%;
     height: 100%;
     background: var(--primary-color);
     transition: width 0.3s ease;
@@ -750,7 +748,7 @@ html, body {
 
 
 /* Theme Variables */
-:root {
+::root {
   /* Cores Base */
   --color-black: #1a1a1a;
   --color-white: #FFFFFF;
@@ -1028,7 +1026,7 @@ html, body {
     font-size: 1.1em;
     cursor: pointer;
     display: none;
-    transition: all 0.3s ease;
+    transition: all all 0.3s ease;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
@@ -1367,4 +1365,321 @@ html, body {
 
 .control-btn.active {
     background: var(--success-color);
+}
+/* Base styles */
+.control-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.control-btn {
+    padding: 12px;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    background: var(--accent-color);
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.npc-inventory {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 15px;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: 8px;
+}
+
+.tool-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tool-slot:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.tool-emoji {
+    font-size: 1.5em;
+    margin-bottom: 5px;
+}
+
+.tool-name {
+    font-size: 0.8em;
+    color: var(--text-color);
+    text-align: center;
+}
+
+.tool-description {
+    font-size: 0.7em;
+    color: var(--text-color);
+    opacity: 0.8;
+    text-align: center;
+    margin-top: 4px;
+}
+
+.inventory-slot {
+    aspect-ratio: 1;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.inventory-slot:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.xp-progress {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+}
+
+.xp-text {
+    color: var(--text-color);
+    font-size: 0.8em;
+    opacity: 0.8;
+    text-align: right;
+}
+
+.mode-info {
+    margin-top: 15px;
+    font-size: 0.9em;
+}
+
+.mode-info p {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    color: var(--text-color);
+}
+
+.mode-info p.visible {
+    opacity: 1;
+}
+
+.modal-content {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 15px;
+    max-width: 400px;
+    width: 90%;
+    position: relative;
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.close-button:hover {
+    background: var(--primary-color);
+    color: var(--button-text);
+    transform: scale(1.1);
+}
+
+.npc-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.npc-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5em;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.npc-info {
+    flex: 1;
+}
+
+.theme-btn:hover {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.theme-btn.selected {
+    background: var(--primary-color);
+    color: var(--secondary-color);
+}
+
+.apply-theme-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary-color);
+    color: var(--secondary-color);
+    padding: 12px 24px;
+    border-radius: 25px;
+    border: none;
+    font-size: 1.1em;
+    cursor: pointer;
+    display: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.apply-theme-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+}
+
+.apply-theme-btn.visible {
+    display: block;
+}
+
+.theme-icon {
+    position: absolute;
+    font-size: 1.5em;
+    transition: all 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    right: 15px;
+    opacity: 0;
+}
+
+.theme-icon.visible {
+    opacity: 1;
+    right: 15px;
+}
+
+.theme-icon.play {
+    top: 26px;
+}
+
+.theme-icon.settings {
+    top: calc(50% + 30px);
+    transform: translateY(-50%);
+}
+.npc-modal {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 65px);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 3000;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.building-btn {
+    width: 50px;
+    height: 50px;
+}
+
+.building-btn img {
+    width: 40px;
+    height: 40px;
+}
+
+.building-list {
+    gap: 8px;
+}
+
+@media (max-width: 480px) {
+    #controls-panel {
+        bottom: 10px;
+        left: 10px;
+    }
+
+    .control-btn {
+        width: 50px;
+        height: 50px;
+        font-size: 24px;
+    }
+
+    .controls-grid {
+        gap: 12px;
+    }
+}
+
+.controls-grid {
+    display: grid;
+    grid-template-areas:
+        ". up ."
+        "left down right";
+    gap: 12px;
+    padding: 5px;
+}
+
+@media (max-width: 480px) {
+    #controls-panel {
+        bottom: 15px;
+        left: 15px;
+        padding: 15px;
+    }
+
+    .control-btn {
+        width: 60px;
+        height: 60px;
+        font-size: 20px;
+    }
+
+    .controls-grid {
+        gap: 8px;
+    }
+}
+
+.control-btn {
+    width: 70px;
+    height: 70px;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    background: var(--accent-color);
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    color: var(--text-color);
+    touch-action: manipulation;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
