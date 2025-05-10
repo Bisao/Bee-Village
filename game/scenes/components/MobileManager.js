@@ -95,3 +95,19 @@ export default class MobileManager {
         }
     }
 }
+export default class MobileManager {
+    constructor(scene) {
+        this.scene = scene;
+        this.isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+
+    init() {
+        if (this.isMobile) {
+            this.setupMobileControls();
+        }
+    }
+
+    setupMobileControls() {
+        // Mobile controls setup will be implemented here
+    }
+}

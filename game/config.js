@@ -1,3 +1,4 @@
+const Phaser = window.Phaser;
 import MainScene from './scenes/MainScene.js';
 import StartScene from './scenes/StartScene.js';
 import GameScene from './scenes/GameScene.js';
