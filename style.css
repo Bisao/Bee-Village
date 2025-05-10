@@ -364,31 +364,61 @@ html, body {
 
 @media (max-width: 768px) {
     #side-panel {
-        width: 95%;
-        max-width: 450px;
-        padding: 15px;
-        max-height: 85vh;
+        width: 100%;
+        height: calc(100vh - 70px);
+        padding: 10px;
+        margin: 0;
+        border-radius: 0;
+        top: 65px;
+        transform: none;
+        left: 0;
+        max-height: none;
+    }
+
+    .panel-tabs {
+        padding: 8px;
+        gap: 6px;
+        margin-bottom: 10px;
+    }
+
+    .tab-btn {
+        padding: 8px 12px;
+        font-size: 13px;
     }
 
     .building-btn {
         width: 100%;
-        min-height: 80px;
-        padding: 8px;
+        min-height: 60px;
+        padding: 6px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 8px;
+        align-items: center;
     }
 
     .building-btn img {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
     }
 
     .building-list {
-        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-        gap: 10px;
-        padding: 10px;
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 5px;
+        margin-bottom: 60px;
     }
 
     .building-info {
-        font-size: 11px;
+        font-size: 12px;
+        text-align: left;
+        border-top: none;
+        padding: 0;
+    }
+
+    .section-title {
+        font-size: 1.1em;
+        margin: 15px 0 10px;
+        padding: 0 10px 8px;
     }
 }
 
