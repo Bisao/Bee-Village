@@ -43,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
         console.log('GameScene iniciada');
         this.eventCleanupList = new Set();
         this.shopSystem = new ShopSystem(this);
-
+        
         // Cleanup no shutdown da cena
         this.events.on('shutdown', this.cleanupEvents, this);
         if (!this.textures.exists('tile_grass')) {
@@ -851,165 +851,18 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
-        // Limpar controles anteriores
+        // Cleanup previous NPC controls
         this.cleanupNPCControls();
 
-        // Criar backdrop e modal
-        const backdrop = document.createElement('div');
-        backdrop.className = 'modal-backdrop';
-        document.body.appendChild(backdrop);
-
-        const modal = document.createElement('div');
-        modal.className = 'npc-modal';
-        document.body.appendChild(modal);
-
-        // Definir o conteúdo do modal
-        modal.innerHTML = `
-            <div class="modal-content">
-                <button class="close-button">✕</button>
-                <div class="npc-header">
-                    <div class="npc-avatar">
-                        ${npc.config.emoji}
-                    </div>
-                    <div class="npc-info">
-                        <h3>${npc.config.name}</h3>
-                        <p class="npc-profession">${npc.config.profession}</p>
-                        <div class="npc-level-info">
-                            <span class="level-text">Nível ${npc.config.level || 1}</span>
-                            <div class="xp-bar">
-                                <div class="xp-progress" style="width: ${((npc.config.xp || 0) / (npc.config.maxXp || 100)) * 100}%"></div>
-                            </div>
-                            <span class="xp-text">${npc.config.xp || 0}/${npc.config.maxXp || 100} XP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-buttons">
-                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
-                        🤖 Modo Autônomo
-                    </button>
-                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
-                        🕹️ Modo Controlado
-                    </button>
-                </div>
-
-                <div class="mode-info">
-                    <p class="autonomous-info ${npc.isAutonomous ? 'visible' : ''}">
-                        🔄 NPC se move livremente
-                    </p>
-                    <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
-                        📱 Use WASD ou controles mobile
-                    </p>
-                </div>
-
-                <div class="npc-tabs">
-                    <button class="tab-button active" data-tab="inventory">🎒 Inventário</button>
-                    <button class="tab-button" data-tab="jobs">💼 Trabalhos</button>
-                    <button class="tab-button" data-tab="skills">🌟 Skillss</button>
-                </div>
-
-                <div class="tab-content" id="inventory-tab">
-                    <div class="inventory-grid">
-                        ${Array(12).fill(null).map((_, i) => `
-                            <div class="inventory-slot ${npc.inventory?.[i] ? '' : 'empty'}">
-                                ${npc.inventory?.[i] || ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="tab-content" id="jobs-tab" style="display: none;">
-                    <div class="jobs-list">
-                        <div class="job-item">
-                            <span class="job-icon">🌾</span>
-                            <span class="job-name">Agricultura</span>
-                            <div class="job-progress"><div style="width: 60%"></div></div>
-                        </div>
-                        <div class="job-item">
-                            <span class="job-icon">⛏️</span>
-                            <span class="job-name">Mineração</span>
-                            <div class="job-progress"><div style="width: 30%"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="skills-tab" style="display: none;">
-                    <div class="skills-tree">
-                        <div class="skill-branch">
-                            <div class="skill-node active">🌱 Cultivo Básico</div>
-                            <div class="skill-node">🌿 Cultivo Avançado</div>
-                            <div class="skill-node locked">🌳 Mestre Agricultor</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Adicionar eventos aos botões
-        modal.querySelector('.close-button').onclick = () => {
-            modal.remove();
-            backdrop.remove();
-        };
-
-        modal.querySelector('#autonomous').onclick = () => {
-            this.tweens.add({
-                targets: this.cameras.main,
-                zoom: 1.5,
-                duration: 500,
-                ease: 'Power2',
-                onComplete: () => {
-                    npc.isAutonomous = true;
-                    this.currentControlledNPC = null;
-                    this.startNPCMovement(npc);
-                    if (this.inputManager.isMobile) {
-                        document.getElementById('controls-panel').style.display = 'none';
-                    }
-                }
-            });
-            this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
-            modal.remove();
-            backdrop.remove();
-        };
-
-        modal.querySelector('#controlled').onclick = () => {
-            npc.isAutonomous = false;
-            this.currentControlledNPC = npc;
-            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
-            this.enablePlayerControl(npc);
-            if (this.inputManager.isMobile) {
-                const controlsPanel = document.getElementById('controls-panel');
-                if (controlsPanel) {
-                    controlsPanel.style.display = 'flex';
-                    controlsPanel.style.zIndex = '2000';
-                }
-            }
-            modal.remove();
-            backdrop.remove();
-        };
-
-        // Adicionar eventos das tabs
-        const tabs = modal.querySelectorAll('.tab-button');
-        tabs.forEach(tab => {
-            tab.onclick = () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-
-                const tabContents = modal.querySelectorAll('.tab-content');
-                tabContents.forEach(content => content.style.display = 'none');
-
-                const targetTab = modal.querySelector(`#${tab.dataset.tab}-tab`);
-                if (targetTab) targetTab.style.display = 'block';
-            };
-        });
+        // Exemplo de inventário (pode ser expandido para um sistema real)
         const inventory = [
             '🌾', '🥕', '⛏️', null,
             '🪓', '🎣', null, null,
             '💎', null, null, null
         ];
 
-        // Update existing modal content
+        const modal = document.createElement('div');
+        modal.className = 'npc-modal';
         modal.innerHTML = `
             <div class="modal-content">
                 <button class="close-button">✕</button>
@@ -1046,57 +899,6 @@ export default class MainScene extends Phaser.Scene {
                     <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
                         📱 Use WASD ou controles mobile
                     </p>
-                </div>
-
-                <div class="npc-tabs">
-                    <button class="tab-button active" data-tab="inventory">🎒 Inventário</button>
-                    <button class="tab-button" data-tab="jobs">💼 Trabalhos</button>
-                    <button class="tab-button" data-tab="skills">🌟 Skills</button>
-                </div>
-
-                <div class="tab-content" id="inventory-tab">
-                    <div class="inventory-grid">
-                        ${Array(12).fill(null).map((_, i) => `
-                            <div class="inventory-slot ${inventory[i] ? '' : 'empty'}">
-                                ${inventory[i] || ''}
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-
-                <div class="tab-content" id="jobs-tab" style="display: none;">
-                    <div class="jobs-list">
-                        <div class="job-item">
-                            <span class="job-icon">🌾</span>
-                            <span class="job-name">Agricultura</span>
-                            <div class="job-progress"><div style="width: 60%"></div></div>
-                        </div>
-                        <div class="job-item">
-                            <span class="job-icon">⛏️</span>
-                            <span class="job-name">Mineração</span>
-                            <div class="job-progress"><div style="width: 30%"></div></div>
-                        </div>
-                        <div class="job-item">
-                            <span class="job-icon">🎣</span>
-                            <span class="job-name">Pesca</span>
-                            <div class="job-progress"><div style="width: 45%"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-content" id="skills-tab" style="display: none;">
-                    <div class="skills-tree">
-                        <div class="skill-branch">
-                            <div class="skill-node active">🌱 Cultivo Básico</div>
-                            <div class="skill-node">🌿 Cultivo Avançado</div>
-                            <div class="skill-node locked">🌳 Mestre Agricultor</div>
-                        </div>
-                        <div class="skill-branch">
-                            <div class="skill-node active">⛏️ Mineração Básica</div>
-                            <div class="skill-node locked">💎 Mineração Avançada</div>
-                            <div class="skill-node locked">⚒️ Mestre Minerador</div>
-                        </div>
-                    </div>
                 </div>
 
                 <div class="npc-inventory">
@@ -1295,15 +1097,6 @@ export default class MainScene extends Phaser.Scene {
 
         // Add update handler
         this.events.on('update', npc.updateHandler);
-    }
-
-    cleanupNPCControls() {
-        // Remove existing modal and backdrop if they exist
-        const existingModal = document.querySelector('.npc-modal');
-        const existingBackdrop = document.querySelector('.modal-backdrop');
-
-        if (existingModal) existingModal.remove();
-        if (existingBackdrop) existingBackdrop.remove();
     }
 
     createTopBar() {

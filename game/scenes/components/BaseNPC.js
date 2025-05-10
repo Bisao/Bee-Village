@@ -34,8 +34,7 @@ export default class BaseNPC {
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
-        this.sprite.setInteractive({ useHandCursor: true });
-        this.sprite.on('pointerdown', () => this.showControls());
+        this.sprite.setInteractive();
         
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
@@ -84,9 +83,7 @@ export default class BaseNPC {
     }
 
     showControls() {
-        if (this.scene) {
-            this.scene.showNPCControls(this);
-        }
+        this.scene.showNPCControls(this);
     }
 
     startAutonomousMovement() {
