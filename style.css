@@ -559,10 +559,10 @@ html, body {
 
 .building-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(min(120px, 20vw), 1fr));
-    gap: clamp(8px, 1.5vw, 15px);
+    grid-template-columns: repeat(auto-fill, minmax(min(100px, 18vw), 1fr));
+    gap: clamp(8px, 1.5vw, 12px);
     width: 100%;
-    padding: clamp(5px, 1vw, 10px);
+    padding: clamp(5px, 1vw, 8px);
 }
 
 .building-btn {
