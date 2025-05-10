@@ -1,4 +1,5 @@
 import BaseScene from './BaseScene.js';
+import Grid from './components/Grid.js';
 
 export default class GameScene extends BaseScene {
     constructor() {
