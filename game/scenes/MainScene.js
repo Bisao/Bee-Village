@@ -854,7 +854,11 @@ export default class MainScene extends Phaser.Scene {
         // Limpar controles anteriores
         this.cleanupNPCControls();
 
-        // Criar modal de controle
+        // Criar backdrop e modal
+        const backdrop = document.createElement('div');
+        backdrop.className = 'modal-backdrop';
+        document.body.appendChild(backdrop);
+        
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
         
@@ -943,7 +947,10 @@ export default class MainScene extends Phaser.Scene {
         document.body.appendChild(modal);
 
         // Adicionar eventos aos botões
-        modal.querySelector('.close-button').onclick = () => modal.remove();
+        modal.querySelector('.close-button').onclick = () => {
+            modal.remove();
+            backdrop.remove();
+        };
 
         modal.querySelector('#autonomous').onclick = () => {
             this.tweens.add({
