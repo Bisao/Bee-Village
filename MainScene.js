@@ -93,3 +93,41 @@ autoSave() {
             }
         }
     }
+
+createTopBar() {
+        // Criar container da top bar fixo na câmera
+        const topBar = this.add.rectangle(0, 0, window.innerWidth, 50, 0x2d2d2d);
+        topBar.setOrigin(0, 0);
+        topBar.setScrollFactor(0);
+        topBar.setDepth(1000);
+
+        // Adicionar texto exemplo
+        const villageText = this.add.text(10, 15, '🌻 My Village', {
+            fontSize: '20px',
+            color: '#ffffff',
+            fontFamily: 'Arial'
+        });
+        villageText.setScrollFactor(0);
+        villageText.setDepth(1000);
+
+        // Adicionar botão da loja
+        const shopButton = this.add.text(window.innerWidth - 50, 15, '🏪', {
+            fontSize: '24px',
+            color: '#ffffff'
+        })
+        .setScrollFactor(0)
+        .setDepth(1000)
+        .setInteractive();
+
+        shopButton.on('pointerdown', () => {
+            this.shopSystem.openShop();
+        });
+
+        shopButton.on('pointerover', () => {
+            shopButton.setScale(1.1);
+        });
+
+        shopButton.on('pointerout', () => {
+            shopButton.setScale(1);
+        });
+    }
