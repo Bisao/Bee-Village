@@ -1,5 +1,4 @@
-import Phaser from 'phaser';
-import AssetCacheManager from '../services/AssetCacheManager.js';
+import AssetCacheManager from '../../game/services/AssetCacheManager.js';
 
 export default class BaseScene extends Phaser.Scene {
     constructor(config) {
