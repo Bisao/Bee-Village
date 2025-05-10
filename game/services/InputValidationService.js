@@ -3,14 +3,26 @@ export default class InputValidationService {
     constructor() {
         this.lastActionTimestamp = {};
         this.actionLimits = {
-            movement: 100, // ms entre movimentos
-            building: 500, // ms entre construções
-            shop: 1000 // ms entre interações com loja
+            movement: 100,
+            building: 500,
+            shop: 1000,
+            resource: 300
         };
     }
 
-    validateGridPosition(x, y, gridWidth, gridHeight) {
-        return x >= 0 && x < gridWidth && y >= 0 && y < gridHeight;
+    validateInput(input, type) {
+        if (!input) return false;
+        
+        switch(type) {
+            case 'position':
+                return Number.isInteger(input.x) && Number.isInteger(input.y);
+            case 'resource':
+                return Number.isInteger(input.amount) && input.amount > 0;
+            case 'building':
+                return typeof input.type === 'string' && input.type.length > 0;
+            default:
+                return false;
+        }
     }
 
     validateAction(actionType, entityId) {
@@ -20,39 +32,36 @@ export default class InputValidationService {
         const limit = this.actionLimits[actionType];
 
         if (now - lastAction < limit) {
-            return false;
+            return {
+                valid: false,
+                cooldown: limit - (now - lastAction),
+                reason: `Aguarde ${((limit - (now - lastAction)) / 1000).toFixed(1)}s`
+            };
         }
 
         this.lastActionTimestamp[key] = now;
-        return true;
+        return { valid: true };
     }
 
     validateBuildingPlacement(gridX, gridY, buildingType, resources) {
-        if (!this.validateAction('building', 'player')) {
-            return { valid: false, reason: 'Aguarde para construir novamente' };
+        const validation = this.validateAction('building', 'player');
+        if (!validation.valid) {
+            return validation;
         }
 
-        // Adicione suas validações específicas de construção aqui
-        return { valid: true };
-    }
-
-    validateMovement(entity, newX, newY, grid) {
-        if (!this.validateAction('movement', entity.id)) {
-            return { valid: false, reason: 'Movimento muito rápido' };
-        }
-
-        if (!this.validateGridPosition(newX, newY, grid.width, grid.height)) {
+        if (!this.validateInput({ x: gridX, y: gridY }, 'position')) {
             return { valid: false, reason: 'Posição inválida' };
         }
 
-        return { valid: true };
-    }
-
-    validateShopInteraction(player, item) {
-        if (!this.validateAction('shop', player.id)) {
-            return { valid: false, reason: 'Aguarde para interagir com a loja' };
+        if (!this.validateInput({ type: buildingType }, 'building')) {
+            return { valid: false, reason: 'Tipo de construção inválido' };
         }
 
         return { valid: true };
+    }
+
+    resetValidation(actionType, entityId) {
+        const key = `${actionType}_${entityId}`;
+        delete this.lastActionTimestamp[key];
     }
 }
