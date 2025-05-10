@@ -1,4 +1,5 @@
 import MobileManager from './components/MobileManager.js';
+import AssetCacheManager from '../services/AssetCacheManager.js';
 
 export default class BaseScene extends Phaser.Scene {
     constructor(config) {
@@ -16,7 +17,7 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     create() {
-        this.assetManager = new AssetCacheManager(this);
+        this.assetCache = new AssetCacheManager(this);
         this.screenDimensions = {
             width: window.innerWidth,
             height: window.innerHeight
