@@ -1,3 +1,5 @@
+import MobileManager from './components/MobileManager.js';
+
 export default class BaseScene extends Phaser.Scene {
     constructor(config) {
         super(config);
@@ -10,9 +12,6 @@ export default class BaseScene extends Phaser.Scene {
     init() {
         if (!this.mobileManager) {
             this.mobileManager = new MobileManager(this);
-        }
-        if (this.assetCache && this.assetCache.preloadAssets) {
-            this.assetCache.preloadAssets(this);
         }
     }
 
