@@ -1129,14 +1129,16 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-}
-    cleanupEvents() {
+cleanupEvents() {
         // Limpa todos os eventos registrados
-        this.eventCleanupList.forEach(cleanup => cleanup());
-        this.eventCleanupList.clear();
+        if (this.eventCleanupList) {
+            this.eventCleanupList.forEach(cleanup => cleanup());
+            this.eventCleanupList.clear();
+        }
         
         // Remove listeners globais
         this.events.off('shutdown', this.cleanupEvents);
         this.input.keyboard.removeAllListeners();
         this.input.removeAllListeners();
     }
+}
