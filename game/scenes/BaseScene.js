@@ -1,6 +1,6 @@
 import { MobileManager } from './components/MobileManager.js';
 import { AssetCacheManager } from '../services/AssetCacheManager.js';
-import { ServiceManager } from '../services/ServiceManager.js';
+import ServiceManager from '../services/ServiceManager.js';
 
 export default class BaseScene extends Phaser.Scene {
     constructor(config) {
