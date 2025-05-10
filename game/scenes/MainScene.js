@@ -916,6 +916,9 @@ export default class MainScene extends Phaser.Scene {
         document.body.appendChild(modal);
 
         modal.querySelector('#autonomous').onclick = () => {
+            // Primeiro limpa controles anteriores
+            this.cleanupNPCControls();
+            
             // Transição suave da câmera
             this.tweens.add({
                 targets: this.cameras.main,
@@ -926,28 +929,44 @@ export default class MainScene extends Phaser.Scene {
                     npc.isAutonomous = true;
                     this.cameras.main.stopFollow();
                     this.startNPCMovement(npc);
-                    // Hide controls panel on mobile
+                    // Esconde controles mobile
                     if (this.inputManager.isMobile) {
                         document.getElementById('controls-panel').style.display = 'none';
                     }
                 }
             });
-            this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
+            this.showFeedback(`${npc.config.name} agora está em modo autônomo!`, true);
             modal.remove();
         };
 
         modal.querySelector('#controlled').onclick = () => {
+            // Primeiro limpa qualquer NPC controlado anterior
+            this.cleanupNPCControls();
+            
             npc.isAutonomous = false;
             this.currentControlledNPC = npc;
-            // Make camera follow the NPC
-            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
+            
+            // Configura câmera com zoom mais próximo
+            this.tweens.add({
+                targets: this.cameras.main,
+                zoom: 2,
+                duration: 500,
+                ease: 'Power2',
+                onComplete: () => {
+                    this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
+                }
+            });
+            
             this.enablePlayerControl(npc);
-            // Show controls panel on mobile
+            
+            // Mostra controles mobile
             const controlsPanel = document.getElementById('controls-panel');
             if (this.inputManager.isMobile && controlsPanel) {
                 controlsPanel.style.display = 'flex';
                 controlsPanel.style.zIndex = '2000';
             }
+            
+            this.showFeedback(`Você está controlando ${npc.config.name}!`, true);
             modal.remove();
         };
 

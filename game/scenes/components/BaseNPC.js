@@ -99,27 +99,56 @@ export default class BaseNPC {
 
         const directions = this.scene.getAvailableDirections(this.gridX, this.gridY);
         if (directions.length === 0) {
-            // Se não houver direções disponíveis, tentar novamente em 1 segundo
             this.scene.time.delayedCall(1000, () => this.moveRandomly());
             return;
         }
 
-        // Priorizar movimentos que não retornam à posição anterior
-        const filteredDirections = directions.filter(dir => {
+        // Sistema de movimento mais inteligente
+        let bestDirections = directions.filter(dir => {
             const newX = this.gridX + dir.x;
             const newY = this.gridY + dir.y;
-            return !(this.lastPosition && 
-                    this.lastPosition.x === newX && 
-                    this.lastPosition.y === newY);
+            
+            // Evita voltar para posição anterior
+            if (this.lastPosition && 
+                this.lastPosition.x === newX && 
+                this.lastPosition.y === newY) {
+                return false;
+            }
+            
+            // Evita ficar muito perto de outros NPCs
+            const nearbyNPCs = this.checkNearbyNPCs(newX, newY);
+            if (nearbyNPCs) return false;
+            
+            // Evita ir muito longe de casa
+            const distanceFromHome = Math.abs(this.homeX - newX) + Math.abs(this.homeY - newY);
+            if (distanceFromHome > 5) return false;
+            
+            return true;
         });
 
-        const directionToUse = filteredDirections.length > 0 ? 
-            filteredDirections[Math.floor(Math.random() * filteredDirections.length)] :
-            directions[Math.floor(Math.random() * directions.length)];
+        // Se não houver direções ideais, usa qualquer direção disponível
+        if (bestDirections.length === 0) {
+            bestDirections = directions;
+        }
 
-        // Guardar posição atual antes de mover
+        const chosenDirection = bestDirections[Math.floor(Math.random() * bestDirections.length)];
+        
+        // Atualiza última posição e move
         this.lastPosition = { x: this.gridX, y: this.gridY };
-        this.moveTo(this.gridX + directionToUse.x, this.gridY + directionToUse.y);
+        this.moveTo(this.gridX + chosenDirection.x, this.gridY + chosenDirection.y);
+    }
+
+    checkNearbyNPCs(x, y) {
+        const grid = this.scene.grid.buildingGrid;
+        for (let dx = -1; dx <= 1; dx++) {
+            for (let dy = -1; dy <= 1; dy++) {
+                const key = `${x + dx},${y + dy}`;
+                if (grid[key] && grid[key].npc && grid[key].npc !== this) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     checkIfInHouse() {
