@@ -43,7 +43,7 @@ export default class MainScene extends Phaser.Scene {
         console.log('GameScene iniciada');
         this.eventCleanupList = new Set();
         this.shopSystem = new ShopSystem(this);
-        
+
         // Cleanup no shutdown da cena
         this.events.on('shutdown', this.cleanupEvents, this);
         if (!this.textures.exists('tile_grass')) {
@@ -858,66 +858,12 @@ export default class MainScene extends Phaser.Scene {
         const backdrop = document.createElement('div');
         backdrop.className = 'modal-backdrop';
         document.body.appendChild(backdrop);
-        
+
         const modal = document.createElement('div');
         modal.className = 'npc-modal';
-        
+
         // Definir o conteúdo do modal
         modal.innerHTML = `
-            <div class="modal-content">
-                <button class="close-button">✕</button>
-                <div class="npc-header">
-                    <div class="npc-avatar">
-                        ${npc.config.emoji}
-                    </div>
-                    <div class="npc-info">
-                        <h3>${npc.config.name}</h3>
-                        <p class="npc-profession">${npc.config.profession}</p>
-                        <div class="npc-level-info">
-                            <span class="level-text">Nível ${npc.config.level}</span>
-                            <div class="xp-bar">
-                                <div class="xp-progress" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
-                            </div>
-                            <span class="xp-text">${npc.config.xp}/${npc.config.maxXp} XP</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="control-buttons">
-                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
-                        🤖 Modo Autônomo
-                    </button>
-                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
-                        🕹️ Modo Controlado
-                    </button>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Adicionar eventos
-        modal.querySelector('.close-button').onclick = () => {
-            modal.remove();
-            backdrop.remove();
-        };
-
-        modal.querySelector('#autonomous').onclick = () => {
-            npc.isAutonomous = true;
-            this.cameras.main.stopFollow();
-            this.startNPCMovement(npc);
-            modal.remove();
-            backdrop.remove();
-        };
-
-        modal.querySelector('#controlled').onclick = () => {
-            npc.isAutonomous = false;
-            this.currentControlledNPC = npc;
-            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
-            this.enablePlayerControl(npc);
-            modal.remove();
-            backdrop.remove();
-        };
             <div class="modal-content">
                 <button class="close-button">✕</button>
                 <div class="npc-header">
@@ -962,6 +908,8 @@ export default class MainScene extends Phaser.Scene {
                 </div>
 
                 <div class="tab-content" id="inventory-tab">
+                    ```text
+
                     <div class="inventory-grid">
                         ${Array(12).fill(null).map((_, i) => `
                             <div class="inventory-slot ${npc.inventory?.[i] ? '' : 'empty'}">
@@ -1023,6 +971,7 @@ export default class MainScene extends Phaser.Scene {
             });
             this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
             modal.remove();
+            backdrop.remove();
         };
 
         modal.querySelector('#controlled').onclick = () => {
@@ -1038,6 +987,7 @@ export default class MainScene extends Phaser.Scene {
                 }
             }
             modal.remove();
+            backdrop.remove();
         };
 
         // Adicionar eventos das tabs
@@ -1046,10 +996,10 @@ export default class MainScene extends Phaser.Scene {
             tab.onclick = () => {
                 tabs.forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
+
                 const tabContents = modal.querySelectorAll('.tab-content');
                 tabContents.forEach(content => content.style.display = 'none');
-                
+
                 const targetTab = modal.querySelector(`#${tab.dataset.tab}-tab`);
                 if (targetTab) targetTab.style.display = 'block';
             };
@@ -1352,7 +1302,7 @@ export default class MainScene extends Phaser.Scene {
         // Remove existing modal and backdrop if they exist
         const existingModal = document.querySelector('.npc-modal');
         const existingBackdrop = document.querySelector('.modal-backdrop');
-        
+
         if (existingModal) existingModal.remove();
         if (existingBackdrop) existingBackdrop.remove();
     }
