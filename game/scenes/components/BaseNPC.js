@@ -229,7 +229,7 @@ export default class BaseNPC {
                 const baseY = this.scene.cameras.main.centerY + tileY;
                 return targetIndex === 0 ? baseY - 32 : baseY - 64;
             },
-            duration: 600,
+            duration: 1000,
             ease: 'Linear',
             onComplete: () => {
                 this.gridX = newX;

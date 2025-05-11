@@ -4,8 +4,8 @@ export default class LumberSystem {
         this.scene = scene;
         this.isWorking = false;
         this.currentTree = null;
-        this.cuttingTime = 5000; // 5 segundos para cortar
-        this.treeRespawnTime = 40000; // 40 segundos para reaparecer
+        this.cuttingTime = 8000; // 8 segundos para cortar
+        this.treeRespawnTime = 60000; // 60 segundos para reaparecer
         this.maxAttempts = 5; // Máximo de tentativas para encontrar árvore
         this.resources = {
             'wood': '🪵',
@@ -15,7 +15,7 @@ export default class LumberSystem {
         // Som de corte
         this.cutSound = {
             time: 0,
-            interval: 800 // Intervalo entre cada "Toc"
+            interval: 1200 // Intervalo entre cada "Toc"
         };
     }
 
