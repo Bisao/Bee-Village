@@ -419,8 +419,7 @@ export default class MainScene extends Phaser.Scene {
         const trees = [
             { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
             { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
-            { key: 'tree_fruit', path: 'game/assets/trees/tree_fruit.png' },
-            { key: 'tree_autumn', path: 'game/assets/trees/tree_autumn.png' }
+            { key: 'tree_fruit', path: 'game/assets/trees/tree_autumn.png' }
         ];
 
         trees.forEach(tree => {
@@ -648,15 +647,18 @@ export default class MainScene extends Phaser.Scene {
             if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
                     if (this.selectedBuilding === 'lumberHouse' && npc) {
-                        // Delay para garantir que o NPC esteja pronto
-                        this.time.delayedCall(1000, () => {
-                            if (npc && npc.config && !npc.lumberSystem) {
-                                npc.lumberSystem = new LumberSystem(this);
-                                npc.lumberSystem.startWorking(npc);
-                                console.log('Lenhador iniciou o trabalho:', npc.config.name);
-                            }
-                        });
-                    }
+                    // Inicializa o sistema de trabalho do lenhador
+                    npc.lumberSystem = new LumberSystem(this);
+
+                    // Aguarda o NPC sair da casa antes de começar a trabalhar
+                    this.time.delayedCall(12000, () => {
+                        if (npc && npc.config) {
+                            npc.isAutonomous = false; // Desativa movimento aleatório
+                            npc.lumberSystem.startWorking(npc);
+                            console.log('Lenhador iniciou o trabalho:', npc.config.name);
+                        }
+                    });
+                }
                 });
             }
 
