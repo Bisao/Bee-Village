@@ -651,9 +651,9 @@ export default class MainScene extends Phaser.Scene {
                     npc.lumberSystem = new LumberSystem(this);
 
                     // Aguarda o NPC sair da casa antes de começar a trabalhar
-                    this.time.delayedCall(12000, () => {
+                    this.time.delayedCall(2000, () => {
                         if (npc && npc.config) {
-                            npc.isAutonomous = false; // Desativa movimento aleatório
+                            npc.isAutonomous = false;
                             npc.lumberSystem.startWorking(npc);
                             console.log('Lenhador iniciou o trabalho:', npc.config.name);
                         }

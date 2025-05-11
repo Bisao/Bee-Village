@@ -81,10 +81,6 @@ export default class BaseNPC {
                     onStart: () => this.sprite.setVisible(true)
                 });
             }
-            
-            if (this.isAutonomous) {
-                this.startAutonomousMovement();
-            }
         });
     }
 
