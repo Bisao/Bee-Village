@@ -112,10 +112,11 @@ autoSave() {
                 type: 'building',
                 buildingType: this.selectedBuilding,
                 gridX: gridX,
-                gridY: gridY
+                gridY: gridY,
+                resources: []
             };
 
-            // Add click handler for silo
+            // Adicionar interatividade ao silo
             if (this.selectedBuilding === 'silo') {
                 building.setInteractive();
                 building.on('pointerdown', () => this.showSiloModal([
@@ -129,7 +130,7 @@ autoSave() {
                 ]));
             }
 
-            // Keep last 3 auto-saves as backup
+            // Create NPC for each house if it's a valid house type
             const backupKey = `gameState_backup_${timestamp}`;
             const backups = JSON.parse(localStorage.getItem('gameStateBackups') || '[]');
             backups.unshift(backupKey);
