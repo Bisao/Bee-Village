@@ -901,7 +901,7 @@ export default class MainScene extends Phaser.Scene {
 
         const modal = document.createElement('div');
         modal.className ='npc-modal';
-        modal.innerHTML = `
+        modal.innerHTML =`
             <div class="modal-content">
                 <button class="close-button">✕</button>
                 <div class="npc-header">
