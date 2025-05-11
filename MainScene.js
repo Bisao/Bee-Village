@@ -231,3 +231,8 @@ showSiloModal(resources) {
     }
 
     enablePlayerControl(npc) {
+}
+
+placeEnvironmentObjects() {
+        // Removed initial structure placement
+    }
