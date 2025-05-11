@@ -58,6 +58,20 @@ export default class MainScene extends Phaser.Scene {
 
         this.placeEnvironmentObjects();
         
+        // Posiciona a casa do lenhador inicial
+        this.placeBuilding(1, 1, 
+            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
+            'lumberHouse'
+        );
+        
+        // Posiciona o silo inicial
+        this.placeBuilding(3, 1,
+            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
+            'silo'
+        );
+        
         // Adicionar casa de lenhador inicial
         this.placeBuilding(1, 1, 
             this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
