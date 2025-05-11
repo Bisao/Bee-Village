@@ -526,7 +526,7 @@ html, body {
 .building-btn {
     position: relative;
     width: 100%;
-    min-height: 140px;
+    min-height: 160px;
     padding: 8px 5px;
     background: var(--accent-color);
     border: 2px solid var(--primary-color);
@@ -542,11 +542,12 @@ html, body {
 .building-info {
     width: 100%;
     margin-top: 2px;
-    padding: 4px;
+    padding: 6px;
     border-top: 1px solid var(--primary-color);
-    font-size: 11px;
+    font-size: 0.85em;
     color: var(--text-color);
     text-align: left;
+    line-height: 1.4;
 }
 
 .building-info p {
