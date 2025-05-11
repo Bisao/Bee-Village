@@ -395,12 +395,13 @@ export default class MainScene extends Phaser.Scene {
 
         // Load buildings
         const buildings = [
-            'chickenHouse|ChickenHouse',
-            'cowHouse|CowHouse', 
+            'silo|Silo',
+            'well|WaterWell',
+            'windmill|Windmill',
             'farmerHouse|FarmerHouse',
-            'minerHouse|MinerHouse',
-            'pigHouse|PigHouse',
-            'fishermanHouse|fishermanHouse'
+            'fishermanHouse|FishermanHouse',
+            'lumberHouse|LumberJackHouse',
+            'minerHouse|MinerHouse'
         ];
 
         buildings.forEach(building => {
