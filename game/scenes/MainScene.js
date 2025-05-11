@@ -985,8 +985,14 @@ export default class MainScene extends Phaser.Scene {
                     if (!npc.lumberSystem) {
                         npc.lumberSystem = new LumberSystem(this);
                     }
+                    npc.isAutonomous = false;
+                    npc.currentJob = 'lumber';
+                    npc.config.emoji = '🪓';
+                    npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                     npc.lumberSystem.startWorking(npc);
                     modal.remove();
+                    
+                    console.log('Iniciando trabalho de lenhador:', npc.config.name);
                 }
             });
         });
