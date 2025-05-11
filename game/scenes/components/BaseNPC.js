@@ -283,15 +283,8 @@ export default class BaseNPC {
         this.nameText.destroy();
     }
 
-    constructor(scene, config) {
-        this.scene = scene;
-        this.config = config;
-        this.inventory = {
-            wood: 0,
-            fish: 0,
-            crop: 0,
-            maxCapacity: 5 // Capacidade máxima por tipo de item
-        };
+    addItemToStorage(itemType) {
+        if (this.inventory[itemType] < this.inventory.maxCapacity) {
             this.inventory[itemType]++;
             
             // Feedback visual
