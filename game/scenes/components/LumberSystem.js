@@ -4,7 +4,7 @@ export default class LumberSystem {
         this.scene = scene;
         this.isWorking = false;
         this.currentTree = null;
-        this.cuttingTime = 8000; // 8 segundos para cortar
+        this.cuttingTime = 15000; // 15 segundos para cortar
         this.treeRespawnTime = 60000; // 60 segundos para reaparecer
         this.maxAttempts = 5; // Máximo de tentativas para encontrar árvore
         this.resources = {
@@ -385,7 +385,7 @@ export default class LumberSystem {
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
         console.log('Depositando recursos no silo...');
-        await this.waitFor(1500); // Pausa antes de depositar
+        await this.waitFor(3000); // Pausa antes de depositar
         
         // Depositar madeira no silo
         if (npc.inventory.wood > 0) {
