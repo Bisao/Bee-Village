@@ -56,15 +56,19 @@ export default class LumberSystem {
         while (this.isWorking) {
             try {
                 console.log('Iniciando ciclo de trabalho do lenhador');
+                await this.waitFor(1000); // Pausa inicial do ciclo
                 
                 // 1. Procurar árvore disponível
+                npc.config.emoji = '🔍';
+                npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                 const tree = this.findNearestTree(npc);
                 if (!tree) {
                     console.log('Nenhuma árvore disponível');
-                    await this.waitFor(2000);
+                    await this.waitFor(3000); // Aumenta espera quando não há árvores
                     continue;
                 }
                 console.log('Árvore encontrada em:', tree.gridX, tree.gridY);
+                await this.waitFor(1000); // Pausa após encontrar árvore
 
                 // 2. Validar posição da árvore
                 if (!this.validateTreePosition(tree)) {
@@ -299,11 +303,11 @@ export default class LumberSystem {
                     targets: text,
                     y: text.y - 15,
                     alpha: 0,
-                    duration: 500,
+                    duration: 800,
                     onComplete: () => text.destroy()
                 });
             }
-        }, 2000); // Intervalo maior entre cada "Toc"
+        }, 2500); // Intervalo maior entre cada "Toc"
 
         await this.waitFor(this.cuttingTime);
         
@@ -381,6 +385,7 @@ export default class LumberSystem {
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
         console.log('Depositando recursos no silo...');
+        await this.waitFor(1500); // Pausa antes de depositar
         
         // Depositar madeira no silo
         if (npc.inventory.wood > 0) {
