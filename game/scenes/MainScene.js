@@ -646,13 +646,12 @@ export default class MainScene extends Phaser.Scene {
 
             // Create NPC for each house if it's a valid house type
             if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
-                const npc = this.createFarmerNPC(gridX, gridY, worldX, worldY);
-
-                // Iniciar sistema de trabalho específico
-                if (this.selectedBuilding === 'lumberHouse') {
-                    const lumberSystem = new LumberSystem(this);
-                    lumberSystem.startWorking(npc);
-                }
+                this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
+                    if (this.selectedBuilding === 'lumberHouse' && npc) {
+                        const lumberSystem = new LumberSystem(this);
+                        lumberSystem.startWorking(npc);
+                    }
+                });
             }
 
             // Efeito de partículas
@@ -780,9 +779,9 @@ export default class MainScene extends Phaser.Scene {
             }
         });
     }
-    createFarmerNPC(houseX, houseY, worldX, worldY) {
+    async createFarmerNPC(houseX, houseY, worldX, worldY) {
         // Import BaseNPC if not already imported
-        import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
+        return import('./components/BaseNPC.js').then(({ default: BaseNPC }) => {
             // Get building type and name data
             const buildingKey = `${houseX},${houseY}`;
             const buildingType = this.grid.buildingGrid[buildingKey]?.buildingType;
@@ -811,6 +810,7 @@ export default class MainScene extends Phaser.Scene {
                 house.setInteractive();
                 house.on('pointerdown', () => this.showNPCControls(npc));
             }
+            return npc;
         });
     }
 
