@@ -229,8 +229,8 @@ export default class BaseNPC {
                 const baseY = this.scene.cameras.main.centerY + tileY;
                 return targetIndex === 0 ? baseY - 32 : baseY - 64;
             },
-            duration: 800,
-            ease: 'Quad.easeInOut',
+            duration: 1000,
+            ease: 'Linear',
             onComplete: () => {
                 this.gridX = newX;
                 this.gridY = newY;
@@ -239,15 +239,6 @@ export default class BaseNPC {
                 this.isMoving = false;
                 this.sprite.stop();
                 this.checkIfInHouse();
-
-                // Adiciona uma pequena animação de "bounce" ao parar
-                this.scene.tweens.add({
-                    targets: [this.sprite, this.nameText],
-                    y: '-=2',
-                    duration: 100,
-                    yoyo: true,
-                    ease: 'Quad.easeOut'
-                });
             }
         });
     }
