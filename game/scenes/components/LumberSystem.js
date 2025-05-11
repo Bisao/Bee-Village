@@ -270,6 +270,15 @@ export default class LumberSystem {
             return;
         }
 
+        // Walk to tree first
+        const tileNextToTree = {
+            x: tree.gridX + 1,
+            y: tree.gridY
+        };
+        
+        await npc.moveTo(tileNextToTree.x, tileNextToTree.y);
+        
+        // Start cutting after reaching the tree
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         console.log('Iniciando corte da árvore em:', tree.gridX, tree.gridY);
