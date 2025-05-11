@@ -5,6 +5,7 @@ export default class LumberSystem {
         this.isWorking = false;
         this.currentTree = null;
         this.cuttingTime = 5000; // 5 segundos para cortar
+        this.treeRespawnTime = 40000; // 40 segundos para reaparecer
         this.resources = {
             'wood': '🪵',
             'log': '🌳'
@@ -46,14 +47,24 @@ export default class LumberSystem {
     }
 
     findNearestTree(npc) {
-        // Implementar lógica para encontrar árvore mais próxima
-        // Retorna coordenadas da árvore {x, y}
+        // Procura no buildingGrid por árvores
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value.type === 'tree' && !value.isCut) {
+                const [x, y] = key.split(',').map(Number);
+                return { gridX: x, gridY: y, sprite: value.sprite };
+            }
+        }
         return null;
     }
 
     findNearestSilo(npc) {
-        // Implementar lógica para encontrar silo mais próximo
-        // Retorna coordenadas do silo {x, y}
+        // Procura no buildingGrid por silos
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value.buildingType === 'silo') {
+                const [x, y] = key.split(',').map(Number);
+                return { gridX: x, gridY: y, sprite: value.sprite };
+            }
+        }
         return null;
     }
 
@@ -70,8 +81,8 @@ export default class LumberSystem {
         
         // Efeito de partículas durante o corte
         const cutParticles = this.scene.add.particles(0, 0, 'tile_grass', {
-            x: npc.sprite.x,
-            y: npc.sprite.y,
+            x: tree.sprite.x,
+            y: tree.sprite.y,
             speed: { min: 20, max: 50 },
             scale: { start: 0.1, end: 0 },
             alpha: { start: 0.6, end: 0 },
@@ -83,6 +94,22 @@ export default class LumberSystem {
 
         await this.waitFor(this.cuttingTime);
         cutParticles.destroy();
+        
+        // Remover árvore temporariamente
+        const key = `${tree.gridX},${tree.gridY}`;
+        const treeData = this.scene.grid.buildingGrid[key];
+        if (treeData) {
+            treeData.isCut = true;
+            treeData.sprite.setVisible(false);
+            
+            // Programar reaparecimento
+            this.scene.time.delayedCall(this.treeRespawnTime, () => {
+                if (treeData) {
+                    treeData.isCut = false;
+                    treeData.sprite.setVisible(true);
+                }
+            });
+        }
         
         // Adicionar madeira ao inventário do NPC
         if (npc.addItemToStorage('wood')) {
