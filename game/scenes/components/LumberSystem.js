@@ -247,7 +247,7 @@ export default class LumberSystem {
                     fill: '#fff',
                     stroke: '#000',
                     strokeThickness: 2
-                }).setDepth(5).setOrigin(0.5);
+                }).setDepth(9999).setOrigin(0.5);
 
                 this.scene.tweens.add({
                     targets: text,
