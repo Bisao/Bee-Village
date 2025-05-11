@@ -95,10 +95,24 @@ export default class LumberSystem {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
-        const position = this.scene.grid.gridToIso(tree.gridX, tree.gridY);
+        // Encontrar posição adjacente à árvore
+        const adjacentPositions = [
+            {x: tree.gridX + 1, y: tree.gridY},
+            {x: tree.gridX - 1, y: tree.gridY},
+            {x: tree.gridX, y: tree.gridY + 1},
+            {x: tree.gridX, y: tree.gridY - 1}
+        ];
+
+        // Encontrar posição válida mais próxima
+        const validPosition = adjacentPositions.find(pos => 
+            this.scene.grid.isValidPosition(pos.x, pos.y) && 
+            !this.scene.isTileOccupied(pos.x, pos.y)
+        ) || adjacentPositions[0];
+
+        const position = this.scene.grid.gridToIso(validPosition.x, validPosition.y);
         await this.moveNPC(npc, position.tileX, position.tileY);
-        npc.gridX = tree.gridX;
-        npc.gridY = tree.gridY;
+        npc.gridX = validPosition.x;
+        npc.gridY = validPosition.y;
     }
 
     async moveNPC(npc, targetX, targetY) {
@@ -198,10 +212,24 @@ export default class LumberSystem {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
-        const position = this.scene.grid.gridToIso(silo.gridX, silo.gridY);
+        // Encontrar posição adjacente ao silo
+        const adjacentPositions = [
+            {x: silo.gridX + 1, y: silo.gridY},
+            {x: silo.gridX - 1, y: silo.gridY},
+            {x: silo.gridX, y: silo.gridY + 1},
+            {x: silo.gridX, y: silo.gridY - 1}
+        ];
+
+        // Encontrar posição válida mais próxima
+        const validPosition = adjacentPositions.find(pos => 
+            this.scene.grid.isValidPosition(pos.x, pos.y) && 
+            !this.scene.isTileOccupied(pos.x, pos.y)
+        ) || adjacentPositions[0];
+
+        const position = this.scene.grid.gridToIso(validPosition.x, validPosition.y);
         await this.moveNPC(npc, position.tileX, position.tileY);
-        npc.gridX = silo.gridX;
-        npc.gridY = silo.gridY;
+        npc.gridX = validPosition.x;
+        npc.gridY = validPosition.y;
     }
 
     async depositResources(npc, silo) {
