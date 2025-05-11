@@ -6,7 +6,7 @@ export default class LumberSystem {
         this.currentTree = null;
         this.cuttingTime = 5000; // 5 segundos para cortar
         this.treeRespawnTime = 40000; // 40 segundos para reaparecer
-        this.movementSpeed = 100;
+        this.movementSpeed = 50;
         this.resources = {
             'wood': '🪵',
             'log': '🌳'
@@ -103,13 +103,21 @@ export default class LumberSystem {
 
     async moveNPC(npc, targetX, targetY) {
         return new Promise(resolve => {
+            const nameTextY = targetY - 64;
+            
             this.scene.tweens.add({
-                targets: npc.sprite,
+                targets: [npc.sprite, npc.nameText],
                 x: targetX,
-                y: targetY,
+                y: (target, key, value, targetIndex) => {
+                    return targetIndex === 0 ? targetY - 32 : nameTextY;
+                },
                 duration: this.calculateMovementDuration(npc.sprite.x, npc.sprite.y, targetX, targetY),
                 ease: 'Linear',
-                onComplete: resolve
+                onComplete: () => {
+                    npc.sprite.setDepth(npc.gridY + 2);
+                    npc.nameText.setDepth(npc.gridY + 3);
+                    resolve();
+                }
             });
         });
     }
