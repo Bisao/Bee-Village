@@ -1,16 +1,52 @@
 placeBuilding(gridX, gridY, worldX, worldY) {
-    const flashTile = (x, y) => {
-        const tile = this.grid.grid[y][x];
-        if (tile) {
-            this.tweens.add({
-                targets: tile,
-                alpha: { from: 1, to: 0.5 },
-                yoyo: true,
-                duration: 200,
-                ease: 'Power2'
-            });
-        }
-    };
+    if (!this.validateBuildingPlacement(gridX, gridY)) {
+        return false;
+    }
+
+    const building = this.createBuilding(gridX, gridY);
+    if (!building) {
+        return false;
+    }
+
+    this.registerBuildingEvents(building);
+    this.updateGridState(gridX, gridY, building);
+    this.provideVisualFeedback(gridX, gridY);
+    
+    return true;
+}
+
+validateBuildingPlacement(gridX, gridY) {
+    return this.grid.isValidPosition(gridX, gridY) && 
+           !this.grid.isOccupied(gridX, gridY);
+}
+
+createBuilding(gridX, gridY) {
+    try {
+        const building = this.add.sprite(
+            gridX * this.grid.tileWidth,
+            gridY * this.grid.tileHeight,
+            this.selectedBuilding
+        );
+        building.setDepth(1);
+        return building;
+    } catch (error) {
+        console.error('Failed to create building:', error);
+        return null;
+    }
+}
+
+provideVisualFeedback(gridX, gridY) {
+    const tile = this.grid.grid[gridY][gridX];
+    if (tile) {
+        this.tweens.add({
+            targets: tile,
+            alpha: { from: 1, to: 0.5 },
+            yoyo: true,
+            duration: 200,
+            ease: 'Power2'
+        });
+    }
+}
 
     //rest of the placeBuilding function would go here.
 }
