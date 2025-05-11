@@ -100,56 +100,68 @@ export default class LumberSystem {
     findNearestTree(npc) {
         let nearestTree = null;
         let shortestDistance = Infinity;
+        let bestAdjacentPosition = null;
 
+        // Procura por todas as árvores no grid
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
             if (value && value.type === 'tree' && value.sprite && !value.isCut && 
                 ['tree_simple', 'tree_pine', 'tree_fruit'].includes(value.sprite.texture.key)) {
-                const [x, y] = key.split(',').map(Number);
-                const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
-
-                // Verificar se a árvore está alcançável
+                const [treeX, treeY] = key.split(',').map(Number);
+                
+                // Posições adjacentes à árvore
                 const adjacentPositions = [
-                    {x: x + 1, y: y}, {x: x - 1, y: y},
-                    {x: x, y: y + 1}, {x: x, y: y - 1}
+                    {x: treeX + 1, y: treeY},
+                    {x: treeX - 1, y: treeY},
+                    {x: treeX, y: treeY + 1},
+                    {x: treeX, y: treeY - 1}
                 ];
 
-                const canReachTree = adjacentPositions.some(pos => 
-                    this.scene.grid.isValidPosition(pos.x, pos.y) && 
-                    !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
-                );
-
-                if (canReachTree && distance < shortestDistance) {
-                    shortestDistance = distance;
-                    nearestTree = { 
-                        gridX: x, 
-                        gridY: y, 
-                        sprite: value.sprite,
-                        key: key
-                    };
+                // Verifica cada posição adjacente
+                for (const pos of adjacentPositions) {
+                    if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
+                        !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]) {
+                        
+                        // Calcula distância Manhattan da posição atual do NPC até a posição adjacente
+                        const distance = Math.abs(npc.gridX - pos.x) + Math.abs(npc.gridY - pos.y);
+                        
+                        if (distance < shortestDistance) {
+                            shortestDistance = distance;
+                            nearestTree = { 
+                                gridX: treeX, 
+                                gridY: treeY, 
+                                sprite: value.sprite,
+                                key: key
+                            };
+                            bestAdjacentPosition = pos;
+                        }
+                    }
                 }
             }
+        }
+
+        if (nearestTree) {
+            nearestTree.targetX = bestAdjacentPosition.x;
+            nearestTree.targetY = bestAdjacentPosition.y;
         }
 
         return nearestTree;
     }
 
     async moveToTree(npc, tree) {
-        if (!tree) return false;
-
-        const path = this.findPathToTree(npc, tree);
-        if (!path || path.length === 0) return false;
+        if (!tree || !tree.targetX || !tree.targetY) return false;
 
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
 
-        for (const pos of path) {
-            if (!this.isWorking) return false;
-            this.drawPathLine(npc, pos.x, pos.y);
-            await npc.moveTo(pos.x, pos.y);
-            await this.waitFor(200);
+        // Move diretamente para a posição alvo adjacente à árvore
+        await npc.moveTo(tree.targetX, tree.targetY);
+        
+        // Verifica se chegou adjacente à árvore
+        if (this.isAdjacentToTree(npc, tree)) {
+            return true;
         }
 
-        return true;
+        return false;
     }
 
     findPathToTree(npc, tree) {
