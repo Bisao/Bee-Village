@@ -242,19 +242,23 @@ export default class LumberSystem {
 
         // Som de corte "Toc"
         const cutInterval = setInterval(() => {
-            const text = this.scene.add.text(tree.sprite.x, tree.sprite.y - 20, 'Toc', {
-                fontSize: '16px',
-                fill: '#fff'
-            });
-            
-            this.scene.tweens.add({
-                targets: text,
-                y: text.y - 30,
-                alpha: 0,
-                duration: 1000,
-                onComplete: () => text.destroy()
-            });
-        }, this.cutSound.interval);
+            if (tree.sprite && tree.sprite.active) {
+                const text = this.scene.add.text(tree.sprite.x, tree.sprite.y - 10, 'Toc', {
+                    fontSize: '20px',
+                    fill: '#fff',
+                    stroke: '#000',
+                    strokeThickness: 2
+                }).setDepth(5).setOrigin(0.5);
+                
+                this.scene.tweens.add({
+                    targets: text,
+                    y: text.y - 15,
+                    alpha: 0,
+                    duration: 500,
+                    onComplete: () => text.destroy()
+                });
+            }
+        }, 2000); // Intervalo maior entre cada "Toc"
 
         await this.waitFor(this.cuttingTime);
         
