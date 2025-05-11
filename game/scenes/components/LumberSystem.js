@@ -143,7 +143,34 @@ export default class LumberSystem {
             frequency: 200
         });
 
+        // Adiciona o texto "Toc" que aparece e desaparece
+        const tocText = this.scene.add.text(tree.sprite.x, tree.sprite.y - 40, 'Toc', {
+            fontSize: '20px',
+            fill: '#000',
+            stroke: '#fff',
+            strokeThickness: 4
+        }).setOrigin(0.5);
+        
+        // Cria uma animação para o texto
+        let tocCount = 0;
+        const tocInterval = setInterval(() => {
+            tocText.setVisible(true);
+            tocText.setY(tree.sprite.y - 40);
+            this.scene.tweens.add({
+                targets: tocText,
+                y: tree.sprite.y - 60,
+                alpha: { from: 1, to: 0 },
+                duration: 500,
+                onComplete: () => {
+                    tocText.setVisible(false);
+                }
+            });
+            tocCount++;
+        }, 800);
+
         await this.waitFor(this.cuttingTime);
+        clearInterval(tocInterval);
+        tocText.destroy();
         cutParticles.destroy();
         
         const key = `${tree.gridX},${tree.gridY}`;
