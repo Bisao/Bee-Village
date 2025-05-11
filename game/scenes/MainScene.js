@@ -866,16 +866,14 @@ export default class MainScene extends Phaser.Scene {
         else if (newY > npc.gridY) animKey = 'farmer_down';
         else if (newX < npc.gridX) animKey = 'farmer_left';
 
-        // Define frames baseado na direção
-        let frameBase = 'farmer';
-        let frameNumber = 1;
-        
-        if (newY < npc.gridY) frameNumber = 1; // up
-        else if (newY > npc.gridY) frameNumber = 9; // down
-        else if (newX < npc.gridX) frameNumber = 5; // left
-        else frameNumber = 1; // right/default
-
-        npc.sprite.setTexture(`${frameBase}${frameNumber}`);
+        // Verifica e toca a animação
+        if (this.anims.exists(animKey)) {
+            npc.sprite.play(animKey, true); // true força o reinício da animação
+        } else {
+            console.warn(`Animation ${animKey} not found`);
+            // Usa um frame estático como fallback
+            npc.sprite.setTexture('farmer1');
+        }
 
         const scene = this;
         this.tweens.add({
@@ -903,7 +901,7 @@ export default class MainScene extends Phaser.Scene {
 
         const modal = document.createElement('div');
         modal.className ='npc-modal';
-        modal.innerHTML =`
+        modal.innerHTML = `
             <div class="modal-content">
                 <button class="close-button">✕</button>
                 <div class="npc-header">
