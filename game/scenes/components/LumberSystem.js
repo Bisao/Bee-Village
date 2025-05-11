@@ -34,8 +34,9 @@ export default class LumberSystem {
     async workCycle(npc) {
         while (this.isWorking) {
             try {
-                if (this.isProcessingTree) {
-                    await this.waitFor(1000);
+                // Evita processamento simultâneo
+                if (this.isProcessingTree || npc.isMoving) {
+                    await this.waitFor(500);
                     continue;
                 }
 
@@ -240,6 +241,11 @@ export default class LumberSystem {
     }
 
     async cutTree(npc, tree) {
+        if (!tree || !tree.sprite || !tree.sprite.active) {
+            console.log('Árvore inválida ou já cortada');
+            return false;
+        }
+
         // Verifica se já está cheio antes de tentar cortar
         if (npc.inventory.wood >= npc.inventory.maxCapacity) {
             console.log('Inventário cheio, indo depositar...');
@@ -247,7 +253,8 @@ export default class LumberSystem {
             return false;
         }
 
-        if (!this.isAdjacentToTree(npc, tree)) {
+        // Verifica adjacência e aguarda movimento completo
+        if (!this.isAdjacentToTree(npc, tree) || npc.isMoving) {
             console.log('NPC não está adjacente à árvore');
             return false;
         }
