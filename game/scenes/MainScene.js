@@ -390,8 +390,7 @@ export default class MainScene extends Phaser.Scene {
         const trees = [
             { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
             { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
-            { key: 'tree_fruit', path: 'game/assets/trees/tree_fruit.png' },
-            { key: 'tree_autumn', path: 'game/assets/trees/tree_autumn.png' }
+            { key: 'tree_fruit', path: 'game/assets/trees/tree_autumn.png' }
         ];
 
         trees.forEach(tree => {
@@ -587,7 +586,7 @@ export default class MainScene extends Phaser.Scene {
             }
 
             // Validar se é uma casa que pode ter NPC
-            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
+            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
             const isNPCHouse = npcHouses.includes(this.selectedBuilding);
 
             // Criar a estrutura
