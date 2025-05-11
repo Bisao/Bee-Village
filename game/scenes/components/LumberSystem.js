@@ -34,6 +34,12 @@ export default class LumberSystem {
     async workCycle(npc) {
         while (this.isWorking) {
             try {
+                // Verifica se está em modo descanso
+                if (npc.currentJob === 'rest') {
+                    this.stopWorking();
+                    return;
+                }
+
                 if (this.isProcessingTree) {
                     await this.waitFor(1000);
                     continue;

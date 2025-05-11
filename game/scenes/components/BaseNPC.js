@@ -97,13 +97,33 @@ export default class BaseNPC {
     }
 
     startAutonomousMovement() {
-        // Timer de movimento autônomo removido
-        return;
+        if (!this.isAutonomous) return;
+
+        if (this.currentJob === 'lumber') {
+            // Continua o trabalho de lenhador
+            return;
+        }
+
+        // Se não está trabalhando, volta para casa
+        this.returnHome();
     }
 
-    moveRandomly() {
-        // Movimento aleatório removido
-        return;
+    setRestMode(enabled) {
+        if (enabled) {
+            // Finaliza o trabalho atual
+            if (this.currentJob === 'lumber') {
+                const lumberSystem = this.scene.lumberSystem;
+                if (lumberSystem) {
+                    lumberSystem.stopWorking();
+                }
+            }
+            
+            // Retorna para casa
+            this.returnHome();
+            this.currentJob = 'rest';
+        } else {
+            this.currentJob = null;
+        }
     }
 
     findNearbyTrees(x, y, radius) {
