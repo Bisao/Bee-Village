@@ -239,19 +239,6 @@ export default class LumberSystem {
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         console.log('Iniciando corte da árvore em:', tree.gridX, tree.gridY);
-        
-        // Efeito de partículas
-        const cutParticles = this.scene.add.particles(0, 0, 'tile_grass', {
-            x: tree.sprite.x,
-            y: tree.sprite.y,
-            speed: { min: 20, max: 50 },
-            scale: { start: 0.1, end: 0 },
-            alpha: { start: 0.6, end: 0 },
-            lifespan: 1000,
-            blendMode: 'ADD',
-            quantity: 1,
-            frequency: 200
-        });
 
         // Som de corte "Toc"
         const cutInterval = setInterval(() => {
@@ -272,7 +259,6 @@ export default class LumberSystem {
         await this.waitFor(this.cuttingTime);
         
         clearInterval(cutInterval);
-        cutParticles.destroy();
         
         const key = `${tree.gridX},${tree.gridY}`;
         const treeData = this.scene.grid.buildingGrid[key];
@@ -350,17 +336,7 @@ export default class LumberSystem {
         if (npc.inventory.wood > 0) {
             console.log(`Depositando ${npc.inventory.wood} madeiras`);
             
-            // Efeito visual de depósito
-            const depositParticles = this.scene.add.particles(0, 0, 'tile_grass', {
-                x: npc.sprite.x,
-                y: npc.sprite.y,
-                speed: { min: 10, max: 30 },
-                scale: { start: 0.2, end: 0 },
-                alpha: { start: 1, end: 0 },
-                lifespan: 800,
-                blendMode: 'ADD',
-                quantity: 1
-            });
+            
 
             // Atualizar inventário
             npc.inventory.wood = 0;
@@ -382,7 +358,6 @@ export default class LumberSystem {
             });
             
             await this.waitFor(1000);
-            depositParticles.destroy();
         }
         
         // Resetar emoji e continuar ciclo
