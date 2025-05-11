@@ -66,8 +66,10 @@ export default class LumberSystem {
         let nearestTree = null;
         let shortestDistance = Infinity;
 
+        console.log('Procurando árvores para o lenhador:', npc.config.name);
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value && value.type === 'tree' && !value.isCut) {
+            if (value && (value.type === 'tree' || value.buildingType === 'tree') && !value.isCut) {
+                console.log('Árvore encontrada em:', key);
                 const [x, y] = key.split(',').map(Number);
                 const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
 
