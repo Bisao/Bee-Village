@@ -4,7 +4,7 @@ export default class LumberSystem {
         this.scene = scene;
         this.isWorking = false;
         this.currentTree = null;
-        this.cuttingTime = 15000; // 15 segundos para cortar
+        this.cuttingTime = 8000; // 8 segundos para cortar
         this.treeRespawnTime = 60000; // 60 segundos para reaparecer
         this.maxAttempts = 5; // Máximo de tentativas para encontrar árvore
         this.resources = {
@@ -25,7 +25,7 @@ export default class LumberSystem {
             return;
         }
         
-        console.log('Iniciando trabalho de lenhador:', npc.config.name);
+        console.log('Iniciando trabalho de lenhador');
         if (!npc.leaveHouse()) {
             console.log('NPC não conseguiu sair da casa');
             return;
@@ -35,61 +35,72 @@ export default class LumberSystem {
         npc.currentJob = 'lumber';
         npc.isAutonomous = false;
         
-        // Inicia o ciclo de trabalho
+        // Inicia o ciclo de trabalho imediatamente
         this.workCycle(npc);
+        
+        // Monitora e mantém o ciclo de trabalho ativo
+        this.workTimer = this.scene.time.addEvent({
+            delay: 1000,
+            callback: () => {
+                if (!this.isWorking) {
+                    npc.returnHome();
+                } else {
+                    this.workCycle(npc);
+                }
+            },
+            loop: true
+        });
     }
 
     async workCycle(npc) {
-        try {
-            if (this.hasCompletedCycle) {
-                npc.returnHome();
-                this.stopWorking();
-                return;
+        while (this.isWorking) {
+            try {
+                console.log('Iniciando ciclo de trabalho do lenhador');
+                
+                // 1. Procurar árvore disponível
+                const tree = this.findNearestTree(npc);
+                if (!tree) {
+                    console.log('Nenhuma árvore disponível');
+                    await this.waitFor(2000);
+                    continue;
+                }
+                console.log('Árvore encontrada em:', tree.gridX, tree.gridY);
+
+                // 2. Validar posição da árvore
+                if (!this.validateTreePosition(tree)) {
+                    console.log('Árvore em posição inválida');
+                    await this.waitFor(1000);
+                    continue;
+                }
+
+                // 3. Tentar se aproximar da árvore
+                console.log('Indo até a árvore...');
+                const canReach = await this.moveToTree(npc, tree);
+                if (!canReach) {
+                    console.log('Não foi possível alcançar a árvore, tentando outra...');
+                    await this.waitFor(1000);
+                    continue;
+                }
+
+                // 4. Cortar a árvore
+                await this.cutTree(npc, tree);
+
+                // 5. Procurar silo mais próximo
+                const silo = this.findNearestSilo(npc);
+                if (!silo) {
+                    console.log('Nenhum silo encontrado');
+                    await this.waitFor(1000);
+                    continue;
+                }
+
+                // 6. Depositar recursos
+                await this.moveToSilo(npc, silo);
+                await this.depositResources(npc, silo);
+
+            } catch (error) {
+                console.error('Erro no ciclo de trabalho:', error);
+                await this.waitFor(1000);
             }
-
-            console.log('Iniciando ciclo de trabalho do lenhador');
-            
-            // 1. Encontrar árvore mais próxima
-            const tree = this.findNearestTree(npc);
-            if (!tree) {
-                console.log('Nenhuma árvore disponível');
-                npc.returnHome();
-                this.stopWorking();
-                return;
-            }
-
-            // 2. Ir até o tile da árvore
-            const tileAdjacente = {
-                x: tree.gridX + 1,
-                y: tree.gridY
-            };
-            await npc.moveTo(tileAdjacente.x, tileAdjacente.y);
-            
-            // 3. Cortar a árvore
-            await this.cutTree(npc, tree);
-
-            // 4. Ir até o silo
-            const silo = this.findNearestSilo(npc);
-            if (silo) {
-                const siloTile = {
-                    x: silo.gridX + 1,
-                    y: silo.gridY
-                };
-                await npc.moveTo(siloTile.x, siloTile.y);
-                await this.depositResources(npc);
-            }
-
-            // Marcar ciclo como completo
-            this.hasCompletedCycle = true;
-            
-            // 5. Retornar para casa
-            npc.returnHome();
-            this.stopWorking();
-
-        } catch (error) {
-            console.error('Erro no ciclo de trabalho:', error);
-            npc.returnHome();
-            this.stopWorking();
         }
     }
 
@@ -270,15 +281,6 @@ export default class LumberSystem {
             return;
         }
 
-        // Walk to tree first
-        const tileNextToTree = {
-            x: tree.gridX + 1,
-            y: tree.gridY
-        };
-        
-        await npc.moveTo(tileNextToTree.x, tileNextToTree.y);
-        
-        // Start cutting after reaching the tree
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         console.log('Iniciando corte da árvore em:', tree.gridX, tree.gridY);

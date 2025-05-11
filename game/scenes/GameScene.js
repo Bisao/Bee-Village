@@ -261,7 +261,7 @@ export default class GameScene extends Phaser.Scene {
                 tablet: 0.9
             },
             depth: 1000,
-            visibility: false
+            visibility: true
         });
 
         // Registra o grid
