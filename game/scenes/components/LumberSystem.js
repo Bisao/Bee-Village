@@ -191,7 +191,7 @@ export default class LumberSystem {
         return this.isAdjacentToTree(npc, tree);
     }
 
-    findPathToTree(npc, tree) {
+    async findPathToTree(npc, tree) {
         const visited = new Set();
         const queue = [{
             x: npc.gridX,
