@@ -27,11 +27,6 @@ export default class CollectionSystem {
     }
 
     collectResource(npc) {
-        if (!npc || !npc.sprite) {
-            console.warn('Invalid NPC reference in collectResource');
-            return;
-        }
-
         // Tempo de busca entre 10-15 segundos
         const searchTime = Phaser.Math.Between(10000, 15000);
         
