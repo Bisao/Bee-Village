@@ -43,14 +43,18 @@ export default class LumberSystem {
                     continue;
                 }
 
-            // 3. Cortar a árvore
-            await this.cutTree(npc, tree);
+                // 3. Cortar a árvore
+                await this.cutTree(npc, tree);
 
-            // 4. Caminhar até o silo
-            const silo = this.findNearestSilo(npc);
-            if (silo) {
-                await this.moveToSilo(npc, silo);
-                await this.depositResources(npc, silo);
+                // 4. Caminhar até o silo
+                const silo = this.findNearestSilo(npc);
+                if (silo) {
+                    await this.moveToSilo(npc, silo);
+                    await this.depositResources(npc, silo);
+                }
+            } catch (error) {
+                console.error('Erro no ciclo de trabalho:', error);
+                await this.waitFor(1000);
             }
         }
     }
