@@ -647,18 +647,18 @@ export default class MainScene extends Phaser.Scene {
             if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
                     if (this.selectedBuilding === 'lumberHouse' && npc) {
-                    // Inicializa o sistema de trabalho do lenhador
-                    npc.lumberSystem = new LumberSystem(this);
+                        // Inicializa o sistema de trabalho do lenhador
+                        npc.lumberSystem = new LumberSystem(this);
 
-                    // Aguarda o NPC sair da casa antes de começar a trabalhar
-                    this.time.delayedCall(2000, () => {
-                        if (npc && npc.config) {
-                            npc.isAutonomous = false;
-                            npc.lumberSystem.startWorking(npc);
-                            console.log('Lenhador iniciou o trabalho:', npc.config.name);
-                        }
-                    });
-                }
+                        // Aguarda o NPC sair da casa antes de começar a trabalhar
+                        this.time.delayedCall(2000, () => {
+                            if (npc && npc.config) {
+                                npc.isAutonomous = false;
+                                npc.lumberSystem.startWorking(npc);
+                                console.log('Lenhador iniciou o trabalho:', npc.config.name);
+                            }
+                        });
+                    }
                 });
             }
 
@@ -974,25 +974,25 @@ export default class MainScene extends Phaser.Scene {
                             </div>
                         `).join('')}
                     </div>
-                    <script>
-                        document.querySelectorAll('.job-option').forEach(option => {
-                            option.addEventListener('click', (e) => {
-                                const jobId = option.dataset.job;
-                                if (jobId === 'lumber') {
-                                    if (!npc.lumberSystem) {
-                                        npc.lumberSystem = new LumberSystem(this.scene);
-                                    }
-                                    npc.lumberSystem.startWorking(npc);
-                                    modal.remove();
-                                }
-                            });
-                        });
-                    </script>
                 </div>
             </div>
         `;
 
         document.body.appendChild(modal);
+
+        // Adiciona manipuladores de eventos do trabalho
+        modal.querySelectorAll('.job-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const jobId = option.dataset.job;
+                if (jobId === 'lumber') {
+                    if (!npc.lumberSystem) {
+                        npc.lumberSystem = new LumberSystem(this);
+                    }
+                    npc.lumberSystem.startWorking(npc);
+                    modal.remove();
+                }
+            });
+        });
 
         // Adiciona manipuladores de eventos para as abas
         modal.querySelectorAll('.modal-tab').forEach(tab => {

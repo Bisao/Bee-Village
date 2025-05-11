@@ -96,11 +96,21 @@ export default class LumberSystem {
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
             if (value && value.type === 'tree' && value.sprite && !value.isCut) {
-                
                 const [x, y] = key.split(',').map(Number);
                 const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
 
-                if (distance < shortestDistance) {
+                // Verificar se a árvore está alcançável
+                const adjacentPositions = [
+                    {x: x + 1, y: y}, {x: x - 1, y: y},
+                    {x: x, y: y + 1}, {x: x, y: y - 1}
+                ];
+
+                const canReachTree = adjacentPositions.some(pos => 
+                    this.scene.grid.isValidPosition(pos.x, pos.y) && 
+                    !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
+                );
+
+                if (canReachTree && distance < shortestDistance) {
                     shortestDistance = distance;
                     nearestTree = { 
                         gridX: x, 
@@ -108,7 +118,7 @@ export default class LumberSystem {
                         sprite: value.sprite,
                         key: key
                     };
-                    console.log('Árvore encontrada:', value.sprite.texture.key, 'em:', x, y);
+                    console.log('Árvore alcançável encontrada:', value.sprite.texture.key, 'em:', x, y);
                 }
             }
         }
