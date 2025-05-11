@@ -36,7 +36,13 @@ export default class LumberSystem {
             try {
                 // Evita processamento simultâneo
                 if (this.isProcessingTree || npc.isMoving) {
-                    await this.waitFor(500);
+                    await this.waitFor(1000);
+                    continue;
+                }
+
+                // Verifica se o inventário está cheio
+                if (npc.inventory.wood >= npc.inventory.maxCapacity) {
+                    await this.depositResources(npc);
                     continue;
                 }
 
