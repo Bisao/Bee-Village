@@ -92,6 +92,21 @@ autoSave() {
                 };
             });
 
+            // Registrar no grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+
+            // Add click handler for silo
+            if (this.selectedBuilding === 'silo') {
+                building.setInteractive();
+                building.on('pointerdown', () => this.showSiloModal());
+            }
+
             // Keep last 3 auto-saves as backup
             const backupKey = `gameState_backup_${timestamp}`;
             const backups = JSON.parse(localStorage.getItem('gameStateBackups') || '[]');

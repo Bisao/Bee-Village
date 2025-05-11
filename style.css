@@ -1278,3 +1278,94 @@ html, body {
 .control-btn.active {
     background: var(--success-color);
 }
+
+/* Silo Modal Styles */
+.silo-modal {
+    position: fixed;
+    top: 65px;
+    left: 0;
+    width: 100%;
+    height: calc(100% - 65px);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    z-index: 3000;
+    padding: 20px;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.silo-content {
+    background: var(--accent-color);
+    padding: 20px;
+    border-radius: 12px;
+    border: 2px solid var(--primary-color);
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.silo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.silo-title {
+    color: var(--text-color);
+    margin: 0;
+    font-size: 1.4em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.resources-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 15px;
+    padding: 10px;
+}
+
+.resource-item {
+    background: rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    text-align: center;
+}
+
+.resource-icon {
+    font-size: 2em;
+    margin-bottom: 8px;
+}
+
+.resource-name {
+    color: var(--text-color);
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.resource-amount {
+    color: var(--text-color);
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .silo-modal {
+        padding: 10px;
+    }
+
+    .resources-grid {
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 10px;
+    }
+
+    .resource-item {
+        padding: 10px;
+    }
+}
