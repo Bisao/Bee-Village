@@ -30,13 +30,16 @@ export default class LumberSystem {
     async workCycle(npc) {
         while (this.isWorking) {
             try {
+                console.log('Iniciando ciclo de trabalho do lenhador');
+                
                 // 1. Procurar árvore disponível
-                const tree = await this.findNearestTree(npc);
+                const tree = this.findNearestTree(npc);
                 if (!tree) {
                     console.log('Nenhuma árvore disponível');
                     await this.waitFor(2000);
                     continue;
                 }
+                console.log('Árvore encontrada em:', tree.gridX, tree.gridY);
 
                 // 2. Validar posição da árvore
                 if (!this.validateTreePosition(tree)) {
@@ -46,6 +49,7 @@ export default class LumberSystem {
                 }
 
                 // 3. Tentar se aproximar da árvore
+                console.log('Indo até a árvore...');
                 const canReach = await this.moveToTree(npc, tree);
                 if (!canReach) {
                     console.log('Não foi possível alcançar a árvore, tentando outra...');
@@ -291,8 +295,12 @@ export default class LumberSystem {
         npc.config.emoji = '📦';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
+        console.log('Depositando recursos no silo...');
+        
         // Depositar madeira no silo
         if (npc.inventory.wood > 0) {
+            console.log(`Depositando ${npc.inventory.wood} madeiras`);
+            
             // Efeito visual de depósito
             const depositParticles = this.scene.add.particles(0, 0, 'tile_grass', {
                 x: npc.sprite.x,
@@ -307,6 +315,22 @@ export default class LumberSystem {
 
             // Atualizar inventário
             npc.inventory.wood = 0;
+            
+            // Mostrar texto flutuante
+            const text = this.scene.add.text(
+                npc.sprite.x,
+                npc.sprite.y - 40,
+                '+ Madeira depositada!',
+                { fontSize: '16px', fill: '#00ff00' }
+            );
+            
+            this.scene.tweens.add({
+                targets: text,
+                y: text.y - 30,
+                alpha: 0,
+                duration: 1000,
+                onComplete: () => text.destroy()
+            });
             
             await this.waitFor(1000);
             depositParticles.destroy();
