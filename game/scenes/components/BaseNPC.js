@@ -229,7 +229,7 @@ export default class BaseNPC {
                 const baseY = this.scene.cameras.main.centerY + tileY;
                 return targetIndex === 0 ? baseY - 32 : baseY - 64;
             },
-            duration: Math.max(400, Math.sqrt(Math.pow(newX - this.gridX, 2) + Math.pow(newY - this.gridY, 2)) * 800),
+            duration: 1000, // Velocidade fixa de 1 segundo por tile
             ease: 'Quad.easeInOut',
             onComplete: () => {
                 this.gridX = newX;
