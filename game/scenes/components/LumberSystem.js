@@ -1,117 +1,161 @@
 export default class LumberSystem {
     constructor(scene) {
         this.scene = scene;
-        this.isWorking = false;
-        this.currentTree = null;
-        this.isProcessingTree = false;
-        this.cuttingTime = 15000;
-        this.treeRespawnTime = 60000;
+        this.state = {
+            isWorking: false,
+            isProcessingTree: false
+        };
+
+        this.config = {
+            cuttingTime: 15000,        // 15 segundos para cortar
+            respawnTime: 60000,        // 1 minuto para reaparecer
+            searchRadius: 10,          // Raio de busca para árvores
+            maxInventory: 5           // Capacidade máxima de madeira
+        };
+
         this.resources = {
-            'wood': '🪵',
-            'log': '🌳'
+            wood: '🪵',
+            log: '🌳'
         };
     }
 
     startWorking(npc) {
-        if (npc.config.profession !== 'Lumberjack') {
-            console.log('NPC não é lenhador');
-            return;
-        }
+        if (!this.validateNPC(npc)) return;
 
-        console.log('Iniciando trabalho de lenhador');
         if (!npc.leaveHouse()) {
-            console.log('NPC não conseguiu sair da casa');
+            console.log('[LumberSystem] NPC não conseguiu sair da casa');
             return;
         }
 
-        this.isWorking = true;
+        this.state.isWorking = true;
         npc.currentJob = 'lumber';
         npc.isAutonomous = true;
 
         this.workCycle(npc);
     }
 
+    validateNPC(npc) {
+        if (!npc || npc.config.profession !== 'Lumberjack') {
+            console.log('[LumberSystem] NPC inválido ou não é lenhador');
+            return false;
+        }
+        return true;
+    }
+
     async workCycle(npc) {
-        while (this.isWorking) {
+        while (this.state.isWorking) {
             try {
-                // Verifica se está em modo descanso
                 if (npc.currentJob === 'rest') {
                     this.stopWorking();
                     return;
                 }
 
-                if (this.isProcessingTree) {
+                if (this.state.isProcessingTree) {
                     await this.waitFor(1000);
                     continue;
                 }
 
-                // Procura todas as árvores não cortadas
-                const trees = this.findAllTrees();
-                if (trees.length === 0) {
-                    console.log('Todas as árvores foram cortadas');
-                    await this.waitFor(3000);
-                    continue;
-                }
-
-                // Processa cada árvore encontrada
-                for (const tree of trees) {
-                    try {
-
-                // 1. Procurar árvore disponível
-                npc.config.emoji = '🔍';
-                npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-
-                const tree = this.findNearestTree(npc);
+                const tree = await this.findAndProcessTree(npc);
                 if (!tree) {
-                    console.log('Nenhuma árvore disponível');
                     await this.waitFor(3000);
                     continue;
                 }
 
-                // 2. Mover até a árvore
-                        const canReach = await this.moveToTree(npc, tree);
-                        if (!canReach) {
-                            console.log('Não foi possível alcançar a árvore');
-                            await this.waitFor(1000);
-                            continue;
-                        }
-                    } catch (treeError) {
-                        console.error('Erro ao processar árvore:', treeError);
-                        await this.waitFor(1000);
-                        continue;
-                    }
-
-                // 3. Verificar se está no mesmo tile
-                if (!this.isAdjacentToTree(npc, tree)) {
-                    console.log('NPC não está adjacente à árvore');
-                    continue;
-                }
-
-                // 4. Cortar a árvore
-                this.isProcessingTree = true;
-                await this.cutTree(npc, tree);
-                this.isProcessingTree = false;
-
-                // 5. Se tiver madeira, procurar silo
-                if (npc.inventory.wood > 0) {
-                    const silo = this.findNearestSilo(npc);
-                    if (!silo) {
-                        console.log('Nenhum silo encontrado');
-                        await this.waitFor(1000);
-                        continue;
-                    }
-
-                    // 6. Depositar recursos
-                    await this.moveToSilo(npc, silo);
-                    await this.depositResources(npc);
+                if (npc.inventory.wood >= this.config.maxInventory) {
+                    await this.depositWood(npc);
                 }
 
             } catch (error) {
-                console.error('Erro no ciclo de trabalho:', error);
-                this.isProcessingTree = false;
+                console.error('[LumberSystem] Erro no ciclo:', error);
                 await this.waitFor(1000);
             }
         }
+    }
+
+    async findAndProcessTree(npc) {
+        // 1. Procurar árvore
+        this.updateNPCStatus(npc, '🔍', 'Procurando');
+        const tree = this.findNearestTree(npc);
+
+        if (!tree) {
+            console.log('[LumberSystem] Nenhuma árvore disponível');
+            return null;
+        }
+
+        // 2. Mover até a árvore
+        this.updateNPCStatus(npc, '🚶', 'Movendo');
+        const reached = await this.moveToTree(npc, tree);
+
+        if (!reached) {
+            console.log('[LumberSystem] Não alcançou a árvore');
+            return null;
+        }
+
+        // 3. Cortar a árvore
+        if (this.isAdjacentToTree(npc, tree)) {
+            await this.cutTree(npc, tree);
+            return tree;
+        }
+
+        return null;
+    }
+
+    findNearestTree(npc) {
+        let nearestTree = null;
+        let shortestDistance = Infinity;
+
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (this.isValidTree(value)) {
+                const [treeX, treeY] = key.split(',').map(Number);
+                const distance = Math.abs(npc.gridX - treeX) + Math.abs(npc.gridY - treeY);
+
+                if (distance < shortestDistance) {
+                    const adjacentPos = this.findBestAdjacentPosition(treeX, treeY);
+                    if (adjacentPos) {
+                        shortestDistance = distance;
+                        nearestTree = {
+                            gridX: treeX,
+                            gridY: treeY,
+                            targetX: adjacentPos.x,
+                            targetY: adjacentPos.y,
+                            sprite: value.sprite,
+                            key: key
+                        };
+                    }
+                }
+            }
+        }
+
+        return nearestTree;
+    }
+
+    isValidTree(tile) {
+        return tile && 
+               tile.type === 'tree' && 
+               tile.sprite && 
+               !tile.isCut && 
+               ['tree_simple', 'tree_pine', 'tree_fruit'].includes(tile.sprite.texture.key);
+    }
+
+    findBestAdjacentPosition(treeX, treeY) {
+        const positions = [
+            {x: treeX + 1, y: treeY},
+            {x: treeX - 1, y: treeY},
+            {x: treeX, y: treeY + 1},
+            {x: treeX, y: treeY - 1}
+        ];
+
+        return positions.find(pos => 
+            this.scene.grid.isValidPosition(pos.x, pos.y) && 
+            !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
+        );
+    }
+
+    async moveToTree(npc, tree) {
+        if (!tree.targetX || !tree.targetY) return false;
+
+        await npc.moveTo(tree.targetX, tree.targetY);
+        return this.isAdjacentToTree(npc, tree);
     }
 
     isAdjacentToTree(npc, tree) {
@@ -120,169 +164,34 @@ export default class LumberSystem {
         return dx + dy === 1;
     }
 
-    findNearestTree(npc) {
-        let nearestTree = null;
-        let shortestDistance = Infinity;
-        let bestAdjacentPosition = null;
-
-        // Procura por todas as árvores no grid
-        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value && value.type === 'tree' && value.sprite && !value.isCut && 
-                ['tree_simple', 'tree_pine', 'tree_fruit'].includes(value.sprite.texture.key)) {
-                const [treeX, treeY] = key.split(',').map(Number);
-                
-                // Posições adjacentes à árvore
-                const adjacentPositions = [
-                    {x: treeX + 1, y: treeY},
-                    {x: treeX - 1, y: treeY},
-                    {x: treeX, y: treeY + 1},
-                    {x: treeX, y: treeY - 1}
-                ];
-
-                // Verifica cada posição adjacente
-                for (const pos of adjacentPositions) {
-                    if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
-                        !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]) {
-                        
-                        // Calcula distância Manhattan da posição atual do NPC até a posição adjacente
-                        const distance = Math.abs(npc.gridX - pos.x) + Math.abs(npc.gridY - pos.y);
-                        
-                        if (distance < shortestDistance) {
-                            shortestDistance = distance;
-                            nearestTree = { 
-                                gridX: treeX, 
-                                gridY: treeY, 
-                                sprite: value.sprite,
-                                key: key
-                            };
-                            bestAdjacentPosition = pos;
-                        }
-                    }
-                }
-            }
-        }
-
-        if (nearestTree) {
-            nearestTree.targetX = bestAdjacentPosition.x;
-            nearestTree.targetY = bestAdjacentPosition.y;
-        }
-
-        return nearestTree;
-    }
-
-    async moveToTree(npc, tree) {
-        if (!tree || !tree.targetX || !tree.targetY) return false;
-
-        npc.config.emoji = '🚶';
-        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-
-        // Move diretamente para a posição alvo adjacente à árvore
-        await npc.moveTo(tree.targetX, tree.targetY);
-        
-        // Verifica se chegou adjacente à árvore
-        if (this.isAdjacentToTree(npc, tree)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    findPathToTree(npc, tree) {
-        const visited = new Set();
-        const queue = [{
-            x: npc.gridX,
-            y: npc.gridY,
-            path: []
-        }];
-
-        while (queue.length > 0) {
-            const current = queue.shift();
-            const key = `${current.x},${current.y}`;
-
-            if (visited.has(key)) continue;
-            visited.add(key);
-
-            // Verifica se está adjacente à árvore
-            if (Math.abs(current.x - tree.gridX) + Math.abs(current.y - tree.gridY) === 1) {
-                return current.path;
-            }
-
-            // Adiciona movimentos possíveis
-            const moves = [
-                {dx: 0, dy: 1},  // baixo
-                {dx: 1, dy: 0},  // direita
-                {dx: 0, dy: -1}, // cima
-                {dx: -1, dy: 0}  // esquerda
-            ];
-
-            for (const move of moves) {
-                const newX = current.x + move.dx;
-                const newY = current.y + move.dy;
-                const newKey = `${newX},${newY}`;
-
-                if (!visited.has(newKey) && 
-                    this.scene.grid.isValidPosition(newX, newY) && 
-                    !this.scene.grid.buildingGrid[newKey]) {
-                    
-                    queue.push({
-                        x: newX,
-                        y: newY,
-                        path: [...current.path, {x: newX, y: newY}]
-                    });
-                }
-            }
-        }
-
-        return null;
-    }
-
-    drawPathLine(npc, targetX, targetY) {
-        if (this.pathGraphics) {
-            this.pathGraphics.destroy();
-        }
-
-        this.pathGraphics = this.scene.add.graphics();
-        this.pathGraphics.lineStyle(2, 0xffff00, 0.5);
-        
-        const startPos = this.scene.grid.gridToIso(npc.gridX, npc.gridY);
-        const endPos = this.scene.grid.gridToIso(targetX, targetY);
-        
-        this.pathGraphics.beginPath();
-        this.pathGraphics.moveTo(
-            this.scene.cameras.main.centerX + startPos.tileX,
-            this.scene.cameras.main.centerY + startPos.tileY
-        );
-        this.pathGraphics.lineTo(
-            this.scene.cameras.main.centerX + endPos.tileX,
-            this.scene.cameras.main.centerY + endPos.tileY
-        );
-        this.pathGraphics.strokePath();
-        
-        // Limpar linha após 1 segundo
-        this.scene.time.delayedCall(1000, () => {
-            if (this.pathGraphics) {
-                this.pathGraphics.destroy();
-                this.pathGraphics = null;
-            }
-        });
-    }
-
     async cutTree(npc, tree) {
         if (!this.isAdjacentToTree(npc, tree)) return;
 
-        npc.config.emoji = '🪓';
-        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-        console.log('Iniciando corte da árvore em:', tree.gridX, tree.gridY);
+        this.state.isProcessingTree = true;
+        this.updateNPCStatus(npc, '🪓', 'Cortando');
 
-        // Efeito visual de corte
-        const cutInterval = setInterval(() => {
-            if (tree.sprite && tree.sprite.active) {
-                const text = this.scene.add.text(tree.sprite.x, tree.sprite.y - 10, 'Toc', {
-                    fontSize: '20px',
-                    fill: '#fff',
-                    stroke: '#000',
-                    strokeThickness: 2
-                }).setDepth(5).setOrigin(0.5);
+        const cutEffect = this.createCutEffect(tree);
+        await this.waitFor(this.config.cuttingTime);
+        clearInterval(cutEffect);
+
+        await this.processTreeCut(npc, tree);
+        this.state.isProcessingTree = false;
+    }
+
+    createCutEffect(tree) {
+        return setInterval(() => {
+            if (tree.sprite?.active) {
+                const text = this.scene.add.text(
+                    tree.sprite.x, 
+                    tree.sprite.y - 10,
+                    'Toc', 
+                    {
+                        fontSize: '20px',
+                        fill: '#fff',
+                        stroke: '#000',
+                        strokeThickness: 2
+                    }
+                ).setDepth(5).setOrigin(0.5);
 
                 this.scene.tweens.add({
                     targets: text,
@@ -293,57 +202,92 @@ export default class LumberSystem {
                 });
             }
         }, 2500);
+    }
 
-        await this.waitFor(this.cuttingTime);
-        clearInterval(cutInterval);
+    async processTreeCut(npc, tree) {
+        const treeData = this.scene.grid.buildingGrid[tree.key];
+        if (!treeData) return;
 
-        const key = `${tree.gridX},${tree.gridY}`;
-        const treeData = this.scene.grid.buildingGrid[key];
-        if (treeData) {
-            treeData.isCut = true;
-            treeData.sprite.setVisible(false);
+        treeData.isCut = true;
+        treeData.sprite.setVisible(false);
 
-            if (npc.addItemToStorage('wood')) {
-                console.log(`[${npc.config.name}] Cortou madeira`);
-            }
-
-            // Programar reaparecimento
-            this.scene.time.delayedCall(this.treeRespawnTime, () => {
-                if (treeData) {
-                    treeData.isCut = false;
-                    treeData.sprite.setVisible(true);
-                }
-            });
+        if (npc.addItemToStorage('wood')) {
+            this.showResourceGain(npc);
         }
+
+        this.scheduleTreeRespawn(treeData);
+    }
+
+    showResourceGain(npc) {
+        const text = this.scene.add.text(
+            npc.sprite.x,
+            npc.sprite.y - 40,
+            `+1 ${this.resources.wood}`,
+            { fontSize: '16px', fill: '#00ff00' }
+        );
+
+        this.scene.tweens.add({
+            targets: text,
+            y: text.y - 30,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => text.destroy()
+        });
+    }
+
+    scheduleTreeRespawn(treeData) {
+        this.scene.time.delayedCall(this.config.respawnTime, () => {
+            if (treeData) {
+                treeData.isCut = false;
+                treeData.sprite.setVisible(true);
+            }
+        });
+    }
+
+    async depositWood(npc) {
+        const silo = this.findNearestSilo(npc);
+        if (!silo) {
+            console.log('[LumberSystem] Nenhum silo encontrado');
+            return;
+        }
+
+        this.updateNPCStatus(npc, '🚶', 'Indo ao silo');
+        const reached = await this.moveToSilo(npc, silo);
+
+        if (reached) {
+            this.updateNPCStatus(npc, '📦', 'Depositando');
+            await this.depositResources(npc);
+        }
+    }
+
+    findNearestSilo(npc) {
+        let nearestSilo = null;
+        let shortestDistance = Infinity;
+
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value.buildingType === 'silo') {
+                const [x, y] = key.split(',').map(Number);
+                const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
+
+                if (distance < shortestDistance) {
+                    shortestDistance = distance;
+                    nearestSilo = { gridX: x, gridY: y, sprite: value.sprite };
+                }
+            }
+        }
+
+        return nearestSilo;
     }
 
     async moveToSilo(npc, silo) {
-        npc.config.emoji = '🚶';
-        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+        const adjacentPosition = this.findBestAdjacentPosition(silo.gridX, silo.gridY);
+        if (!adjacentPosition) return false;
 
-        const adjacentPositions = [
-            {x: silo.gridX + 1, y: silo.gridY},
-            {x: silo.gridX - 1, y: silo.gridY},
-            {x: silo.gridX, y: silo.gridY + 1},
-            {x: silo.gridX, y: silo.gridY - 1}
-        ];
-
-        for (const pos of adjacentPositions) {
-            if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
-                !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]) {
-                this.drawPathLine(npc, pos.x, pos.y);
-                await npc.moveTo(pos.x, pos.y);
-                return true;
-            }
-        }
-
-        return false;
+        await npc.moveTo(adjacentPosition.x, adjacentPosition.y);
+        return true;
     }
 
     async depositResources(npc) {
-        npc.config.emoji = '📦';
-        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-
         await this.waitFor(3000);
 
         if (npc.inventory.wood > 0) {
@@ -367,23 +311,10 @@ export default class LumberSystem {
         }
     }
 
-    findNearestSilo(npc) {
-        let nearestSilo = null;
-        let shortestDistance = Infinity;
-
-        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value.buildingType === 'silo') {
-                const [x, y] = key.split(',').map(Number);
-                const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
-
-                if (distance < shortestDistance) {
-                    shortestDistance = distance;
-                    nearestSilo = { gridX: x, gridY: y, sprite: value.sprite };
-                }
-            }
-        }
-
-        return nearestSilo;
+    updateNPCStatus(npc, emoji, status) {
+        npc.config.emoji = emoji;
+        npc.nameText.setText(`${emoji} ${npc.config.name}`);
+        console.log(`[LumberSystem] ${npc.config.name}: ${status}`);
     }
 
     waitFor(ms) {
@@ -391,29 +322,7 @@ export default class LumberSystem {
     }
 
     stopWorking() {
-        this.isWorking = false;
-        this.isProcessingTree = false;
-        if (this.pathGraphics) {
-            this.pathGraphics.destroy();
-            this.pathGraphics = null;
-        }
+        this.state.isWorking = false;
+        this.state.isProcessingTree = false;
     }
 }
-    findAllTrees() {
-        const trees = [];
-        
-        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value && value.type === 'tree' && value.sprite && !value.isCut && 
-                ['tree_simple', 'tree_pine', 'tree_fruit'].includes(value.sprite.texture.key)) {
-                const [treeX, treeY] = key.split(',').map(Number);
-                trees.push({ 
-                    gridX: treeX, 
-                    gridY: treeY, 
-                    sprite: value.sprite,
-                    key: key
-                });
-            }
-        }
-        
-        return trees;
-    }
