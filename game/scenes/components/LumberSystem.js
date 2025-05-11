@@ -26,6 +26,11 @@ export default class LumberSystem {
         }
         
         console.log('Iniciando trabalho de lenhador');
+        if (!npc.leaveHouse()) {
+            console.log('NPC não conseguiu sair da casa');
+            return;
+        }
+
         this.isWorking = true;
         npc.currentJob = 'lumber';
         npc.isAutonomous = false;
@@ -38,7 +43,8 @@ export default class LumberSystem {
             delay: 1000,
             callback: () => {
                 if (!this.isWorking) {
-                    this.isWorking = true;
+                    npc.returnHome();
+                } else {
                     this.workCycle(npc);
                 }
             },

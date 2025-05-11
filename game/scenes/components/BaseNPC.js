@@ -63,25 +63,33 @@ export default class BaseNPC {
 
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
-        
-        // Esconder sprite inicialmente
         this.sprite.setVisible(false);
-        
-        // Atrasar movimento para fora da casa em 10 segundos
-        this.scene.time.delayedCall(10000, () => {
-            const newY = this.gridY + 1;
-            if (this.scene.grid.isValidPosition(this.gridX, newY) && 
-                !this.scene.isTileOccupied(this.gridX, newY)) {
-                this.moveTo(this.gridX, newY);
-                // Sprite só fica visível quando estiver fora da casa
-                this.scene.tweens.add({
-                    targets: this.sprite,
-                    alpha: { from: 0, to: 1 },
-                    duration: 500,
-                    onStart: () => this.sprite.setVisible(true)
-                });
-            }
-        });
+        this.homePosition = { x: this.gridX, y: this.gridY };
+    }
+
+    leaveHouse() {
+        const newY = this.gridY + 1;
+        if (this.scene.grid.isValidPosition(this.gridX, newY) && 
+            !this.scene.isTileOccupied(this.gridX, newY)) {
+            this.moveTo(this.gridX, newY);
+            this.scene.tweens.add({
+                targets: this.sprite,
+                alpha: { from: 0, to: 1 },
+                duration: 500,
+                onStart: () => this.sprite.setVisible(true)
+            });
+            return true;
+        }
+        return false;
+    }
+
+    returnHome() {
+        if (this.homePosition) {
+            this.moveTo(this.homePosition.x, this.homePosition.y);
+            this.scene.time.delayedCall(1000, () => {
+                this.sprite.setVisible(false);
+            });
+        }
     }
 
     showControls() {
