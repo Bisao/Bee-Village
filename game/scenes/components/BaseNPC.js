@@ -26,6 +26,12 @@ export default class BaseNPC {
     }
 
     init() {
+        // Inventário do NPC
+        this.inventory = {
+            wood: 0,
+            maxCapacity: 5
+        };
+        
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
@@ -258,5 +264,17 @@ export default class BaseNPC {
     destroy() {
         this.sprite.destroy();
         this.nameText.destroy();
+    }
+
+    addItemToStorage(itemType) {
+        if (this.inventory[itemType] < this.inventory.maxCapacity) {
+            this.inventory[itemType]++;
+            return true;
+        }
+        return false;
+    }
+
+    hasInventorySpace(itemType) {
+        return this.inventory[itemType] < this.inventory.maxCapacity;
     }
 }

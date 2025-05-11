@@ -57,28 +57,28 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointermove', this.updatePreview, this);
 
         this.placeEnvironmentObjects();
-        
+
         // Posiciona a casa do lenhador inicial
         this.placeBuilding(1, 1, 
             this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
             this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
             'lumberHouse'
         );
-        
+
         // Posiciona o silo inicial
         this.placeBuilding(3, 1,
             this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
             this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
             'silo'
         );
-        
+
         // Adicionar casa de lenhador inicial
         this.placeBuilding(1, 1, 
             this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
             this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
             'lumberHouse'
         );
-        
+
         // Adicionar silo inicial
         this.placeBuilding(3, 1,
             this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
@@ -641,7 +641,13 @@ export default class MainScene extends Phaser.Scene {
 
             // Create NPC for each house if it's a valid house type
             if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
-                this.createFarmerNPC(gridX, gridY, worldX, worldY);
+                const npc = this.createFarmerNPC(gridX, gridY, worldX, worldY);
+
+                // Iniciar sistema de trabalho específico
+                if (this.selectedBuilding === 'lumberHouse') {
+                    const lumberSystem = new LumberSystem(this);
+                    lumberSystem.startWorking(npc);
+                }
             }
 
             // Efeito de partículas
