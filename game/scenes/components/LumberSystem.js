@@ -104,6 +104,25 @@ export default class LumberSystem {
         }
     }
 
+    constructor(scene) {
+        this.scene = scene;
+        this.isWorking = false;
+        this.currentTree = null;
+        this.cuttingTime = 8000;
+        this.treeRespawnTime = 60000;
+        this.maxAttempts = 5;
+        this.resources = {
+            wood: "🪵",
+            log: "🌳",
+        };
+        this.reservedTrees = new Map(); // Mapa para controlar árvores reservadas
+
+        this.cutSound = {
+            time: 0,
+            interval: 1200,
+        };
+    }
+
     findNearestTree(npc) {
         let nearestTree = null;
         let shortestDistance = Infinity;
@@ -116,6 +135,7 @@ export default class LumberSystem {
                 value.type === "tree" &&
                 value.sprite &&
                 !value.isCut &&
+                !this.isTreeReserved(key) && // Verifica se a árvore não está reservada
                 ["tree_simple", "tree_pine", "tree_fruit"].includes(
                     value.sprite.texture.key,
                 )
@@ -302,11 +322,26 @@ export default class LumberSystem {
         });
     }
 
+    isTreeReserved(treeKey) {
+        return this.reservedTrees.has(treeKey);
+    }
+
+    reserveTree(treeKey, npc) {
+        this.reservedTrees.set(treeKey, npc.config.name);
+    }
+
+    releaseTree(treeKey) {
+        this.reservedTrees.delete(treeKey);
+    }
+
     async cutTree(npc, tree) {
         if (!tree || !tree.sprite || !tree.key) {
             console.log("Árvore inválida para corte");
             return;
         }
+
+        // Reserva a árvore para este NPC
+        this.reserveTree(tree.key, npc);
 
         npc.config.emoji = "🪓";
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
@@ -346,6 +381,7 @@ export default class LumberSystem {
             clearInterval(cutInterval); // Clear the Toc sound immediately when tree is cut
             treeData.isCut = true;
             treeData.sprite.setVisible(false);
+            this.releaseTree(key); // Libera a árvore após o corte
 
             // Programar reaparecimento
             this.scene.time.delayedCall(this.treeRespawnTime, () => {
