@@ -217,12 +217,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const playButton = document.getElementById('play-button');
     
     if (fullscreenButton) {
-        fullscreenButton.addEventListener('click', toggleFullScreen);
+        fullscreenButton.addEventListener('click', () => {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+                });
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        });
     }
     
     if (playButton) {
         playButton.addEventListener('click', () => {
-            toggleFullScreen();
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {
+                    console.log(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+                });
+            }
             // Adicione aqui qualquer outra lógica necessária ao clicar em play
         });
     }
