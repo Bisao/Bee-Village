@@ -97,71 +97,13 @@ export default class BaseNPC {
     }
 
     startAutonomousMovement() {
-        this.scene.time.addEvent({
-            delay: this.config.movementDelay,
-            callback: () => this.moveRandomly(),
-            loop: true
-        });
+        // Timer de movimento autônomo removido
+        return;
     }
 
     moveRandomly() {
-        if (!this.isAutonomous || this.isMoving) return;
-
-        // Sistema de memória de posições visitadas com limite
-        this.visitedPositions = this.visitedPositions || new Map();
-        if (this.visitedPositions.size > 50) {
-            const oldestKey = this.visitedPositions.keys().next().value;
-            this.visitedPositions.delete(oldestKey);
-        }
-        const key = `${this.gridX},${this.gridY}`;
-        this.visitedPositions.set(key, (this.visitedPositions.get(key) || 0) + 1);
-
-        const directions = this.scene.getAvailableDirections(this.gridX, this.gridY);
-        if (directions.length === 0) {
-            this.scene.time.delayedCall(1000, () => this.moveRandomly());
-            return;
-        }
-
-        // Avaliar cada direção possível
-        const scoredDirections = directions.map(dir => {
-            const newX = this.gridX + dir.x;
-            const newY = this.gridY + dir.y;
-            const newKey = `${newX},${newY}`;
-            
-            let score = 0;
-            // Evitar voltar para posição anterior
-            if (this.lastPosition && this.lastPosition.x === newX && this.lastPosition.y === newY) {
-                score -= 5;
-            }
-            
-            // Preferir posições menos visitadas
-            const visits = this.visitedPositions.get(newKey) || 0;
-            score -= visits * 2;
-            
-            // Evitar ficar muito tempo em uma área
-            if (this.currentAreaTime > 10000) { // 10 segundos
-                score += Math.random() * 3; // Adiciona aleatoriedade para exploração
-            }
-            
-            // Verificar objetivos próximos (árvores, recursos, etc)
-            if (this.config.profession === 'Lumberjack') {
-                const nearbyTrees = this.findNearbyTrees(newX, newY, 3);
-                score += nearbyTrees.length * 2;
-            }
-            
-            return { dir, score };
-        });
-
-        // Escolher direção com maior pontuação
-        scoredDirections.sort((a, b) => b.score - a.score);
-        const bestDirection = scoredDirections[0].dir;
-
-        // Atualizar estado
-        this.lastPosition = { x: this.gridX, y: this.gridY };
-        this.currentAreaTime = (this.currentAreaTime || 0) + 1000;
-        
-        // Executar movimento
-        this.moveTo(this.gridX + bestDirection.x, this.gridY + bestDirection.y);
+        // Movimento aleatório removido
+        return;
     }
 
     findNearbyTrees(x, y, radius) {
