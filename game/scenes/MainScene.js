@@ -21,7 +21,7 @@ export default class MainScene extends Phaser.Scene {
                 prefix: 'Farmer',
                 names: ['John', 'Peter', 'Mary', 'Lucas', 'Emma', 'Sofia', 'Miguel', 'Julia']
             },
-            fishermanHouse: {
+            FishermanHouse: {
                 prefix: 'Fisher',
                 names: ['Jack', 'Tom', 'Nina', 'Marco', 'Ana', 'Leo', 'Luna', 'Kai']
             },
@@ -644,7 +644,7 @@ export default class MainScene extends Phaser.Scene {
             };
 
             // Create NPC for each house if it's a valid house type
-            if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
+            if (['farmerHouse', 'minerHouse', 'FishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
                     if (this.selectedBuilding === 'lumberHouse' && npc) {
                         // Inicializa o sistema de trabalho do lenhador imediatamente
@@ -991,7 +991,7 @@ export default class MainScene extends Phaser.Scene {
                     npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                     npc.lumberSystem.startWorking(npc);
                     modal.remove();
-                    
+
                     console.log('Iniciando trabalho de lenhador:', npc.config.name);
                 }
             });
