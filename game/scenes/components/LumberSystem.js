@@ -24,18 +24,24 @@ export default class LumberSystem {
 
     async workCycle(npc) {
         while (this.isWorking) {
-            // 1. Procurar árvore disponível
-            const tree = this.findNearestTree(npc);
-            if (!tree) {
-                console.log('Nenhuma árvore disponível');
-                npc.config.emoji = '💤';
-                npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-                await this.waitFor(2000);
-                continue;
-            }
+            try {
+                // 1. Procurar árvore disponível
+                const tree = this.findNearestTree(npc);
+                if (!tree) {
+                    console.log('Nenhuma árvore disponível');
+                    npc.config.emoji = '💤';
+                    npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                    await this.waitFor(2000);
+                    continue;
+                }
 
-            // 2. Caminhar até a árvore
-            await this.moveToTree(npc, tree);
+                // 2. Caminhar até a árvore
+                const moveSuccess = await this.moveToTree(npc, tree);
+                if (!moveSuccess) {
+                    console.log('Não foi possível alcançar a árvore, tentando outra...');
+                    await this.waitFor(1000);
+                    continue;
+                }
 
             // 3. Cortar a árvore
             await this.cutTree(npc, tree);
@@ -92,6 +98,11 @@ export default class LumberSystem {
     }
 
     async moveToTree(npc, tree) {
+        if (!tree || !tree.sprite || !tree.sprite.visible) {
+            console.log('Árvore inválida, procurando outra...');
+            return false;
+        }
+
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
@@ -101,13 +112,26 @@ export default class LumberSystem {
             {x: tree.gridX - 1, y: tree.gridY},
             {x: tree.gridX, y: tree.gridY + 1},
             {x: tree.gridX, y: tree.gridY - 1}
-        ];
-
-        // Encontrar posição válida mais próxima
-        const validPosition = adjacentPositions.find(pos => 
+        ].filter(pos => 
             this.scene.grid.isValidPosition(pos.x, pos.y) && 
             !this.scene.isTileOccupied(pos.x, pos.y)
-        ) || adjacentPositions[0];
+        );
+
+        if (adjacentPositions.length === 0) {
+            console.log('Nenhuma posição válida encontrada próxima à árvore');
+            return false;
+        }
+
+        // Encontrar posição mais próxima do NPC
+        const validPosition = adjacentPositions.reduce((closest, pos) => {
+            const distance = Phaser.Math.Distance.Between(
+                npc.gridX, npc.gridY,
+                pos.x, pos.y
+            );
+            return (!closest || distance < closest.distance) 
+                ? {pos, distance}
+                : closest;
+        }, null).pos;
 
         const position = this.scene.grid.gridToIso(validPosition.x, validPosition.y);
         await this.moveNPC(npc, position.tileX, position.tileY);
