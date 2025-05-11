@@ -154,49 +154,94 @@ export default class LumberSystem {
     }
 
     async moveToTree(npc, tree) {
-        // Validar se a árvore existe e está dentro dos limites
         if (!tree || !this.scene.grid.isValidPosition(tree.gridX, tree.gridY)) {
             console.log('Árvore inválida ou fora dos limites');
             return false;
         }
 
-        // Calcular distância atual
         const currentDistance = Math.abs(npc.gridX - tree.gridX) + Math.abs(npc.gridY - tree.gridY);
         if (currentDistance <= 1) {
-            return true; // Já está adjacente à árvore
-        }
-
-        // Encontrar melhor posição adjacente
-        const adjacentPositions = [
-            {x: tree.gridX + 1, y: tree.gridY},
-            {x: tree.gridX - 1, y: tree.gridY},
-            {x: tree.gridX, y: tree.gridY + 1},
-            {x: tree.gridX, y: tree.gridY - 1}
-        ].filter(pos => 
-            this.scene.grid.isValidPosition(pos.x, pos.y) && 
-            !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
-        );
-
-        if (adjacentPositions.length === 0) {
-            console.log('Nenhuma posição adjacente disponível');
-            return false;
-        }
-
-        // Escolher a posição mais próxima
-        const bestPosition = adjacentPositions.reduce((best, pos) => {
-            const distance = Math.abs(npc.gridX - pos.x) + Math.abs(npc.gridY - pos.y);
-            return (!best || distance < best.distance) ? {...pos, distance} : best;
-        }, null);
-
-        if (bestPosition) {
-            npc.config.emoji = '🚶';
-            npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-            this.drawPathLine(npc, bestPosition.x, bestPosition.y);
-            await npc.moveTo(bestPosition.x, bestPosition.y);
             return true;
         }
 
-        return false;
+        // Encontrar caminho até a árvore usando um padrão mais natural
+        const path = this.findPathToTree(npc, tree);
+        if (!path || path.length === 0) {
+            console.log('Não foi possível encontrar caminho até a árvore');
+            return false;
+        }
+
+        // Mover através do caminho
+        npc.config.emoji = '🚶';
+        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+
+        for (let i = 0; i < path.length; i++) {
+            const pos = path[i];
+            
+            // Pequena pausa aleatória entre movimentos para parecer mais natural
+            if (i > 0) {
+                await this.waitFor(Math.random() * 200 + 100);
+            }
+
+            this.drawPathLine(npc, pos.x, pos.y);
+            await npc.moveTo(pos.x, pos.y);
+
+            // Verificar se ainda está trabalhando
+            if (!this.isWorking) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    findPathToTree(npc, tree) {
+        const visited = new Set();
+        const queue = [{
+            x: npc.gridX,
+            y: npc.gridY,
+            path: []
+        }];
+
+        while (queue.length > 0) {
+            const current = queue.shift();
+            const key = `${current.x},${current.y}`;
+
+            if (visited.has(key)) continue;
+            visited.add(key);
+
+            // Verifica se está adjacente à árvore
+            if (Math.abs(current.x - tree.gridX) + Math.abs(current.y - tree.gridY) === 1) {
+                return current.path;
+            }
+
+            // Adiciona movimentos possíveis
+            const moves = [
+                {dx: 0, dy: 1},  // baixo
+                {dx: 1, dy: 0},  // direita
+                {dx: 0, dy: -1}, // cima
+                {dx: -1, dy: 0}  // esquerda
+            ];
+
+            for (const move of moves) {
+                const newX = current.x + move.dx;
+                const newY = current.y + move.dy;
+                const newKey = `${newX},${newY}`;
+
+                if (!visited.has(newKey) && 
+                    this.scene.grid.isValidPosition(newX, newY) && 
+                    !this.scene.grid.buildingGrid[newKey]) {
+                    
+                    queue.push({
+                        x: newX,
+                        y: newY,
+                        path: [...current.path, {x: newX, y: newY}]
+                    });
+                }
+            }
+        }
+
+        return null;
     }
 
     drawPathLine(npc, targetX, targetY) {
