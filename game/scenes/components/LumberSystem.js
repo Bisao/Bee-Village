@@ -25,7 +25,7 @@ export default class LumberSystem {
             return;
         }
         
-        console.log('Iniciando trabalho de lenhador');
+        console.log('Iniciando trabalho de lenhador:', npc.config.name);
         if (!npc.leaveHouse()) {
             console.log('NPC não conseguiu sair da casa');
             return;
@@ -35,21 +35,8 @@ export default class LumberSystem {
         npc.currentJob = 'lumber';
         npc.isAutonomous = false;
         
-        // Inicia o ciclo de trabalho imediatamente
+        // Inicia o ciclo de trabalho
         this.workCycle(npc);
-        
-        // Monitora e mantém o ciclo de trabalho ativo
-        this.workTimer = this.scene.time.addEvent({
-            delay: 1000,
-            callback: () => {
-                if (!this.isWorking) {
-                    npc.returnHome();
-                } else {
-                    this.workCycle(npc);
-                }
-            },
-            loop: true
-        });
     }
 
     async workCycle(npc) {
