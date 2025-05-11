@@ -93,12 +93,9 @@ export default class LumberSystem {
     findNearestTree(npc) {
         let nearestTree = null;
         let shortestDistance = Infinity;
-        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value && value.sprite && 
-                treeTypes.some(type => value.sprite.texture.key === type) && 
-                !value.isCut) {
+            if (value && value.type === 'tree' && value.sprite && !value.isCut) {
                 
                 const [x, y] = key.split(',').map(Number);
                 const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
