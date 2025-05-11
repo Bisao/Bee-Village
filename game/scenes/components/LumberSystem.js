@@ -84,13 +84,15 @@ export default class LumberSystem {
         let shortestDistance = Infinity;
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value.type === 'tree' && !value.isCut) {
+            // Verifica se é uma árvore e não foi cortada
+            if ((value.sprite && value.sprite.texture.key.includes('tree')) && !value.isCut) {
                 const [x, y] = key.split(',').map(Number);
                 const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
 
                 if (distance < shortestDistance) {
                     shortestDistance = distance;
                     nearestTree = { gridX: x, gridY: y, sprite: value.sprite };
+                    console.log('Árvore encontrada em:', x, y);
                 }
             }
         }

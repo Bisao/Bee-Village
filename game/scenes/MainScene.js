@@ -650,9 +650,9 @@ export default class MainScene extends Phaser.Scene {
                     if (this.selectedBuilding === 'lumberHouse' && npc) {
                         // Delay para garantir que o NPC esteja pronto
                         this.time.delayedCall(1000, () => {
-                            if (npc && npc.config) {
-                                const lumberSystem = new LumberSystem(this);
-                                lumberSystem.startWorking(npc);
+                            if (npc && npc.config && !npc.lumberSystem) {
+                                npc.lumberSystem = new LumberSystem(this);
+                                npc.lumberSystem.startWorking(npc);
                                 console.log('Lenhador iniciou o trabalho:', npc.config.name);
                             }
                         });
