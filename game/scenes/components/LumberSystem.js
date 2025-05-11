@@ -39,6 +39,16 @@ export default class LumberSystem {
                     continue;
                 }
 
+                // Verificar se já tem madeira para depositar
+                if (npc.inventory.wood > 0) {
+                    const silo = this.findNearestSilo(npc);
+                    if (silo) {
+                        await this.moveToSilo(npc, silo);
+                        await this.depositResources(npc);
+                        continue;
+                    }
+                }
+
                 // 1. Procurar árvore disponível
                 npc.config.emoji = '🔍';
                 npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
@@ -233,7 +243,15 @@ export default class LumberSystem {
     }
 
     async cutTree(npc, tree) {
-        if (!this.isAdjacentToTree(npc, tree)) return;
+        if (!this.isAdjacentToTree(npc, tree)) {
+            console.log('Esperando chegar mais perto da árvore');
+            return false;
+        }
+
+        if (this.isProcessingTree) {
+            console.log('Já está processando uma árvore');
+            return false;
+        }
 
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
