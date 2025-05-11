@@ -11,7 +11,7 @@ placeBuilding(gridX, gridY, worldX, worldY) {
     this.registerBuildingEvents(building);
     this.updateGridState(gridX, gridY, building);
     this.provideVisualFeedback(gridX, gridY);
-    
+
     return true;
 }
 
@@ -129,3 +129,4 @@ autoSave() {
             }
         }
     }
+}
