@@ -97,29 +97,71 @@ export default class BaseNPC {
     moveRandomly() {
         if (!this.isAutonomous || this.isMoving) return;
 
+        // Sistema de memória de posições visitadas
+        this.visitedPositions = this.visitedPositions || new Map();
+        const key = `${this.gridX},${this.gridY}`;
+        this.visitedPositions.set(key, (this.visitedPositions.get(key) || 0) + 1);
+
         const directions = this.scene.getAvailableDirections(this.gridX, this.gridY);
         if (directions.length === 0) {
-            // Se não houver direções disponíveis, tentar novamente em 1 segundo
             this.scene.time.delayedCall(1000, () => this.moveRandomly());
             return;
         }
 
-        // Priorizar movimentos que não retornam à posição anterior
-        const filteredDirections = directions.filter(dir => {
+        // Avaliar cada direção possível
+        const scoredDirections = directions.map(dir => {
             const newX = this.gridX + dir.x;
             const newY = this.gridY + dir.y;
-            return !(this.lastPosition && 
-                    this.lastPosition.x === newX && 
-                    this.lastPosition.y === newY);
+            const newKey = `${newX},${newY}`;
+            
+            let score = 0;
+            // Evitar voltar para posição anterior
+            if (this.lastPosition && this.lastPosition.x === newX && this.lastPosition.y === newY) {
+                score -= 5;
+            }
+            
+            // Preferir posições menos visitadas
+            const visits = this.visitedPositions.get(newKey) || 0;
+            score -= visits * 2;
+            
+            // Evitar ficar muito tempo em uma área
+            if (this.currentAreaTime > 10000) { // 10 segundos
+                score += Math.random() * 3; // Adiciona aleatoriedade para exploração
+            }
+            
+            // Verificar objetivos próximos (árvores, recursos, etc)
+            if (this.config.profession === 'Lumberjack') {
+                const nearbyTrees = this.findNearbyTrees(newX, newY, 3);
+                score += nearbyTrees.length * 2;
+            }
+            
+            return { dir, score };
         });
 
-        const directionToUse = filteredDirections.length > 0 ? 
-            filteredDirections[Math.floor(Math.random() * filteredDirections.length)] :
-            directions[Math.floor(Math.random() * directions.length)];
+        // Escolher direção com maior pontuação
+        scoredDirections.sort((a, b) => b.score - a.score);
+        const bestDirection = scoredDirections[0].dir;
 
-        // Guardar posição atual antes de mover
+        // Atualizar estado
         this.lastPosition = { x: this.gridX, y: this.gridY };
-        this.moveTo(this.gridX + directionToUse.x, this.gridY + directionToUse.y);
+        this.currentAreaTime = (this.currentAreaTime || 0) + 1000;
+        
+        // Executar movimento
+        this.moveTo(this.gridX + bestDirection.x, this.gridY + bestDirection.y);
+    }
+
+    findNearbyTrees(x, y, radius) {
+        const trees = [];
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value.type === 'tree' && !value.isCut) {
+                const [treeX, treeY] = key.split(',').map(Number);
+                const distance = Math.abs(x - treeX) + Math.abs(y - treeY);
+                if (distance <= radius) {
+                    trees.push({ x: treeX, y: treeY, distance });
+                }
+            }
+        }
+        return trees;
     }
 
     checkIfInHouse() {
