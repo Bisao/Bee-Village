@@ -55,6 +55,7 @@ export default class LumberSystem {
 
                 // Processa cada árvore encontrada
                 for (const tree of trees) {
+                    try {
 
                 // 1. Procurar árvore disponível
                 npc.config.emoji = '🔍';
@@ -68,12 +69,17 @@ export default class LumberSystem {
                 }
 
                 // 2. Mover até a árvore
-                const canReach = await this.moveToTree(npc, tree);
-                if (!canReach) {
-                    console.log('Não foi possível alcançar a árvore');
-                    await this.waitFor(1000);
-                    continue;
-                }
+                        const canReach = await this.moveToTree(npc, tree);
+                        if (!canReach) {
+                            console.log('Não foi possível alcançar a árvore');
+                            await this.waitFor(1000);
+                            continue;
+                        }
+                    } catch (treeError) {
+                        console.error('Erro ao processar árvore:', treeError);
+                        await this.waitFor(1000);
+                        continue;
+                    }
 
                 // 3. Verificar se está no mesmo tile
                 if (!this.isAdjacentToTree(npc, tree)) {
