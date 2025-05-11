@@ -268,6 +268,7 @@ export default class LumberSystem {
         const treeData = this.scene.grid.buildingGrid[key];
         
         if (treeData) {
+            clearInterval(cutInterval); // Clear the Toc sound immediately when tree is cut
             treeData.isCut = true;
             treeData.sprite.setVisible(false);
             
