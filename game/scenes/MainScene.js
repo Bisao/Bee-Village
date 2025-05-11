@@ -1054,7 +1054,7 @@ export default class MainScene extends Phaser.Scene {
         cameraButton.onclick = () => {
             this.cameras.main.startFollow(npc.sprite, true);
             modal.remove();
-            
+
             // Add click handler to stop following
             const clickHandler = () => {
                 this.cameras.main.stopFollow();
@@ -1234,10 +1234,10 @@ export default class MainScene extends Phaser.Scene {
 
     getAvailableJobs(npc) {
         const jobs = [];
-        
+
         // Trabalho básico para todos
         jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
-        
+
         // Trabalhos específicos por profissão
         if (npc.config.profession === 'Lumberjack') {
             jobs.push({ 

@@ -93,17 +93,25 @@ export default class LumberSystem {
     findNearestTree(npc) {
         let nearestTree = null;
         let shortestDistance = Infinity;
+        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            // Verifica se é uma árvore e não foi cortada
-            if ((value.sprite && value.sprite.texture.key.includes('tree')) && !value.isCut) {
+            if (value && value.sprite && 
+                treeTypes.some(type => value.sprite.texture.key === type) && 
+                !value.isCut) {
+                
                 const [x, y] = key.split(',').map(Number);
                 const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
 
                 if (distance < shortestDistance) {
                     shortestDistance = distance;
-                    nearestTree = { gridX: x, gridY: y, sprite: value.sprite };
-                    console.log('Árvore encontrada em:', x, y);
+                    nearestTree = { 
+                        gridX: x, 
+                        gridY: y, 
+                        sprite: value.sprite,
+                        key: key
+                    };
+                    console.log('Árvore encontrada:', value.sprite.texture.key, 'em:', x, y);
                 }
             }
         }
@@ -201,8 +209,14 @@ export default class LumberSystem {
     }
 
     async cutTree(npc, tree) {
+        if (!tree || !tree.sprite || !tree.key) {
+            console.log('Árvore inválida para corte');
+            return;
+        }
+
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+        console.log('Iniciando corte da árvore em:', tree.gridX, tree.gridY);
         
         // Efeito de partículas
         const cutParticles = this.scene.add.particles(0, 0, 'tile_grass', {
