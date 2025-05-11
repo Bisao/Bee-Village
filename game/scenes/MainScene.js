@@ -647,18 +647,18 @@ export default class MainScene extends Phaser.Scene {
             if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
                     if (this.selectedBuilding === 'lumberHouse' && npc) {
-                        // Inicializa o sistema de trabalho do lenhador
-                        npc.lumberSystem = new LumberSystem(this);
+                    // Inicializa o sistema de trabalho do lenhador
+                    npc.lumberSystem = new LumberSystem(this);
 
-                        // Aguarda o NPC sair da casa antes de começar a trabalhar
-                        this.time.delayedCall(12000, () => {
-                            if (npc && npc.config) {
-                                console.log('Iniciando trabalho do lenhador:', npc.config.name);
-                                npc.isAutonomous = false;
-                                npc.lumberSystem.startWorking(npc);
-                            }
-                        });
-                    }
+                    // Aguarda o NPC sair da casa antes de começar a trabalhar
+                    this.time.delayedCall(2000, () => {
+                        if (npc && npc.config) {
+                            npc.isAutonomous = false;
+                            npc.lumberSystem.startWorking(npc);
+                            console.log('Lenhador iniciou o trabalho:', npc.config.name);
+                        }
+                    });
+                }
                 });
             }
 
@@ -903,83 +903,353 @@ export default class MainScene extends Phaser.Scene {
         this.cleanupNPCControls();
 
         const modal = document.createElement('div');
-        modal.id = 'npc-controls-modal';
-        modal.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: white;
-            padding: 20px;
-            border: 1px solid #ccc;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            z-index: 1000;
+        modal.className ='npc-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="close-button">✕</button>
+                <div class="npc-header">
+                    <div class="npc-avatar">
+                        ${npc.config.emoji}
+                    </div>
+                    <div class="npc-info">
+                        <div class="npc-name-row">
+                            <h3>${npc.config.name}</h3>
+                            <button class="camera-follow-btn">👁️ Seguir</button>
+                        </div>
+                        <p class="npc-profession">${npc.config.profession}</p>
+                        <div class="npc-level-info">
+                            <span class="level-text">Nível ${npc.config.level}</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
+                            </div>
+                            <span class="xp-text">${npc.config.xp}/${npc.config.maxXp} XP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
+                        🤖 Modo Autônomo
+                    </button>
+                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                        🕹️ Modo Controlado
+                    </button>
+                </div>
+
+                <div class="mode-info">
+                    <p class="autonomous-info ${npc.isAutonomous ? 'visible' : ''}">
+                        🔄 NPC se move livremente
+                    </p>
+                    <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
+                        📱 Use WASD ou controles mobile
+                    </p>
+                </div>
+
+                <div class="modal-tabs">
+                    <button class="modal-tab active" data-tab="inventory">Inventário</button>
+                    <button class="modal-tab" data-tab="jobs">Trabalhos</button>
+                </div>
+
+                <div class="tab-panel active" id="inventory-panel">
+                    <div class="npc-inventory">
+                        ${npc.config.tools.map(tool => `
+                            <div class="tool-slot">
+                                <div class="tool-emoji">${tool.emoji}</div>
+                                <div class="tool-name">${tool.name}</div>
+                                <div class="tool-description">${tool.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="tab-panel" id="jobs-panel">
+                    <div class="jobs-list">
+                        ${this.getAvailableJobs(npc).map(job => `
+                            <div class="job-option ${npc.currentJob === job.id ? 'active' : ''}" data-job="${job.id}">
+                                <div class="job-icon">${job.icon}</div>
+                                <div class="job-info">
+                                    <div class="job-name">${job.name}</div>
+                                    <div class="job-description">${job.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <script>
+                        document.querySelectorAll('.job-option').forEach(option => {
+                            option.addEventListener('click', (e) => {
+                                const jobId = option.dataset.job;
+                                if (jobId === 'lumber') {
+                                    if (!npc.lumberSystem) {
+                                        npc.lumberSystem = new LumberSystem(this.scene);
+                                    }
+                                    npc.lumberSystem.startWorking(npc);
+                                    modal.remove();
+                                }
+                            });
+                        });
+                    </script>
+                </div>
+            </div>
         `;
 
-        const title = document.createElement('h2');
-        title.textContent = `${npc.config.name} (${npc.config.emoji} ${npc.config.profession})`;
-        modal.appendChild(title);
-
-        const levelInfo = document.createElement('p');
-        levelInfo.textContent = `Level: ${npc.config.level}`;
-        modal.appendChild(levelInfo);
-
-        const xpInfo = document.createElement('p');
-        xpInfo.textContent = `XP: ${npc.config.xp} / ${npc.config.maxXp}`;
-        modal.appendChild(xpInfo);
-
-        // Ferramentas
-        const toolsHeader = document.createElement('h3');
-        toolsHeader.textContent = 'Ferramentas:';
-        modal.appendChild(toolsHeader);
-
-        const toolsList = document.createElement('ul');
-        npc.config.tools.forEach(tool => {
-            const toolItem = document.createElement('li');
-            toolItem.textContent = tool;
-            toolsList.appendChild(toolItem);
-        });
-        modal.appendChild(toolsList);
-
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Close';
-        closeButton.onclick = () => {
-            this.cleanupNPCControls();
-        };
-        modal.appendChild(closeButton);
-
         document.body.appendChild(modal);
-        this.npcControlsModal = modal;
+
+        // Adiciona manipuladores de eventos para as abas
+        modal.querySelectorAll('.modal-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove a classe 'active' de todas as abas e painéis
+                modal.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                modal.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+                // Adiciona a classe 'active' à aba clicada
+                tab.classList.add('active');
+
+                // Mostra o painel correspondente
+                const tabId = tab.dataset.tab;
+                document.getElementById(`${tabId}-panel`).classList.add('active');
+            });
+        });
+
+        modal.querySelector('#autonomous').onclick = () => {
+            // Transição suave da câmera
+            this.tweens.add({
+                targets: this.cameras.main,
+                zoom: 1.5,
+                duration: 500,ease: 'Power2',
+                onComplete: () => {
+                    npc.isAutonomous = true;
+                    this.cameras.main.stopFollow();
+                    this.startNPCMovement(npc);
+                    // Hide controls panel on mobile
+                    if (this.inputManager.isMobile) {
+                        document.getElementById('controls-panel').style.display = 'none';
+                    }
+                }
+            });
+            this.showFeedback(`${npc.config.name} está em modo autônomo`, true);
+            modal.remove();
+        };
+
+        modal.querySelector('#controlled').onclick = () => {
+            npc.isAutonomous = false;
+            this.currentControlledNPC = npc;
+            // Make camera follow the NPC
+            this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
+            this.enablePlayerControl(npc);
+            // Show controls panel on mobile
+            const controlsPanel = document.getElementById('controls-panel');
+            if (this.inputManager.isMobile && controlsPanel) {
+                controlsPanel.style.display = 'flex';
+                controlsPanel.style.zIndex = '2000';
+            }
+            modal.remove();
+        };
+
+        // Configure close button
+        const closeButton = modal.querySelector('.close-button');
+        closeButton.onclick = () => {
+            modal.remove();
+        };
+
+        // Configure camera follow button
+        const cameraButton = modal.querySelector('.camera-follow-btn');
+        cameraButton.onclick = () => {
+            this.cameras.main.startFollow(npc.sprite, true);
+            modal.remove();
+
+            // Add click handler to stop following
+            const clickHandler = () => {
+                this.cameras.main.stopFollow();
+                this.input.off('pointerdown', clickHandler);
+            };
+            this.input.on('pointerdown', clickHandler);
+        };
+
+        // Close on clicking outside
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
     }
 
     cleanupNPCControls() {
-        if (this.npcControlsModal) {
-            this.npcControlsModal.remove();
-            this.npcControlsModal = null;
+        if (this.currentControlledNPC) {
+            const previousNPC = this.currentControlledNPC;
+
+            // Reset NPC state
+            previousNPC.isAutonomous = true;
+
+            // Clear existing movement timer if exists
+            if (previousNPC.movementTimer) {
+                previousNPC.movementTimer.remove();
+            }
+
+            // Remove specific NPC's controls and update handler
+            if (previousNPC.controls) {
+                Object.values(previousNPC.controls).forEach(key => key.destroy());
+                previousNPC.controls = null;
+            }
+            if (previousNPC.updateHandler) {
+                this.events.off('update', previousNPC.updateHandler);
+                previousNPC.updateHandler = null;
+            }
+
+            // Clear reference before starting movement
+            this.currentControlledNPC = null;
+
+            // Start autonomous movement again after a short delay
+            this.time.delayedCall(100, () => {
+                this.startNPCMovement(previousNPC);
+            });
         }
+    }
+
+    getProfessionEmoji(profession) {
+        return this.professionEmojis[profession] || '👤';
     }
 
     getRandomName(buildingType) {
-        const names = this.professionNames[buildingType].names;
-        return this.professionNames[buildingType].prefix + ' ' + names[Math.floor(Math.random() * names.length)];
+        const nameData = this.professionNames[buildingType];
+        if (!nameData || !nameData.names || nameData.names.length === 0) {
+            console.warn(`No names available for building type: ${buildingType}`);
+            return 'Unknown';
+        }
+
+        // Get used names for this profession
+        if (!this.usedNames) this.usedNames = {};
+        if (!this.usedNames[buildingType]) this.usedNames[buildingType] = new Set();
+
+        // Filter available names
+        const availableNames = nameData.names.filter(name => 
+            !this.usedNames[buildingType].has(name)
+        );
+
+        // If all names are used, reset the used names
+        if (availableNames.length === 0) {
+            this.usedNames[buildingType].clear();
+            return this.getRandomName(buildingType);
+        }
+
+        // Get random name and mark as used
+        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
+        this.usedNames[buildingType].add(randomName);
+        return randomName;
     }
 
-    getProfessionEmoji(professionPrefix) {
-        return this.professionEmojis[professionPrefix] || '👤';
+    enablePlayerControl(npc) {
+        // Remove previous keyboard listeners if they exist
+        this.input.keyboard.removeAllListeners('keydown');
+
+        // Create unique controls for this NPC
+        npc.controls = this.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
+        // Mobile controls
+        if (this.inputManager.isMobile) {
+            const buttons = {
+                'mobile-up': 'w',
+                'mobile-down': 's',
+                'mobile-left': 'a',
+                'mobile-right': 'd'
+            };
+
+            // Remove existing mobile controls if any
+            Object.keys(buttons).forEach(className => {
+                const button = document.querySelector(`.${className}`);
+                if (button) {
+                    button.replaceWith(button.cloneNode(true));
+                }
+            });
+
+            // Add new mobile controls for this NPC
+            Object.entries(buttons).forEach(([className, key]) => {
+                const button = document.querySelector(`.${className}`);
+                if (button) {
+                    button.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        if (this.currentControlledNPC === npc) {
+                            npc.controls[key].isDown = true;
+                        }
+                    });
+                    button.addEventListener('touchend', (e) => {
+                        e.preventDefault();
+                        if (this.currentControlledNPC === npc) {
+                            npc.controls[key].isDown = false;
+                        }
+                    });
+                }
+            });
+        }
+
+        // Create unique update handler for this NPC
+        npc.updateHandler = () => {
+            if (!npc || npc.isMoving || npc.isAutonomous || this.currentControlledNPC !== npc) return;
+
+            let newX = npc.gridX;
+            let newY = npc.gridY;
+
+            if (npc.controls.w.isDown) newY--;
+            else if (npc.controls.s.isDown) newY++;
+            else if (npc.controls.a.isDown) newX--;
+            else if (npc.controls.d.isDown) newX++;
+
+            if (newX !== npc.gridX || newY !== npc.gridY) {
+                if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
+                    this.moveNPCTo(npc, newX, newY);
+                }
+            }
+        };
+
+        // Add update handler
+        this.events.on('update', npc.updateHandler);
     }
 
-    getToolsForProfession(professionPrefix) {
-        switch (professionPrefix) {
+    getToolsForProfession(profession) {
+        switch (profession) {
             case 'Farmer':
-                return ['Pá', 'Enxada'];
+                return [
+                    { name: 'Pá', emoji: '🚜', description: 'Usada para arar a terra.' },
+                    { name: 'Semente', emoji: '🌱', description: 'Usada para plantar.' }
+                ];
             case 'Miner':
-                return ['Picareta', 'Lanterna'];
+                return [
+                    { name: 'Picareta', emoji: '⛏️', description: 'Usada para minerar.' },
+                    { name: 'Lanterna', emoji: '🔦', description: 'Ilumina áreas escuras.' }
+                ];
             case 'Fisher':
-                return ['Vara de pesca', 'Rede'];
+                return [
+                    { name: 'Vara de pesca', emoji: '🎣', description: 'Usada para pescar.' },
+                    { name: 'Rede', emoji: '🕸️', description: 'Captura peixes em massa.' }
+                ];
             case 'Lumberjack':
-                return ['Machado', 'Serrote'];
+                return [
+                    { name: 'Machado', emoji: '🪓', description: 'Usado para cortar árvores.' },
+                    { name: 'Serra', emoji: '🪚', description: 'Corta madeira mais rápido.' }
+                ];
             default:
                 return [];
         }
+    }
+
+    getAvailableJobs(npc) {
+        const jobs = [];
+
+        // Trabalho básico para todos
+        jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
+
+        // Trabalhos específicos por profissão
+        if (npc.config.profession === 'Lumberjack') {
+            jobs.push({ 
+                id: 'lumber', 
+                name: 'Cortar Madeira', 
+                icon: '🪓', 
+                description: 'Corta árvores e coleta madeira.' 
+            });
+        }
+
+        return jobs;
     }
 }
