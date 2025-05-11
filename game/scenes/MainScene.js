@@ -12,6 +12,7 @@ export default class MainScene extends Phaser.Scene {
             'Farmer': '🥕',
             'Miner': '⛏️',
             'Fisher': '🎣',
+            'Lumberjack': '🪓',
             'Villager': '👤'
         };
         this.professionNames = {
@@ -26,6 +27,10 @@ export default class MainScene extends Phaser.Scene {
             minerHouse: {
                 prefix: 'Miner',
                 names: ['Max', 'Sam', 'Alex', 'Cole', 'Ruby', 'Jade', 'Rocky', 'Crystal']
+            },
+            lumberHouse: {
+                prefix: 'Lumberjack',
+                names: ['Paul', 'Jack', 'Woody', 'Axel', 'Oak', 'Forest', 'Timber', 'Cedar']
             }
         };
     }

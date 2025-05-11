@@ -203,6 +203,11 @@ export default class BaseNPC {
                 { name: 'Vara', emoji: '🎣', description: 'Para pescar' },
                 { name: 'Rede', emoji: '🕸️', description: 'Para pegar peixes' },
                 { name: 'Arpão', emoji: '🔱', description: 'Para peixes grandes' }
+            ],
+            'Lumberjack': [
+                { name: 'Machado', emoji: '🪓', description: 'Para cortar árvores' },
+                { name: 'Serra', emoji: '🪚', description: 'Para serrar madeira' },
+                { name: 'Corda', emoji: '🪢', description: 'Para arrastar troncos' }
             ]
         };
         return toolsets[profession] || [];
