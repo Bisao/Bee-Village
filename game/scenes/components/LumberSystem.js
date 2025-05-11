@@ -124,8 +124,12 @@ export default class LumberSystem {
 
                 // Verifica cada posição adjacente
                 for (const pos of adjacentPositions) {
-                    if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
-                        !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]) {
+                    if (this.scene.grid.isValidPosition(pos.x, pos.y)) {
+                        const key = `${pos.x},${pos.y}`;
+                        const tile = this.scene.grid.buildingGrid[key];
+                        
+                        // Verifica se o tile está livre de construções e outros objetos
+                        if (!tile || (tile.type !== 'building' && tile.type !== 'tree' && tile.type !== 'rock')) {
                         
                         // Calcula distância Manhattan da posição atual do NPC até a posição adjacente
                         const distance = Math.abs(npc.gridX - pos.x) + Math.abs(npc.gridY - pos.y);
@@ -159,15 +163,32 @@ export default class LumberSystem {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
 
-        // Move diretamente para a posição alvo adjacente à árvore
-        await npc.moveTo(tree.targetX, tree.targetY);
-        
-        // Verifica se chegou adjacente à árvore
-        if (this.isAdjacentToTree(npc, tree)) {
-            return true;
+        // Tenta encontrar um caminho até a árvore
+        const path = this.findPathToTree(npc, tree);
+        if (!path) {
+            console.log('Não foi possível encontrar caminho até a árvore');
+            return false;
         }
 
-        return false;
+        // Move através do caminho encontrado
+        for (const pos of path) {
+            await npc.moveTo(pos.x, pos.y);
+            if (npc.isMoving) {
+                await new Promise(resolve => {
+                    const checkInterval = setInterval(() => {
+                        if (!npc.isMoving) {
+                            clearInterval(checkInterval);
+                            resolve();
+                        }
+                    }, 100);
+                });
+            }
+        }
+
+        // Move para a posição final adjacente à árvore
+        await npc.moveTo(tree.targetX, tree.targetY);
+        
+        return this.isAdjacentToTree(npc, tree);
     }
 
     findPathToTree(npc, tree) {
