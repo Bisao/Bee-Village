@@ -185,9 +185,11 @@ export default class BaseNPC {
     }
 
     moveTo(newX, newY) {
-        if (this.isMoving) return;
+        if (this.isMoving || !this.sprite || !this.sprite.active) return;
 
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
+        if (!tileX || !tileY) return;
+        
         this.isMoving = true;
 
         // Configura a animação padrão
