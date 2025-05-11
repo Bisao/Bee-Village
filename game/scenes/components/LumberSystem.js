@@ -26,7 +26,7 @@ export default class LumberSystem {
 
         this.isWorking = true;
         npc.currentJob = 'lumber';
-        npc.isAutonomous = true;
+        npc.isAutonomous = false;
 
         this.workCycle(npc);
     }

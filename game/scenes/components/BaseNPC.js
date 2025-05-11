@@ -100,13 +100,7 @@ export default class BaseNPC {
         if (!this.isAutonomous) return;
 
         if (this.currentJob === 'lumber') {
-            const lumberSystem = this.scene.lumberSystem;
-            if (lumberSystem && lumberSystem.isWorking) {
-                const tree = lumberSystem.findNearestTree(this);
-                if (tree) {
-                    lumberSystem.moveToTree(this, tree);
-                }
-            }
+            // Continua o trabalho de lenhador
             return;
         }
 
