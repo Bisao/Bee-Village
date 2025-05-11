@@ -972,6 +972,20 @@ export default class MainScene extends Phaser.Scene {
                             </div>
                         `).join('')}
                     </div>
+                    <script>
+                        document.querySelectorAll('.job-option').forEach(option => {
+                            option.addEventListener('click', (e) => {
+                                const jobId = option.dataset.job;
+                                if (jobId === 'lumber') {
+                                    if (!npc.lumberSystem) {
+                                        npc.lumberSystem = new LumberSystem(this.scene);
+                                    }
+                                    npc.lumberSystem.startWorking(npc);
+                                    modal.remove();
+                                }
+                            });
+                        });
+                    </script>
                 </div>
             </div>
         `;
@@ -1219,12 +1233,21 @@ export default class MainScene extends Phaser.Scene {
     }
 
     getAvailableJobs(npc) {
-        // Defina os trabalhos disponíveis aqui
-        const jobs = [
-            { id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' },
-            { id: 'gather', name: 'Coletar', icon: '🧺', description: 'Coleta recursos.' },
-            { id: 'build', name: 'Construir', icon: '🔨', description: 'Constrói estruturas.' }
-        ];
+        const jobs = [];
+        
+        // Trabalho básico para todos
+        jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
+        
+        // Trabalhos específicos por profissão
+        if (npc.config.profession === 'Lumberjack') {
+            jobs.push({ 
+                id: 'lumber', 
+                name: 'Cortar Madeira', 
+                icon: '🪓', 
+                description: 'Corta árvores e coleta madeira.' 
+            });
+        }
+
         return jobs;
     }
 }

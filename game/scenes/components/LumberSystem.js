@@ -20,8 +20,19 @@ export default class LumberSystem {
     }
 
     startWorking(npc) {
-        if (this.isWorking) return;
+        if (this.isWorking) {
+            console.log('Já está trabalhando');
+            return;
+        }
+        
+        if (npc.config.profession !== 'Lumberjack') {
+            console.log('NPC não é lenhador');
+            return;
+        }
+        
+        console.log('Iniciando trabalho de lenhador');
         this.isWorking = true;
+        npc.currentJob = 'lumber';
         npc.config.emoji = '🔍';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         this.workCycle(npc);
