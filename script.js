@@ -199,6 +199,35 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Settings management functions
+function toggleFullScreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Erro ao tentar entrar em tela cheia: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
+
+// Adiciona listeners para o botão de tela cheia
+document.addEventListener('DOMContentLoaded', () => {
+    const fullscreenButton = document.getElementById('fullscreen-button');
+    const playButton = document.getElementById('play-button');
+    
+    if (fullscreenButton) {
+        fullscreenButton.addEventListener('click', toggleFullScreen);
+    }
+    
+    if (playButton) {
+        playButton.addEventListener('click', () => {
+            toggleFullScreen();
+            // Adicione aqui qualquer outra lógica necessária ao clicar em play
+        });
+    }
+});
+
 function loadSettings() {
     const defaultSettings = {
         gameSound: 50,

@@ -209,6 +209,15 @@ html, body {
     box-shadow: 0 6px 20px rgba(255, 215, 0, 0.4);
 }
 
+#fullscreen-button {
+    padding: 8px 15px;
+    margin: 0 10px;
+}
+
+.fullscreen-icon {
+    font-size: 1.5em;
+}
+
 @keyframes beeHover {
     0% { transform: translateY(0) rotate(5deg); }
     25% { transform: translateY(-5px) rotate(-5deg); }
