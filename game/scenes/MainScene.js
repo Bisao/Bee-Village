@@ -433,7 +433,7 @@ export default class MainScene extends Phaser.Scene {
             'well|WaterWell',
             'windmill|Windmill',
             'farmerHouse|FarmerHouse',
-            'fishermanHouse|fishermanHouse',
+            'fishermanHouse|FishermanHouse',
             'lumberHouse|LumberJackHouse',
             'minerHouse|MinerHouse'
         ];
@@ -601,7 +601,11 @@ export default class MainScene extends Phaser.Scene {
             // Validações iniciais
             if (!this.selectedBuilding) {
                 console.log('No building selected');
-                return;
+                return false;
+            }
+            if (!worldX || !worldY) {
+                console.error('Invalid world coordinates');
+                return false;
             }
 
             if (!this.grid.isValidPosition(gridX, gridY)) {
