@@ -45,6 +45,17 @@ export default class LumberSystem {
                     continue;
                 }
 
+                // Procura todas as árvores não cortadas
+                const trees = this.findAllTrees();
+                if (trees.length === 0) {
+                    console.log('Todas as árvores foram cortadas');
+                    await this.waitFor(3000);
+                    continue;
+                }
+
+                // Processa cada árvore encontrada
+                for (const tree of trees) {
+
                 // 1. Procurar árvore disponível
                 npc.config.emoji = '🔍';
                 npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
@@ -382,3 +393,21 @@ export default class LumberSystem {
         }
     }
 }
+    findAllTrees() {
+        const trees = [];
+        
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value && value.type === 'tree' && value.sprite && !value.isCut && 
+                ['tree_simple', 'tree_pine', 'tree_fruit'].includes(value.sprite.texture.key)) {
+                const [treeX, treeY] = key.split(',').map(Number);
+                trees.push({ 
+                    gridX: treeX, 
+                    gridY: treeY, 
+                    sprite: value.sprite,
+                    key: key
+                });
+            }
+        }
+        
+        return trees;
+    }
