@@ -57,6 +57,20 @@ export default class MainScene extends Phaser.Scene {
         this.input.on('pointermove', this.updatePreview, this);
 
         this.placeEnvironmentObjects();
+        
+        // Adicionar casa de lenhador inicial
+        this.placeBuilding(1, 1, 
+            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
+            'lumberHouse'
+        );
+        
+        // Adicionar silo inicial
+        this.placeBuilding(3, 1,
+            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
+            'silo'
+        );
 
         // Define zoom inicial diferente para mobile e desktop
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
