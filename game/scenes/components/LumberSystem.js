@@ -103,7 +103,8 @@ export default class LumberSystem {
         let shortestDistance = Infinity;
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value && value.type === 'tree' && value.sprite && !value.isCut) {
+            if (value && value.type === 'tree' && value.sprite && !value.isCut && 
+                ['tree_simple', 'tree_pine', 'tree_fruit'].includes(value.sprite.texture.key)) {
                 const [x, y] = key.split(',').map(Number);
                 const distance = Math.abs(npc.gridX - x) + Math.abs(npc.gridY - y);
 

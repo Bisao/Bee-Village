@@ -485,7 +485,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     placeTrees() {
-        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit', 'tree_autumn'];
+        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit'];
         this.placeObjects(treeTypes, 15, 'tree');
     }
 
