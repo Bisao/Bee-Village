@@ -612,7 +612,7 @@ export default class MainScene extends Phaser.Scene {
             };
 
             // Create NPC for each house if it's a valid house type
-            if (['farmerHouse', 'minerHouse', 'fishermanHouse'].includes(this.selectedBuilding)) {
+            if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY);
             }
 
