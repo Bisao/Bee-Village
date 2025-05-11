@@ -12,6 +12,15 @@ placeBuilding(gridX, gridY, worldX, worldY) {
     this.updateGridState(gridX, gridY, building);
     this.provideVisualFeedback(gridX, gridY);
 
+    // Validar se é uma casa que pode ter NPC
+    const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
+    const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+
+    // Create NPC for each house if it's a valid house type
+    if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
+        this.createFarmerNPC(gridX, gridY, worldX, worldY);
+    }
+
     return true;
 }
 
@@ -46,9 +55,6 @@ provideVisualFeedback(gridX, gridY) {
             ease: 'Power2'
         });
     }
-}
-
-    //rest of the placeBuilding function would go here.
 }
 
 autoSave() {
