@@ -21,6 +21,20 @@ placeBuilding(gridX, gridY, worldX, worldY) {
         this.createFarmerNPC(gridX, gridY, worldX, worldY);
     }
 
+    // Add click handler for silo
+    if (this.selectedBuilding === 'silo') {
+        building.setInteractive();
+        building.on('pointerdown', () => this.showSiloModal([
+            { name: 'Sementes', icon: '🌾', amount: 0 },
+            { name: 'Trigo', icon: '🌾', amount: 0 },
+            { name: 'Cenoura', icon: '🥕', amount: 0 },
+            { name: 'Milho', icon: '🌽', amount: 0 },
+            { name: 'Madeira', icon: '🪵', amount: 0 },
+            { name: 'Peixe', icon: '🐟', amount: 0 },
+            { name: 'Minério', icon: '⛏️', amount: 0 }
+        ]));
+    }
+
     return true;
 }
 
