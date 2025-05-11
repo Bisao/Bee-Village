@@ -182,6 +182,18 @@ showSiloModal(resources) {
 
         const modal = document.createElement('div');
         modal.className = 'silo-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        `;
         modal.innerHTML = `
             <div class="silo-content">
                 <div class="silo-header">
