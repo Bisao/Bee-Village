@@ -54,12 +54,20 @@ export default class LumberSystem {
 
     async workCycle(npc) {
         try {
+            if (this.hasCompletedCycle) {
+                npc.returnHome();
+                this.stopWorking();
+                return;
+            }
+
             console.log('Iniciando ciclo de trabalho do lenhador');
             
             // 1. Encontrar árvore mais próxima
             const tree = this.findNearestTree(npc);
             if (!tree) {
                 console.log('Nenhuma árvore disponível');
+                npc.returnHome();
+                this.stopWorking();
                 return;
             }
 
@@ -84,6 +92,9 @@ export default class LumberSystem {
                 await this.depositResources(npc);
             }
 
+            // Marcar ciclo como completo
+            this.hasCompletedCycle = true;
+            
             // 5. Retornar para casa
             npc.returnHome();
             this.stopWorking();
