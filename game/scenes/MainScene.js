@@ -647,19 +647,14 @@ export default class MainScene extends Phaser.Scene {
             if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
                     if (this.selectedBuilding === 'lumberHouse' && npc) {
-                        // Inicializa o sistema de trabalho do lenhador
+                        // Inicializa o sistema de trabalho do lenhador imediatamente
                         npc.lumberSystem = new LumberSystem(this);
                         npc.isAutonomous = false;
-
-                        // Aguarda o NPC sair da casa antes de começar a trabalhar
-                        this.time.delayedCall(1000, () => {
-                            if (npc && npc.config) {
-                                npc.currentJob = 'lumber';
-                                npc.lumberSystem.startWorking(npc);
-                                npc.lumberSystem.isWorking = true;
-                                console.log('Lenhador iniciou o trabalho:', npc.config.name);
-                            }
-                        });
+                        npc.currentJob = 'lumber';
+                        npc.config.emoji = '🪓';
+                        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                        npc.lumberSystem.startWorking(npc);
+                        console.log('Lenhador iniciou o trabalho:', npc.config.name);
                     }
                 });
             }

@@ -29,15 +29,13 @@ export default class LumberSystem {
         this.isWorking = true;
         npc.currentJob = 'lumber';
         npc.isAutonomous = false;
-        npc.config.emoji = '🪓';
-        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
-        // Força início imediato do ciclo de trabalho
+        // Inicia o ciclo de trabalho imediatamente
         this.workCycle(npc);
         
-        // Garante que o ciclo continue
-        this.scene.time.addEvent({
-            delay: 2000,
+        // Monitora e mantém o ciclo de trabalho ativo
+        this.workTimer = this.scene.time.addEvent({
+            delay: 1000,
             callback: () => {
                 if (!this.isWorking) {
                     this.isWorking = true;
