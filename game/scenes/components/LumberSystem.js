@@ -54,7 +54,7 @@ export default class LumberSystem {
         let shortestDistance = Infinity;
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (value.type === 'tree' && !value.isCut) {
+            if (value && value.type === 'tree' && !value.isCut && value.sprite && value.sprite.visible) {
                 const [x, y] = key.split(',').map(Number);
                 const distance = Phaser.Math.Distance.Between(
                     npc.gridX, npc.gridY,
@@ -119,6 +119,24 @@ export default class LumberSystem {
         return new Promise(resolve => {
             const nameTextY = targetY - 64;
             
+            // Criar linha pontilhada
+            const pathGraphics = this.scene.add.graphics();
+            pathGraphics.lineStyle(2, 0xffffff, 0.8);
+            pathGraphics.beginPath();
+            pathGraphics.moveTo(npc.sprite.x, npc.sprite.y - 32);
+            pathGraphics.lineTo(targetX, targetY - 32);
+            pathGraphics.strokePath();
+
+            // Adicionar efeito pontilhado
+            const length = Phaser.Math.Distance.Between(npc.sprite.x, npc.sprite.y, targetX, targetY);
+            const dots = Math.floor(length / 10);
+            for (let i = 0; i < dots; i++) {
+                const t = i / dots;
+                const x = Phaser.Math.Linear(npc.sprite.x, targetX, t);
+                const y = Phaser.Math.Linear(npc.sprite.y - 32, targetY - 32, t);
+                pathGraphics.fillCircle(x, y, 2);
+            }
+            
             this.scene.tweens.add({
                 targets: [npc.sprite, npc.nameText],
                 x: targetX,
@@ -130,6 +148,7 @@ export default class LumberSystem {
                 onComplete: () => {
                     npc.sprite.setDepth(npc.gridY + 2);
                     npc.nameText.setDepth(npc.gridY + 3);
+                    pathGraphics.destroy();
                     resolve();
                 }
             });
