@@ -801,7 +801,11 @@ export default class MainScene extends Phaser.Scene {
                 emoji: this.getProfessionEmoji(nameData?.prefix),
                 spritesheet: 'farmer',
                 scale: 0.8,
-                movementDelay: 2000
+                movementDelay: 2000,
+                tools: this.getToolsForProfession(nameData?.prefix), // Adiciona as ferramentas
+                level: 1,
+                xp: 0,
+                maxXp: 100
             };
 
             // Create NPC instance
@@ -896,15 +900,8 @@ export default class MainScene extends Phaser.Scene {
         // Cleanup previous NPC controls
         this.cleanupNPCControls();
 
-        // Exemplo de inventário (pode ser expandido para um sistema real)
-        const inventory = [
-            '🌾', '🥕', '⛏️', null,
-            '🪓', '🎣', null, null,
-            '💎', null, null, null
-        ];
-
         const modal = document.createElement('div');
-        modal.className = 'npc-modal';
+        modal.className ='npc-modal';
         modal.innerHTML = `
             <div class="modal-content">
                 <button class="close-button">✕</button>
@@ -943,19 +940,56 @@ export default class MainScene extends Phaser.Scene {
                     </p>
                 </div>
 
-                <div class="npc-inventory">
-                    ${npc.config.tools.map(tool => `
-                        <div class="tool-slot">
-                            <div class="tool-emoji">${tool.emoji}</div>
-                            <div class="tool-name">${tool.name}</div>
-                            <div class="tool-description">${tool.description}</div>
-                        </div>
-                    `).join('')}
+                <div class="modal-tabs">
+                    <button class="modal-tab active" data-tab="inventory">Inventário</button>
+                    <button class="modal-tab" data-tab="jobs">Trabalhos</button>
+                </div>
+
+                <div class="tab-panel active" id="inventory-panel">
+                    <div class="npc-inventory">
+                        ${npc.config.tools.map(tool => `
+                            <div class="tool-slot">
+                                <div class="tool-emoji">${tool.emoji}</div>
+                                <div class="tool-name">${tool.name}</div>
+                                <div class="tool-description">${tool.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="tab-panel" id="jobs-panel">
+                    <div class="jobs-list">
+                        ${this.getAvailableJobs(npc).map(job => `
+                            <div class="job-option ${npc.currentJob === job.id ? 'active' : ''}" data-job="${job.id}">
+                                <div class="job-icon">${job.icon}</div>
+                                <div class="job-info">
+                                    <div class="job-name">${job.name}</div>
+                                    <div class="job-description">${job.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             </div>
         `;
 
         document.body.appendChild(modal);
+
+        // Adiciona manipuladores de eventos para as abas
+        modal.querySelectorAll('.modal-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Remove a classe 'active' de todas as abas e painéis
+                modal.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                modal.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+
+                // Adiciona a classe 'active' à aba clicada
+                tab.classList.add('active');
+
+                // Mostra o painel correspondente
+                const tabId = tab.dataset.tab;
+                document.getElementById(`${tabId}-panel`).classList.add('active');
+            });
+        });
 
         modal.querySelector('#autonomous').onclick = () => {
             // Transição suave da câmera
@@ -1140,4 +1174,40 @@ export default class MainScene extends Phaser.Scene {
         this.events.on('update', npc.updateHandler);
     }
 
+    getToolsForProfession(profession) {
+        switch (profession) {
+            case 'Farmer':
+                return [
+                    { name: 'Pá', emoji: '🚜', description: 'Usada para arar a terra.' },
+                    { name: 'Semente', emoji: '🌱', description: 'Usada para plantar.' }
+                ];
+            case 'Miner':
+                return [
+                    { name: 'Picareta', emoji: '⛏️', description: 'Usada para minerar.' },
+                    { name: 'Lanterna', emoji: '🔦', description: 'Ilumina áreas escuras.' }
+                ];
+            case 'Fisher':
+                return [
+                    { name: 'Vara de pesca', emoji: '🎣', description: 'Usada para pescar.' },
+                    { name: 'Rede', emoji: '🕸️', description: 'Captura peixes em massa.' }
+                ];
+            case 'Lumberjack':
+                return [
+                    { name: 'Machado', emoji: '🪓', description: 'Usado para cortar árvores.' },
+                    { name: 'Serra', emoji: '🪚', description: 'Corta madeira mais rápido.' }
+                ];
+            default:
+                return [];
+        }
+    }
+
+    getAvailableJobs(npc) {
+        // Defina os trabalhos disponíveis aqui
+        const jobs = [
+            { id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' },
+            { id: 'gather', name: 'Coletar', icon: '🧺', description: 'Coleta recursos.' },
+            { id: 'build', name: 'Construir', icon: '🔨', description: 'Constrói estruturas.' }
+        ];
+        return jobs;
+    }
 }

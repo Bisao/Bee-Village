@@ -1228,6 +1228,80 @@ html, body {
     margin-top: 4px;
 }
 
+.modal-tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-tab {
+    padding: 8px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-tab.active {
+    background: var(--primary-color);
+    color: var(--button-text);
+}
+
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.jobs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.job-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--primary-color);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.job-option:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.job-option.active {
+    background: var(--primary-color);
+}
+
+.job-icon {
+    font-size: 1.5em;
+}
+
+.job-info {
+    flex: 1;
+}
+
+.job-name {
+    font-size: 1em;
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+.job-description {
+    font-size: 0.8em;
+    opacity: 0.8;
+}
+
 .inventory-slot {
     aspect-ratio: 1;
     background: rgba(255, 255, 255, 0.1);
