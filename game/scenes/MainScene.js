@@ -903,7 +903,6 @@ export default class MainScene extends Phaser.Scene {
         this.cleanupNPCControls();
 
         const modal = document.createElement('div');
-</replit_finalfile>
         modal.id = 'npc-controls-modal';
         modal.style.cssText = `
             position: fixed;
