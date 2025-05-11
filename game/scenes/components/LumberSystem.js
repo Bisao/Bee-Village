@@ -200,6 +200,17 @@ export default class LumberSystem {
             path: []
         }];
 
+        // Função auxiliar para verificar se uma posição é válida
+        const isValidPosition = (x, y) => {
+            if (!this.scene.grid.isValidPosition(x, y)) return false;
+            
+            const key = `${x},${y}`;
+            const tile = this.scene.grid.buildingGrid[key];
+            
+            // Permite caminhar em tiles vazios ou no tile da árvore alvo
+            return !tile || (x === tree.gridX && y === tree.gridY);
+        };
+
         while (queue.length > 0) {
             const current = queue.shift();
             const key = `${current.x},${current.y}`;
@@ -209,26 +220,34 @@ export default class LumberSystem {
 
             // Verifica se está adjacente à árvore
             if (Math.abs(current.x - tree.gridX) + Math.abs(current.y - tree.gridY) === 1) {
-                return current.path;
+                // Verifica se a posição atual é válida para corte
+                const canCutFromHere = isValidPosition(current.x, current.y);
+                if (canCutFromHere) {
+                    return current.path;
+                }
             }
 
-            // Adiciona movimentos possíveis
+            // Lista de movimentos possíveis com pesos
             const moves = [
-                {dx: 0, dy: 1},  // baixo
-                {dx: 1, dy: 0},  // direita
-                {dx: 0, dy: -1}, // cima
-                {dx: -1, dy: 0}  // esquerda
+                {dx: 0, dy: 1, priority: 1},   // baixo
+                {dx: 1, dy: 0, priority: 2},   // direita
+                {dx: 0, dy: -1, priority: 1},  // cima
+                {dx: -1, dy: 0, priority: 2},  // esquerda
+                {dx: 1, dy: 1, priority: 3},   // diagonal
+                {dx: -1, dy: 1, priority: 3},
+                {dx: 1, dy: -1, priority: 3},
+                {dx: -1, dy: -1, priority: 3}
             ];
+
+            // Ordena movimentos por prioridade
+            moves.sort((a, b) => a.priority - b.priority);
 
             for (const move of moves) {
                 const newX = current.x + move.dx;
                 const newY = current.y + move.dy;
                 const newKey = `${newX},${newY}`;
 
-                if (!visited.has(newKey) && 
-                    this.scene.grid.isValidPosition(newX, newY) && 
-                    !this.scene.grid.buildingGrid[newKey]) {
-                    
+                if (!visited.has(newKey) && isValidPosition(newX, newY)) {
                     queue.push({
                         x: newX,
                         y: newY,
@@ -238,7 +257,7 @@ export default class LumberSystem {
             }
         }
 
-        return null;
+        return null; // Nenhum caminho encontrado
     }
 
     drawPathLine(npc, targetX, targetY) {
