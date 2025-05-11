@@ -5,7 +5,7 @@ export default class LumberSystem {
         this.currentTree = null;
         this.isProcessingTree = false;
         this.cuttingTime = 15000;
-        this.treeRespawnTime = 60000;
+        this.treeRespawnTime = 300000;
         this.resources = {
             'wood': '🪵',
             'log': '🌳'
