@@ -355,7 +355,7 @@ export default class MainScene extends Phaser.Scene {
 
         // Load farmer sprites
         for (let i = 1; i <= 12; i++) {
-            this.load.image(`farmer${i}`, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+            this.load.image(`farmer${i}`, `game/assets/shared/Farmer_${i}-ezgif.com-resize.png`);
         }
 
         // Load tiles
