@@ -6,6 +6,7 @@ export default class LumberSystem {
         this.currentTree = null;
         this.cuttingTime = 5000; // 5 segundos para cortar
         this.treeRespawnTime = 40000; // 40 segundos para reaparecer
+        this.movementSpeed = 100;
         this.resources = {
             'wood': '🪵',
             'log': '🌳'
@@ -27,6 +28,8 @@ export default class LumberSystem {
             const tree = this.findNearestTree(npc);
             if (!tree) {
                 console.log('Nenhuma árvore disponível');
+                npc.config.emoji = '💤';
+                npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                 await this.waitFor(2000);
                 continue;
             }
@@ -41,45 +44,85 @@ export default class LumberSystem {
             const silo = this.findNearestSilo(npc);
             if (silo) {
                 await this.moveToSilo(npc, silo);
-                await this.depositResources(npc);
+                await this.depositResources(npc, silo);
             }
         }
     }
 
     findNearestTree(npc) {
-        // Procura no buildingGrid por árvores
+        let nearestTree = null;
+        let shortestDistance = Infinity;
+
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
             if (value.type === 'tree' && !value.isCut) {
                 const [x, y] = key.split(',').map(Number);
-                return { gridX: x, gridY: y, sprite: value.sprite };
+                const distance = Phaser.Math.Distance.Between(
+                    npc.gridX, npc.gridY,
+                    x, y
+                );
+
+                if (distance < shortestDistance) {
+                    shortestDistance = distance;
+                    nearestTree = { gridX: x, gridY: y, sprite: value.sprite };
+                }
             }
         }
-        return null;
+        return nearestTree;
     }
 
     findNearestSilo(npc) {
-        // Procura no buildingGrid por silos
+        let nearestSilo = null;
+        let shortestDistance = Infinity;
+
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
             if (value.buildingType === 'silo') {
                 const [x, y] = key.split(',').map(Number);
-                return { gridX: x, gridY: y, sprite: value.sprite };
+                const distance = Phaser.Math.Distance.Between(
+                    npc.gridX, npc.gridY,
+                    x, y
+                );
+
+                if (distance < shortestDistance) {
+                    shortestDistance = distance;
+                    nearestSilo = { gridX: x, gridY: y, sprite: value.sprite };
+                }
             }
         }
-        return null;
+        return nearestSilo;
     }
 
     async moveToTree(npc, tree) {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-        // Implementar movimento até a árvore
-        await this.waitFor(1000);
+        
+        const position = this.scene.grid.gridToIso(tree.gridX, tree.gridY);
+        await this.moveNPC(npc, position.tileX, position.tileY);
+        npc.gridX = tree.gridX;
+        npc.gridY = tree.gridY;
+    }
+
+    async moveNPC(npc, targetX, targetY) {
+        return new Promise(resolve => {
+            this.scene.tweens.add({
+                targets: npc.sprite,
+                x: targetX,
+                y: targetY,
+                duration: this.calculateMovementDuration(npc.sprite.x, npc.sprite.y, targetX, targetY),
+                ease: 'Linear',
+                onComplete: resolve
+            });
+        });
+    }
+
+    calculateMovementDuration(startX, startY, endX, endY) {
+        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+        return (distance / this.movementSpeed) * 1000;
     }
 
     async cutTree(npc, tree) {
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
-        // Efeito de partículas durante o corte
         const cutParticles = this.scene.add.particles(0, 0, 'tile_grass', {
             x: tree.sprite.x,
             y: tree.sprite.y,
@@ -95,14 +138,12 @@ export default class LumberSystem {
         await this.waitFor(this.cuttingTime);
         cutParticles.destroy();
         
-        // Remover árvore temporariamente
         const key = `${tree.gridX},${tree.gridY}`;
         const treeData = this.scene.grid.buildingGrid[key];
         if (treeData) {
             treeData.isCut = true;
             treeData.sprite.setVisible(false);
             
-            // Programar reaparecimento
             this.scene.time.delayedCall(this.treeRespawnTime, () => {
                 if (treeData) {
                     treeData.isCut = false;
@@ -111,7 +152,6 @@ export default class LumberSystem {
             });
         }
         
-        // Adicionar madeira ao inventário do NPC
         if (npc.addItemToStorage('wood')) {
             console.log(`[${npc.config.name}] Cortou madeira`);
         } else {
@@ -122,14 +162,25 @@ export default class LumberSystem {
     async moveToSilo(npc, silo) {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-        // Implementar movimento até o silo
-        await this.waitFor(1000);
+        
+        const position = this.scene.grid.gridToIso(silo.gridX, silo.gridY);
+        await this.moveNPC(npc, position.tileX, position.tileY);
+        npc.gridX = silo.gridX;
+        npc.gridY = silo.gridY;
     }
 
-    async depositResources(npc) {
+    async depositResources(npc, silo) {
         npc.config.emoji = '📦';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-        // Implementar depósito de recursos no silo
+        
+        // Atualizar recursos no silo
+        const siloStorage = this.scene.siloStorage || {};
+        siloStorage.wood = (siloStorage.wood || 0) + npc.storage.wood;
+        this.scene.siloStorage = siloStorage;
+        
+        // Limpar inventário do NPC
+        npc.storage.wood = 0;
+        
         await this.waitFor(1000);
     }
 
