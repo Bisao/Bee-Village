@@ -385,7 +385,7 @@ export default class LumberSystem {
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
         console.log('Depositando recursos no silo...');
-        await this.waitFor(3000); // Pausa antes de depositar
+        await this.waitFor(10000); // 10 segundos para depositar
         
         // Depositar madeira no silo
         if (npc.inventory.wood > 0) {
@@ -415,9 +415,11 @@ export default class LumberSystem {
             await this.waitFor(1000);
         }
         
-        // Resetar emoji e continuar ciclo
+        // Procurar próxima árvore
         npc.config.emoji = '🔍';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+        console.log('Procurando próxima árvore...');
+        await this.waitFor(3000); // 3 segundos procurando
     }
 
     waitFor(ms) {
