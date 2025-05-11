@@ -290,7 +290,31 @@ export default class LumberSystem {
     async depositResources(npc) {
         npc.config.emoji = '📦';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-        await this.waitFor(1000);
+        
+        // Depositar madeira no silo
+        if (npc.inventory.wood > 0) {
+            // Efeito visual de depósito
+            const depositParticles = this.scene.add.particles(0, 0, 'tile_grass', {
+                x: npc.sprite.x,
+                y: npc.sprite.y,
+                speed: { min: 10, max: 30 },
+                scale: { start: 0.2, end: 0 },
+                alpha: { start: 1, end: 0 },
+                lifespan: 800,
+                blendMode: 'ADD',
+                quantity: 1
+            });
+
+            // Atualizar inventário
+            npc.inventory.wood = 0;
+            
+            await this.waitFor(1000);
+            depositParticles.destroy();
+        }
+        
+        // Resetar emoji e continuar ciclo
+        npc.config.emoji = '🔍';
+        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
     }
 
     waitFor(ms) {

@@ -103,8 +103,12 @@ export default class BaseNPC {
     moveRandomly() {
         if (!this.isAutonomous || this.isMoving) return;
 
-        // Sistema de memória de posições visitadas
+        // Sistema de memória de posições visitadas com limite
         this.visitedPositions = this.visitedPositions || new Map();
+        if (this.visitedPositions.size > 50) {
+            const oldestKey = this.visitedPositions.keys().next().value;
+            this.visitedPositions.delete(oldestKey);
+        }
         const key = `${this.gridX},${this.gridY}`;
         this.visitedPositions.set(key, (this.visitedPositions.get(key) || 0) + 1);
 
@@ -269,8 +273,42 @@ export default class BaseNPC {
     addItemToStorage(itemType) {
         if (this.inventory[itemType] < this.inventory.maxCapacity) {
             this.inventory[itemType]++;
+            
+            // Feedback visual
+            const text = this.scene.add.text(
+                this.sprite.x, 
+                this.sprite.y - 40,
+                `+1 ${itemType}`, 
+                { fontSize: '16px', fill: '#fff' }
+            );
+            
+            this.scene.tweens.add({
+                targets: text,
+                y: text.y - 30,
+                alpha: 0,
+                duration: 1000,
+                onComplete: () => text.destroy()
+            });
+            
             return true;
         }
+        
+        // Feedback de inventário cheio
+        const text = this.scene.add.text(
+            this.sprite.x,
+            this.sprite.y - 40,
+            'Inventário cheio!',
+            { fontSize: '16px', fill: '#ff0000' }
+        );
+        
+        this.scene.tweens.add({
+            targets: text,
+            y: text.y - 30,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => text.destroy()
+        });
+        
         return false;
     }
 
