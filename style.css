@@ -301,26 +301,19 @@ html, body {
 
 /* Painel de Estruturas */
 #side-panel {
-  display: none;
-  position: fixed;
-  top: 75px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: min(75%, 500px);
-  height: auto;
-  max-height: calc(100vh - 85px);
-  background: var(--accent-color);
-  backdrop-filter: blur(10px);
-  border: 2px solid var(--primary-color);
-  border-radius: 12px;
-  padding: 20px;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  gap: 15px;
-  z-index: 2000;
-  overflow-y: auto;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    position: fixed;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    max-width: 800px;
+    width: 90%;
+    max-height: 80vh;
+    background: var(--panel-background);
+    border: 2px solid var(--primary-color);
+    border-radius: 15px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    overflow-y: auto;
 }
 
 #side-panel::-webkit-scrollbar {
@@ -374,10 +367,11 @@ html, body {
 @media (max-width: 768px) {
     #side-panel {
         left: 50%;
-        transform: translateX(-50%);
-        top: 70px;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 800px;
         width: 90%;
-        max-width: 400px;
+        max-height: 80vh;
     }
 
     .building-btn {
@@ -730,9 +724,13 @@ html, body {
     }
 
     #side-panel {
-        right: 10px;
-        top: 70px;
-        max-width: 60px;
+        position: fixed;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
     }
 
     .building-btn {
@@ -837,9 +835,10 @@ html, body {
 @media (max-width: 768px) {
     #side-panel {
         left: 50%;
-        transform: translateX(-50%);
-        top: 70px;
-        width: 80%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        max-width: 800px;
+        width: 90%;
         flex-direction: column;
         height: calc(100vh - 180px);
         padding: 8px;
