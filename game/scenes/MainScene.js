@@ -760,7 +760,7 @@ export default class MainScene extends Phaser.Scene {
 
             // Store NPC reference in building grid
             this.grid.buildingGrid[buildingKey].npc = npc;
-            
+
             // Adiciona interatividade à casa
             const house = this.grid.buildingGrid[buildingKey].sprite;
             if (house) {
@@ -912,8 +912,7 @@ export default class MainScene extends Phaser.Scene {
             this.tweens.add({
                 targets: this.cameras.main,
                 zoom: 1.5,
-                duration: 500,
-                ease: 'Power2',
+                duration: 500,ease: 'Power2',
                 onComplete: () => {
                     npc.isAutonomous = true;
                     this.cameras.main.stopFollow();
