@@ -34,8 +34,14 @@ export default class LumberSystem {
     async workCycle(npc) {
         while (this.isWorking) {
             try {
-                // Evita processamento simultâneo
+                // Evita processamento simultâneo e verifica estado
                 if (this.isProcessingTree || npc.isMoving) {
+                    await this.waitFor(500);
+                    continue;
+                }
+
+                // Verificação de estado inicial
+                if (!npc.sprite.active || !npc.sprite.visible) {
                     await this.waitFor(1000);
                     continue;
                 }
