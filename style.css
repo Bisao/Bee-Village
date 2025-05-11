@@ -357,8 +357,7 @@ html, body {
 }
 
 .tab-btn {
-    padding: 10px 25px;
-    min-width: 120px;
+    padding: 10px 20px;
     background: var(--accent-color);
     border: 1px solid var(--primary-color);
     border-radius: 20px;
@@ -369,7 +368,6 @@ html, body {
     font-size: 15px;
     font-weight: 500;
     letter-spacing: 0.5px;
-    text-align: center;
 }
 
 .tab-btn.active {
@@ -396,53 +394,30 @@ html, body {
         left: 50%;
         top: 50%;
         transform: translate(-50%, -50%);
-        width: 95%;
-        max-height: 85vh;
-        padding: 10px;
+        max-width: 800px;
+        width: 90%;
+        max-height: 80vh;
     }
 
     .building-btn {
         width: 100%;
-        min-height: 100px;
+        min-height: 80px;
         padding: 8px;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
     }
 
     .building-btn img {
-        width: 40px;
-        height: 40px;
-        margin-bottom: 5px;
+        width: 35px;
+        height: 35px;
     }
 
     .building-list {
-        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-        gap: 8px;
-        padding: 8px;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 10px;
+        padding: 10px;
     }
 
     .building-info {
-        font-size: 12px;
-        margin-top: auto;
-    }
-
-    .tab-btn {
-        padding: 8px 15px;
-        font-size: 13px;
-        min-width: auto;
-    }
-
-    .panel-tabs {
-        padding: 10px;
-        gap: 8px;
-    }
-
-    #controls-panel {
-        display: block;
-        bottom: 10px;
-        left: 10px;
-        z-index: 2000;
+        font-size: 11px;
     }
 }
 
@@ -460,46 +435,19 @@ html, body {
 @media (max-width: 480px) {
     #side-panel {
         width: 98%;
-        max-width: none;
-        padding: 8px;
-        max-height: 90vh;
+        top: 68px;
+        padding: 5px;
+        max-height: calc(100vh - 75px);
     }
 
     .panel-tabs {
-        padding: 6px;
-        gap: 4px;
+        padding: 4px;
+        gap: 3px;
     }
 
     .tab-btn {
-        padding: 6px 12px;
-        font-size: 12px;
-        white-space: nowrap;
-    }
-
-    .building-list {
-        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    }
-
-    .building-btn {
-        min-height: 90px;
-    }
-
-    .building-info {
-        font-size: 11px;
-    }
-
-    .control-btn {
-        width: 55px;
-        height: 55px;
-        font-size: 20px;
-    }
-
-    #controls-panel {
-        padding: 12px;
-    }
-
-    .controls-grid {
-        gap: 10px;
+        padding: 3px 8px;
+        font-size: clamp(11px, 2.5vw, 12px);
     }
 }
 
@@ -526,7 +474,7 @@ html, body {
 .building-btn {
     position: relative;
     width: 100%;
-    min-height: 160px;
+    min-height: 140px;
     padding: 8px 5px;
     background: var(--accent-color);
     border: 2px solid var(--primary-color);
@@ -542,12 +490,11 @@ html, body {
 .building-info {
     width: 100%;
     margin-top: 2px;
-    padding: 6px;
+    padding: 4px;
     border-top: 1px solid var(--primary-color);
-    font-size: 0.85em;
+    font-size: 11px;
     color: var(--text-color);
     text-align: left;
-    line-height: 1.4;
 }
 
 .building-info p {
