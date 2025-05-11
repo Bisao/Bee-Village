@@ -191,6 +191,9 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
         this.isMoving = true;
 
+        // Configura a animação padrão
+        this.sprite.setTexture('farmer1');
+
         // Mostra o sprite ao sair da casa
         this.sprite.setVisible(true);
 
