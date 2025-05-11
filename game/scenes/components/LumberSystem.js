@@ -110,16 +110,30 @@ export default class LumberSystem {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
-        // Encontrar posição adjacente à árvore
+        // Encontrar posições possíveis ao redor da árvore com prioridade
         const adjacentPositions = [
-            {x: tree.gridX + 1, y: tree.gridY},
-            {x: tree.gridX - 1, y: tree.gridY},
-            {x: tree.gridX, y: tree.gridY + 1},
-            {x: tree.gridX, y: tree.gridY - 1}
-        ].filter(pos => 
-            this.scene.grid.isValidPosition(pos.x, pos.y) && 
-            !this.scene.isTileOccupied(pos.x, pos.y)
-        );
+            {x: tree.gridX + 1, y: tree.gridY, priority: 1},
+            {x: tree.gridX - 1, y: tree.gridY, priority: 1},
+            {x: tree.gridX, y: tree.gridY + 1, priority: 1},
+            {x: tree.gridX, y: tree.gridY - 1, priority: 1},
+            {x: tree.gridX + 1, y: tree.gridY + 1, priority: 2},
+            {x: tree.gridX - 1, y: tree.gridY - 1, priority: 2},
+            {x: tree.gridX + 1, y: tree.gridY - 1, priority: 2},
+            {x: tree.gridX - 1, y: tree.gridY + 1, priority: 2}
+        ].filter(pos => {
+            const isValid = this.scene.grid.isValidPosition(pos.x, pos.y);
+            const isNotOccupied = !this.scene.isTileOccupied(pos.x, pos.y);
+            const hasNoOtherNPC = !this.isPositionOccupiedByNPC(pos.x, pos.y);
+            return isValid && isNotOccupied && hasNoOtherNPC;
+        }).sort((a, b) => {
+            // Ordenar por prioridade e depois por distância
+            if (a.priority !== b.priority) {
+                return a.priority - b.priority;
+            }
+            const distA = Phaser.Math.Distance.Between(npc.gridX, npc.gridY, a.x, a.y);
+            const distB = Phaser.Math.Distance.Between(npc.gridX, npc.gridY, b.x, b.y);
+            return distA - distB;
+        });
 
         if (adjacentPositions.length === 0) {
             console.log('Nenhuma posição válida encontrada próxima à árvore');
@@ -147,40 +161,71 @@ export default class LumberSystem {
         return new Promise(resolve => {
             const nameTextY = targetY - 64;
             
+            // Limpar gráficos anteriores se existirem
+            if (npc.pathGraphics) {
+                npc.pathGraphics.destroy();
+            }
+            
             // Criar linha pontilhada
-            const pathGraphics = this.scene.add.graphics();
-            pathGraphics.lineStyle(2, 0xffffff, 0.8);
-            pathGraphics.beginPath();
-            pathGraphics.moveTo(npc.sprite.x, npc.sprite.y - 32);
-            pathGraphics.lineTo(targetX, targetY - 32);
-            pathGraphics.strokePath();
+            npc.pathGraphics = this.scene.add.graphics();
+            npc.pathGraphics.lineStyle(2, 0xffffff, 0.8);
+            npc.pathGraphics.beginPath();
+            npc.pathGraphics.moveTo(npc.sprite.x, npc.sprite.y - 32);
+            npc.pathGraphics.lineTo(targetX, targetY - 32);
+            npc.pathGraphics.strokePath();
 
-            // Adicionar efeito pontilhado
+            // Adicionar efeito pontilhado com fade
             const length = Phaser.Math.Distance.Between(npc.sprite.x, npc.sprite.y, targetX, targetY);
-            const dots = Math.floor(length / 10);
+            const dots = Math.floor(length / 8);
             for (let i = 0; i < dots; i++) {
                 const t = i / dots;
                 const x = Phaser.Math.Linear(npc.sprite.x, targetX, t);
                 const y = Phaser.Math.Linear(npc.sprite.y - 32, targetY - 32, t);
-                pathGraphics.fillCircle(x, y, 2);
+                const alpha = 1 - (i / dots);
+                npc.pathGraphics.fillStyle(0xffffff, alpha);
+                npc.pathGraphics.fillCircle(x, y, 2);
             }
+
+            // Calcular duração baseada na distância
+            const duration = this.calculateMovementDuration(npc.sprite.x, npc.sprite.y, targetX, targetY);
             
+            // Adicionar efeito de aceleração/desaceleração
             this.scene.tweens.add({
                 targets: [npc.sprite, npc.nameText],
                 x: targetX,
                 y: (target, key, value, targetIndex) => {
                     return targetIndex === 0 ? targetY - 32 : nameTextY;
                 },
-                duration: this.calculateMovementDuration(npc.sprite.x, npc.sprite.y, targetX, targetY),
-                ease: 'Linear',
-                onComplete: () => {
+                duration: duration,
+                ease: 'Power2',
+                onUpdate: () => {
                     npc.sprite.setDepth(npc.gridY + 2);
                     npc.nameText.setDepth(npc.gridY + 3);
-                    pathGraphics.destroy();
+                },
+                onComplete: () => {
+                    if (npc.pathGraphics) {
+                        this.scene.tweens.add({
+                            targets: npc.pathGraphics,
+                            alpha: 0,
+                            duration: 200,
+                            onComplete: () => {
+                                npc.pathGraphics.destroy();
+                                npc.pathGraphics = null;
+                            }
+                        });
+                    }
                     resolve();
                 }
             });
         });
+    }
+
+    calculateMovementDuration(startX, startY, endX, endY) {
+        const distance = Phaser.Math.Distance.Between(startX, startY, endX, endY);
+        // Ajuste a velocidade base e o fator de aceleração
+        const baseSpeed = 80;
+        const speedFactor = Math.min(1.5, Math.max(0.8, distance / 200));
+        return (distance / (baseSpeed * speedFactor));
     }
 
     calculateMovementDuration(startX, startY, endX, endY) {
@@ -298,7 +343,21 @@ export default class LumberSystem {
         return new Promise(resolve => this.scene.time.delayedCall(ms, resolve));
     }
 
+    isPositionOccupiedByNPC(x, y) {
+        // Verifica se há outro NPC na posição
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value.npc && value.npc.gridX === x && value.npc.gridY === y) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     stopWorking() {
         this.isWorking = false;
+        if (this.currentNPC && this.currentNPC.pathGraphics) {
+            this.currentNPC.pathGraphics.destroy();
+            this.currentNPC.pathGraphics = null;
+        }
     }
 }
