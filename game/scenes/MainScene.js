@@ -903,3 +903,84 @@ export default class MainScene extends Phaser.Scene {
         this.cleanupNPCControls();
 
         const modal = document.createElement('div');
+</replit_finalfile>
+        modal.id = 'npc-controls-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            z-index: 1000;
+        `;
+
+        const title = document.createElement('h2');
+        title.textContent = `${npc.config.name} (${npc.config.emoji} ${npc.config.profession})`;
+        modal.appendChild(title);
+
+        const levelInfo = document.createElement('p');
+        levelInfo.textContent = `Level: ${npc.config.level}`;
+        modal.appendChild(levelInfo);
+
+        const xpInfo = document.createElement('p');
+        xpInfo.textContent = `XP: ${npc.config.xp} / ${npc.config.maxXp}`;
+        modal.appendChild(xpInfo);
+
+        // Ferramentas
+        const toolsHeader = document.createElement('h3');
+        toolsHeader.textContent = 'Ferramentas:';
+        modal.appendChild(toolsHeader);
+
+        const toolsList = document.createElement('ul');
+        npc.config.tools.forEach(tool => {
+            const toolItem = document.createElement('li');
+            toolItem.textContent = tool;
+            toolsList.appendChild(toolItem);
+        });
+        modal.appendChild(toolsList);
+
+        const closeButton = document.createElement('button');
+        closeButton.textContent = 'Close';
+        closeButton.onclick = () => {
+            this.cleanupNPCControls();
+        };
+        modal.appendChild(closeButton);
+
+        document.body.appendChild(modal);
+        this.npcControlsModal = modal;
+    }
+
+    cleanupNPCControls() {
+        if (this.npcControlsModal) {
+            this.npcControlsModal.remove();
+            this.npcControlsModal = null;
+        }
+    }
+
+    getRandomName(buildingType) {
+        const names = this.professionNames[buildingType].names;
+        return this.professionNames[buildingType].prefix + ' ' + names[Math.floor(Math.random() * names.length)];
+    }
+
+    getProfessionEmoji(professionPrefix) {
+        return this.professionEmojis[professionPrefix] || '👤';
+    }
+
+    getToolsForProfession(professionPrefix) {
+        switch (professionPrefix) {
+            case 'Farmer':
+                return ['Pá', 'Enxada'];
+            case 'Miner':
+                return ['Picareta', 'Lanterna'];
+            case 'Fisher':
+                return ['Vara de pesca', 'Rede'];
+            case 'Lumberjack':
+                return ['Machado', 'Serrote'];
+            default:
+                return [];
+        }
+    }
+}
