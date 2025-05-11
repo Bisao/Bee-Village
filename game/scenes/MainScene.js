@@ -910,7 +910,10 @@ export default class MainScene extends Phaser.Scene {
                         ${npc.config.emoji}
                     </div>
                     <div class="npc-info">
-                        <h3>${npc.config.name}</h3>
+                        <div class="npc-name-row">
+                            <h3>${npc.config.name}</h3>
+                            <button class="camera-follow-btn">👁️ Seguir</button>
+                        </div>
                         <p class="npc-profession">${npc.config.profession}</p>
                         <div class="npc-level-info">
                             <span class="level-text">Nível ${npc.config.level}</span>
@@ -1030,6 +1033,20 @@ export default class MainScene extends Phaser.Scene {
         const closeButton = modal.querySelector('.close-button');
         closeButton.onclick = () => {
             modal.remove();
+        };
+
+        // Configure camera follow button
+        const cameraButton = modal.querySelector('.camera-follow-btn');
+        cameraButton.onclick = () => {
+            this.cameras.main.startFollow(npc.sprite, true);
+            modal.remove();
+            
+            // Add click handler to stop following
+            const clickHandler = () => {
+                this.cameras.main.stopFollow();
+                this.input.off('pointerdown', clickHandler);
+            };
+            this.input.on('pointerdown', clickHandler);
         };
 
         // Close on clicking outside

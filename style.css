@@ -1167,6 +1167,28 @@ html, body {
     flex: 1;
 }
 
+.npc-name-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.camera-follow-btn {
+    padding: 5px 10px;
+    background: var(--accent-color);
+    border: 1px solid var(--primary-color);
+    color: var(--text-color);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: all 0.2s ease;
+}
+
+.camera-follow-btn:hover {
+    background: var(--primary-color);
+    color: var(--button-text);
+}
+
 .control-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
