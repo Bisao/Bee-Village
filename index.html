@@ -1,17 +1,213 @@
-
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>My Village</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Isometric Game</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
 </head>
 <body>
-    <div id="game"></div>
-    <script type="module" src="game/config.js"></script>
+    <div id="start-screen" class="start-screen">
+        <h1><span class="theme-emoji"></span> My Village <span class="theme-emoji"></span></h1>
+        <div class="start-buttons-panel">
+            <span class="theme-icon play"></span>
+            <button id="play-button">Jogar</button>
+            <button id="settings-button">Configurações</button>
+        </div>
+    </div>
+
+    <div id="settings-panel" class="settings-panel">
+        <div class="settings-header">
+            <button class="back-button">🔙</button>
+            <h2>Configurações</h2>
+        </div>
+        <div class="settings-content">
+            <!-- Add settings options here -->
+            <div class="setting-item">
+                <label>Som</label>
+                <input type="range" min="0" max="100" value="50">
+            </div>
+            <div class="setting-item">
+                <label>Música</label>
+                <input type="range" min="0" max="100" value="50">
+            </div>
+            <div class="setting-item themes">
+                <label>Temas</label>
+                <div class="theme-options">
+                    <button class="theme-btn selected" data-theme="bee" data-emoji="🐝">🐝 Abelha</button>
+                    <button class="theme-btn" data-theme="pig" data-emoji="🐖">🐖 Porco</button>
+                    <button class="theme-btn" data-theme="cow" data-emoji="🐄">🐄 Vaca</button>
+                </div>
+            </div>
+            <button id="apply-theme" class="apply-theme-btn">Aplicar Tema</button>
+        </div>
+    </div>
+    <div id="loading-screen" class="loading-overlay" style="display: none;">
+        <div class="loading-container">
+            <div class="loading-bar">
+                <div class="loading-progress"></div>
+            </div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+    <div id="game-ui">
+        <div class="topbar">
+            <span class="save-indicator">💾</span>
+            <h1><span class="flower">🌻</span>My Village<span class="bee">🐝</span></h1>
+            <button class="structure-button" id="toggleStructures">
+                <img src="game/assets/buildings/FarmerHouse.png" alt="Estruturas">
+            </button>
+        </div>
+        <div id="controls-panel">
+            <div class="controls-grid">
+                <button class="control-btn mobile-up">W</button>
+                <button class="control-btn mobile-left">A</button>
+                <button class="control-btn mobile-down">S</button>
+                <button class="control-btn mobile-right">D</button>
+            </div>
+        </div>
+        <div id="side-panel">
+            <div class="panel-tabs">
+                <button class="tab-btn active" data-tab="structures">Estruturas</button>
+                <button class="tab-btn" data-tab="terrains">Terrenos</button>
+                <button class="tab-btn" data-tab="seeds">Sementes</button>
+                <button class="tab-btn" data-tab="vehicles">Veículos</button>
+            </div>
+            <div class="tab-content active" id="structures-tab">
+                <h3 class="section-title">Casas de NPCs</h3>
+                <div class="building-list">
+                    <button class="building-btn" data-building="farmerHouse">
+                        <img src="game/assets/buildings/FarmerHouse.png" alt="Casa do Fazendeiro">
+                        <div class="building-info">
+                            <p>Casa do Fazendeiro</p>
+                            <p>🪙 1000</p>
+                            <p>🪵 50</p>
+                            <p>🪨 30</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-building="minerHouse">
+                        <img src="game/assets/buildings/MinerHouse.png" alt="Casa do Minerador">
+                        <div class="building-info">
+                            <p>Casa do Minerador</p>
+                            <p>🪙 1200</p>
+                            <p>🪵 60</p>
+                            <p>🪨 45</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-building="fishermanHouse">
+                        <img src="game/assets/buildings/fishermanHouse.png" alt="Casa do Pescador">
+                        <div class="building-info">
+                            <p>Casa do Pescador</p>
+                            <p>🪙 900</p>
+                            <p>🪵 45</p>
+                            <p>🪨 25</p>
+                        </div>
+                    </button>
+                </div>
+                
+                <h3 class="section-title">Estruturas de Animais</h3>
+                <div class="building-list">
+                    <button class="building-btn" data-building="cowHouse">
+                        <img src="game/assets/buildings/CowHouse.png" alt="Estábulo">
+                        <div class="building-info">
+                            <p>Estábulo</p>
+                            <p>🪙 800</p>
+                            <p>🪵 40</p>
+                            <p>🪨 25</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-building="chickenHouse">
+                        <img src="game/assets/buildings/ChickenHouse.png" alt="Galinheiro">
+                        <div class="building-info">
+                            <p>Galinheiro</p>
+                            <p>🪙 400</p>
+                            <p>🪵 25</p>
+                            <p>🪨 15</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-building="pigHouse">
+                        <img src="game/assets/buildings/PigHouse.png" alt="Chiqueiro">
+                        <div class="building-info">
+                            <p>Chiqueiro</p>
+                            <p>🪙 600</p>
+                            <p>🪵 35</p>
+                            <p>🪨 18</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            </div>
+            <div class="tab-content" id="terrains-tab">
+                <div class="building-list">
+                    <!-- Future terrain content -->
+                </div>
+            </div>
+            <div class="tab-content" id="seeds-tab">
+                <div class="building-list">
+                    <button class="building-btn" data-seed="wheat">
+                        <span style="font-size: 2em;">🌾</span>
+                        <div class="building-info">
+                            <p>Trigo</p>
+                            <p>🪙 50</p>
+                            <p>⏰ 2min</p>
+                            <p>💰 120</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-seed="carrot">
+                        <span style="font-size: 2em;">🥕</span>
+                        <div class="building-info">
+                            <p>Cenoura</p>
+                            <p>🪙 30</p>
+                            <p>⏰ 1min</p>
+                            <p>💰 80</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-seed="corn">
+                        <span style="font-size: 2em;">🌽</span>
+                        <div class="building-info">
+                            <p>Milho</p>
+                            <p>🪙 40</p>
+                            <p>⏰ 3min</p>
+                            <p>💰 100</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-seed="potato">
+                        <span style="font-size: 2em;">🥔</span>
+                        <div class="building-info">
+                            <p>Batata</p>
+                            <p>🪙 35</p>
+                            <p>⏰ 4min</p>
+                            <p>💰 90</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-seed="tomato">
+                        <span style="font-size: 2em;">🍅</span>
+                        <div class="building-info">
+                            <p>Tomate</p>
+                            <p>🪙 45</p>
+                            <p>⏰ 2min</p>
+                            <p>💰 110</p>
+                        </div>
+                    </button>
+                    <button class="building-btn" data-seed="pumpkin">
+                        <span style="font-size: 2em;">🎃</span>
+                        <div class="building-info">
+                            <p>Abóbora</p>
+                            <p>🪙 60</p>
+                            <p>⏰ 5min</p>
+                            <p>💰 150</p>
+                        </div>
+                    </button>
+                </div>
+            </div>
+            <div class="tab-content" id="vehicles-tab">
+                <div class="building-list">
+                    <!-- Future vehicles content -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="game/config.js" type="module"></script>
 </body>
 </html>
