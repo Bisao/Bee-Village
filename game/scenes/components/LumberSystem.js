@@ -5,7 +5,7 @@ export default class LumberSystem {
         this.currentTree = null;
         this.isProcessingTree = false;
         this.cuttingTime = 15000;
-        this.treeRespawnTime = 300000;
+        this.treeRespawnTime = 60000;
         this.resources = {
             'wood': '🪵',
             'log': '🌳'
@@ -124,12 +124,8 @@ export default class LumberSystem {
 
                 // Verifica cada posição adjacente
                 for (const pos of adjacentPositions) {
-                    if (this.scene.grid.isValidPosition(pos.x, pos.y)) {
-                        const key = `${pos.x},${pos.y}`;
-                        const tile = this.scene.grid.buildingGrid[key];
-                        
-                        // Verifica se o tile está livre de construções e outros objetos
-                        if (!tile || (tile.type !== 'building' && tile.type !== 'tree' && tile.type !== 'rock')) {
+                    if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
+                        !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]) {
                         
                         // Calcula distância Manhattan da posição atual do NPC até a posição adjacente
                         const distance = Math.abs(npc.gridX - pos.x) + Math.abs(npc.gridY - pos.y);
@@ -145,12 +141,11 @@ export default class LumberSystem {
                             bestAdjacentPosition = pos;
                         }
                     }
-                    }
                 }
             }
         }
 
-        if (nearestTree && bestAdjacentPosition) {
+        if (nearestTree) {
             nearestTree.targetX = bestAdjacentPosition.x;
             nearestTree.targetY = bestAdjacentPosition.y;
         }
@@ -164,52 +159,24 @@ export default class LumberSystem {
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
 
-        // Tenta encontrar um caminho até a árvore
-        const path = this.findPathToTree(npc, tree);
-        if (!path) {
-            console.log('Não foi possível encontrar caminho até a árvore');
-            return false;
-        }
-
-        // Move através do caminho encontrado
-        for (const pos of path) {
-            await npc.moveTo(pos.x, pos.y);
-            if (npc.isMoving) {
-                await new Promise(resolve => {
-                    const checkInterval = setInterval(() => {
-                        if (!npc.isMoving) {
-                            clearInterval(checkInterval);
-                            resolve();
-                        }
-                    }, 100);
-                });
-            }
-        }
-
-        // Move para a posição final adjacente à árvore
+        // Move diretamente para a posição alvo adjacente à árvore
         await npc.moveTo(tree.targetX, tree.targetY);
         
-        return this.isAdjacentToTree(npc, tree);
+        // Verifica se chegou adjacente à árvore
+        if (this.isAdjacentToTree(npc, tree)) {
+            return true;
+        }
+
+        return false;
     }
 
-    async findPathToTree(npc, tree) {
+    findPathToTree(npc, tree) {
         const visited = new Set();
         const queue = [{
             x: npc.gridX,
             y: npc.gridY,
             path: []
         }];
-
-        // Função auxiliar para verificar se uma posição é válida
-        const isValidPosition = (x, y) => {
-            if (!this.scene.grid.isValidPosition(x, y)) return false;
-            
-            const key = `${x},${y}`;
-            const tile = this.scene.grid.buildingGrid[key];
-            
-            // Permite caminhar em tiles vazios ou no tile da árvore alvo
-            return !tile || (x === tree.gridX && y === tree.gridY);
-        };
 
         while (queue.length > 0) {
             const current = queue.shift();
@@ -220,34 +187,26 @@ export default class LumberSystem {
 
             // Verifica se está adjacente à árvore
             if (Math.abs(current.x - tree.gridX) + Math.abs(current.y - tree.gridY) === 1) {
-                // Verifica se a posição atual é válida para corte
-                const canCutFromHere = isValidPosition(current.x, current.y);
-                if (canCutFromHere) {
-                    return current.path;
-                }
+                return current.path;
             }
 
-            // Lista de movimentos possíveis com pesos
+            // Adiciona movimentos possíveis
             const moves = [
-                {dx: 0, dy: 1, priority: 1},   // baixo
-                {dx: 1, dy: 0, priority: 2},   // direita
-                {dx: 0, dy: -1, priority: 1},  // cima
-                {dx: -1, dy: 0, priority: 2},  // esquerda
-                {dx: 1, dy: 1, priority: 3},   // diagonal
-                {dx: -1, dy: 1, priority: 3},
-                {dx: 1, dy: -1, priority: 3},
-                {dx: -1, dy: -1, priority: 3}
+                {dx: 0, dy: 1},  // baixo
+                {dx: 1, dy: 0},  // direita
+                {dx: 0, dy: -1}, // cima
+                {dx: -1, dy: 0}  // esquerda
             ];
-
-            // Ordena movimentos por prioridade
-            moves.sort((a, b) => a.priority - b.priority);
 
             for (const move of moves) {
                 const newX = current.x + move.dx;
                 const newY = current.y + move.dy;
                 const newKey = `${newX},${newY}`;
 
-                if (!visited.has(newKey) && isValidPosition(newX, newY)) {
+                if (!visited.has(newKey) && 
+                    this.scene.grid.isValidPosition(newX, newY) && 
+                    !this.scene.grid.buildingGrid[newKey]) {
+                    
                     queue.push({
                         x: newX,
                         y: newY,
@@ -257,7 +216,7 @@ export default class LumberSystem {
             }
         }
 
-        return null; // Nenhum caminho encontrado
+        return null;
     }
 
     drawPathLine(npc, targetX, targetY) {
