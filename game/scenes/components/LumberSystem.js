@@ -107,6 +107,12 @@ export default class LumberSystem {
             return false;
         }
 
+        // Validar se a árvore está dentro dos limites do mapa
+        if (!this.scene.grid.isValidPosition(tree.gridX, tree.gridY)) {
+            console.log('Árvore fora dos limites do mapa');
+            return false;
+        }
+
         npc.config.emoji = '🚶';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
         
@@ -115,11 +121,7 @@ export default class LumberSystem {
             {x: tree.gridX + 1, y: tree.gridY, priority: 1},
             {x: tree.gridX - 1, y: tree.gridY, priority: 1},
             {x: tree.gridX, y: tree.gridY + 1, priority: 1},
-            {x: tree.gridX, y: tree.gridY - 1, priority: 1},
-            {x: tree.gridX + 1, y: tree.gridY + 1, priority: 2},
-            {x: tree.gridX - 1, y: tree.gridY - 1, priority: 2},
-            {x: tree.gridX + 1, y: tree.gridY - 1, priority: 2},
-            {x: tree.gridX - 1, y: tree.gridY + 1, priority: 2}
+            {x: tree.gridX, y: tree.gridY - 1, priority: 1}
         ].filter(pos => {
             const isValid = this.scene.grid.isValidPosition(pos.x, pos.y);
             const isNotOccupied = !this.scene.isTileOccupied(pos.x, pos.y);
@@ -158,6 +160,12 @@ export default class LumberSystem {
     }
 
     async moveNPC(npc, targetX, targetY) {
+        // Validar limites antes de mover
+        if (!this.scene.grid.isValidPosition(targetX / this.scene.grid.tileWidth, targetY / this.scene.grid.tileHeight)) {
+            console.log('Destino fora dos limites do mapa');
+            return Promise.resolve(false);
+        }
+        
         return new Promise(resolve => {
             const nameTextY = targetY - 64;
             
