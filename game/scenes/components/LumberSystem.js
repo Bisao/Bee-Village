@@ -107,27 +107,46 @@ export default class LumberSystem {
     }
 
     async moveToTree(npc, tree) {
-        // Encontrar posição adjacente livre
+        // Validar se a árvore existe e está dentro dos limites
+        if (!tree || !this.scene.grid.isValidPosition(tree.gridX, tree.gridY)) {
+            console.log('Árvore inválida ou fora dos limites');
+            return false;
+        }
+
+        // Calcular distância atual
+        const currentDistance = Math.abs(npc.gridX - tree.gridX) + Math.abs(npc.gridY - tree.gridY);
+        if (currentDistance <= 1) {
+            return true; // Já está adjacente à árvore
+        }
+
+        // Encontrar melhor posição adjacente
         const adjacentPositions = [
             {x: tree.gridX + 1, y: tree.gridY},
             {x: tree.gridX - 1, y: tree.gridY},
             {x: tree.gridX, y: tree.gridY + 1},
             {x: tree.gridX, y: tree.gridY - 1}
-        ];
+        ].filter(pos => 
+            this.scene.grid.isValidPosition(pos.x, pos.y) && 
+            !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
+        );
 
-        for (const pos of adjacentPositions) {
-            if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
-                !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]) {
-                
-                npc.config.emoji = '🚶';
-                npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-                
-                // Desenhar linha de movimento
-                this.drawPathLine(npc, pos.x, pos.y);
-                
-                await npc.moveTo(pos.x, pos.y);
-                return true;
-            }
+        if (adjacentPositions.length === 0) {
+            console.log('Nenhuma posição adjacente disponível');
+            return false;
+        }
+
+        // Escolher a posição mais próxima
+        const bestPosition = adjacentPositions.reduce((best, pos) => {
+            const distance = Math.abs(npc.gridX - pos.x) + Math.abs(npc.gridY - pos.y);
+            return (!best || distance < best.distance) ? {...pos, distance} : best;
+        }, null);
+
+        if (bestPosition) {
+            npc.config.emoji = '🚶';
+            npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+            this.drawPathLine(npc, bestPosition.x, bestPosition.y);
+            await npc.moveTo(bestPosition.x, bestPosition.y);
+            return true;
         }
 
         return false;
