@@ -145,11 +145,12 @@ export default class LumberSystem {
                             bestAdjacentPosition = pos;
                         }
                     }
+                    }
                 }
             }
         }
 
-        if (nearestTree) {
+        if (nearestTree && bestAdjacentPosition) {
             nearestTree.targetX = bestAdjacentPosition.x;
             nearestTree.targetY = bestAdjacentPosition.y;
         }
