@@ -32,39 +32,11 @@ export default class LumberSystem {
     }
 
     async workCycle(npc) {
-        if (!npc || !npc.sprite || !npc.sprite.active) {
-            console.log('NPC inválido ou inativo');
-            this.stopWorking();
-            return;
-        }
-
         while (this.isWorking) {
             try {
-                if (!npc.sprite.active || this.isProcessingTree || npc.isMoving) {
+                if (this.isProcessingTree) {
                     await this.waitFor(1000);
                     continue;
-                }
-
-                // Verificação de estado inicial
-                if (!npc.sprite.active || !npc.sprite.visible) {
-                    await this.waitFor(1000);
-                    continue;
-                }
-
-                // Verifica se o inventário está cheio
-                if (npc.inventory.wood >= npc.inventory.maxCapacity) {
-                    await this.depositResources(npc);
-                    continue;
-                }
-
-                // Verificar se já tem madeira para depositar
-                if (npc.inventory.wood > 0) {
-                    const silo = this.findNearestSilo(npc);
-                    if (silo) {
-                        await this.moveToSilo(npc, silo);
-                        await this.depositResources(npc);
-                        continue;
-                    }
                 }
 
                 // 1. Procurar árvore disponível
@@ -162,19 +134,22 @@ export default class LumberSystem {
     }
 
     async moveToTree(npc, tree) {
+        if (!tree) return false;
+
         const path = this.findPathToTree(npc, tree);
-        if (!path) {
-            console.log('Caminho não encontrado para a árvore');
-            return false;
+        if (!path || path.length === 0) return false;
+
+        npc.config.emoji = '🚶';
+        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+
+        for (const pos of path) {
+            if (!this.isWorking) return false;
+            this.drawPathLine(npc, pos.x, pos.y);
+            await npc.moveTo(pos.x, pos.y);
+            await this.waitFor(200);
         }
 
-        for (const step of path) {
-            if (npc.isMoving) await this.waitFor(100);
-            await this.scene.moveNPCTo(npc, step.x, step.y);
-        }
-
-        // Verifica adjacência após movimento
-        return this.isAdjacentToTree(npc, tree);
+        return true;
     }
 
     findPathToTree(npc, tree) {
@@ -213,7 +188,7 @@ export default class LumberSystem {
                 if (!visited.has(newKey) && 
                     this.scene.grid.isValidPosition(newX, newY) && 
                     !this.scene.grid.buildingGrid[newKey]) {
-
+                    
                     queue.push({
                         x: newX,
                         y: newY,
@@ -233,10 +208,10 @@ export default class LumberSystem {
 
         this.pathGraphics = this.scene.add.graphics();
         this.pathGraphics.lineStyle(2, 0xffff00, 0.5);
-
+        
         const startPos = this.scene.grid.gridToIso(npc.gridX, npc.gridY);
         const endPos = this.scene.grid.gridToIso(targetX, targetY);
-
+        
         this.pathGraphics.beginPath();
         this.pathGraphics.moveTo(
             this.scene.cameras.main.centerX + startPos.tileX,
@@ -247,7 +222,7 @@ export default class LumberSystem {
             this.scene.cameras.main.centerY + endPos.tileY
         );
         this.pathGraphics.strokePath();
-
+        
         // Limpar linha após 1 segundo
         this.scene.time.delayedCall(1000, () => {
             if (this.pathGraphics) {
@@ -258,28 +233,7 @@ export default class LumberSystem {
     }
 
     async cutTree(npc, tree) {
-        if (!tree || !tree.sprite || !tree.sprite.active) {
-            console.log('Árvore inválida ou já cortada');
-            return false;
-        }
-
-        // Verifica se já está cheio antes de tentar cortar
-        if (npc.inventory.wood >= npc.inventory.maxCapacity) {
-            console.log('Inventário cheio, indo depositar...');
-            await this.depositResources(npc);
-            return false;
-        }
-
-        // Verifica adjacência e aguarda movimento completo
-        if (!this.isAdjacentToTree(npc, tree) || npc.isMoving) {
-            console.log('NPC não está adjacente à árvore');
-            return false;
-        }
-
-        if (this.isProcessingTree) {
-            console.log('Já está processando uma árvore');
-            return false;
-        }
+        if (!this.isAdjacentToTree(npc, tree)) return;
 
         npc.config.emoji = '🪓';
         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);

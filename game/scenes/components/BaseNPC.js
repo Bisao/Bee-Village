@@ -1,3 +1,4 @@
+
 export default class BaseNPC {
     constructor(scene, x, y, config = {}) {
         this.scene = scene;
@@ -5,7 +6,7 @@ export default class BaseNPC {
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-
+        
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -30,17 +31,17 @@ export default class BaseNPC {
             wood: 0,
             maxCapacity: 5
         };
-
+        
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-
+        
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-
+        
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
@@ -126,28 +127,28 @@ export default class BaseNPC {
             const newX = this.gridX + dir.x;
             const newY = this.gridY + dir.y;
             const newKey = `${newX},${newY}`;
-
+            
             let score = 0;
             // Evitar voltar para posição anterior
             if (this.lastPosition && this.lastPosition.x === newX && this.lastPosition.y === newY) {
                 score -= 5;
             }
-
+            
             // Preferir posições menos visitadas
             const visits = this.visitedPositions.get(newKey) || 0;
             score -= visits * 2;
-
+            
             // Evitar ficar muito tempo em uma área
             if (this.currentAreaTime > 10000) { // 10 segundos
                 score += Math.random() * 3; // Adiciona aleatoriedade para exploração
             }
-
+            
             // Verificar objetivos próximos (árvores, recursos, etc)
             if (this.config.profession === 'Lumberjack') {
                 const nearbyTrees = this.findNearbyTrees(newX, newY, 3);
                 score += nearbyTrees.length * 2;
             }
-
+            
             return { dir, score };
         });
 
@@ -158,7 +159,7 @@ export default class BaseNPC {
         // Atualizar estado
         this.lastPosition = { x: this.gridX, y: this.gridY };
         this.currentAreaTime = (this.currentAreaTime || 0) + 1000;
-
+        
         // Executar movimento
         this.moveTo(this.gridX + bestDirection.x, this.gridY + bestDirection.y);
     }
@@ -185,15 +186,10 @@ export default class BaseNPC {
     }
 
     moveTo(newX, newY) {
-        if (this.isMoving || !this.sprite || !this.sprite.active) return;
+        if (this.isMoving) return;
 
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
-        if (!tileX || !tileY) return;
-        
         this.isMoving = true;
-
-        // Configura a animação padrão
-        this.sprite.setTexture('farmer1');
 
         // Mostra o sprite ao sair da casa
         this.sprite.setVisible(true);
@@ -290,7 +286,7 @@ export default class BaseNPC {
     addItemToStorage(itemType) {
         if (this.inventory[itemType] < this.inventory.maxCapacity) {
             this.inventory[itemType]++;
-
+            
             // Feedback visual
             const text = this.scene.add.text(
                 this.sprite.x, 
@@ -298,7 +294,7 @@ export default class BaseNPC {
                 `+1 ${itemType}`, 
                 { fontSize: '16px', fill: '#fff' }
             );
-
+            
             this.scene.tweens.add({
                 targets: text,
                 y: text.y - 30,
@@ -306,10 +302,10 @@ export default class BaseNPC {
                 duration: 1000,
                 onComplete: () => text.destroy()
             });
-
+            
             return true;
         }
-
+        
         // Feedback de inventário cheio
         const text = this.scene.add.text(
             this.sprite.x,
@@ -317,7 +313,7 @@ export default class BaseNPC {
             'Inventário cheio!',
             { fontSize: '16px', fill: '#ff0000' }
         );
-
+        
         this.scene.tweens.add({
             targets: text,
             y: text.y - 30,
@@ -325,7 +321,7 @@ export default class BaseNPC {
             duration: 1000,
             onComplete: () => text.destroy()
         });
-
+        
         return false;
     }
 
@@ -368,7 +364,7 @@ export default class BaseNPC {
 
         const processingTime = 2000; // 2 segundos para processar
         this.isProcessing = true;
-
+        
         // Feedback visual
         this.config.emoji = '⚡';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
@@ -378,10 +374,10 @@ export default class BaseNPC {
             this.isProcessing = false;
             this.config.emoji = this.getDefaultEmoji();
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-
+            
             // Marca recurso como processado
             resource.isProcessed = true;
-
+            
             // Ganha XP
             this.gainExperience(10);
         });
@@ -399,13 +395,13 @@ export default class BaseNPC {
 
     gainExperience(amount) {
         this.config.xp += amount;
-
+        
         // Level up se atingir XP máximo
         if (this.config.xp >= this.config.maxXp) {
             this.config.level++;
             this.config.xp = 0;
             this.config.maxXp *= 1.5;
-
+            
             // Feedback visual de level up
             const levelUpText = this.scene.add.text(
                 this.sprite.x,
