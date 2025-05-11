@@ -432,7 +432,7 @@ export default class MainScene extends Phaser.Scene {
             'well|WaterWell',
             'windmill|Windmill',
             'farmerHouse|FarmerHouse',
-            'FishermanHouse|FishermanHouse',
+            'fishermanHouse|FishermanHouse',
             'lumberHouse|LumberJackHouse',
             'minerHouse|MinerHouse'
         ];
