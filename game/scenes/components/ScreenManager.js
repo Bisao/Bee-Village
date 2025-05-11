@@ -8,26 +8,15 @@ export default class ScreenManager {
             height: window.innerHeight
         };
         this.uiElements = new Map();
-        this.scaleRatios = this.calculateScaleRatios();
         
+        // Atualiza as dimensões quando a tela é redimensionada
         window.addEventListener('resize', () => {
             this.dimensions = {
                 width: window.innerWidth,
                 height: window.innerHeight
             };
-            this.scaleRatios = this.calculateScaleRatios();
             this.adjustAllElements();
         });
-    }
-
-    calculateScaleRatios() {
-        const baseWidth = 1920;
-        const baseHeight = 1080;
-        return {
-            width: this.dimensions.width / baseWidth,
-            height: this.dimensions.height / baseHeight,
-            uniform: Math.min(this.dimensions.width / baseWidth, this.dimensions.height / baseHeight)
-        };
     }
 
     detectBrowser() {
@@ -50,18 +39,7 @@ export default class ScreenManager {
     }
 
     registerElement(key, element, config) {
-        this.uiElements.set(key, { 
-            element, 
-            config,
-            originalSize: {
-                width: element.width || element.displayWidth,
-                height: element.height || element.displayHeight
-            },
-            originalPosition: {
-                x: element.x,
-                y: element.y
-            }
-        });
+        this.uiElements.set(key, { element, config });
         this.adjustElement(key);
     }
 
@@ -69,62 +47,48 @@ export default class ScreenManager {
         const item = this.uiElements.get(key);
         if (!item) return;
 
-        const { element, config, originalSize, originalPosition } = item;
+        const { element, config } = item;
         const isMobile = this.dimensions.width <= 768;
         const isTablet = this.dimensions.width <= 1024 && this.dimensions.width > 768;
 
-        // Scale handling
+        // Ajusta escala
         if (config.scale) {
             const baseScale = config.scale.base || 1;
             const mobileScale = config.scale.mobile || baseScale * 0.8;
             const tabletScale = config.scale.tablet || baseScale * 0.9;
-            const deviceScale = isMobile ? mobileScale : isTablet ? tabletScale : baseScale;
-            const finalScale = deviceScale * this.scaleRatios.uniform;
             
-            if (element.setScale) {
-                element.setScale(finalScale);
-            }
+            element.setScale(isMobile ? mobileScale : isTablet ? tabletScale : baseScale);
         }
 
-        // Position handling
+        // Ajusta posição
         if (config.position) {
-            const x = this.calculatePosition(config.position.x, this.dimensions.width, originalPosition.x);
-            const y = this.calculatePosition(config.position.y, this.dimensions.height, originalPosition.y);
+            const x = this.calculatePosition(config.position.x, this.dimensions.width);
+            const y = this.calculatePosition(config.position.y, this.dimensions.height);
             element.setPosition(x, y);
         }
 
-        // Size handling
+        // Ajusta dimensões
         if (config.dimensions) {
-            const width = this.calculateDimension(config.dimensions.width, this.dimensions.width, originalSize.width);
-            const height = this.calculateDimension(config.dimensions.height, this.dimensions.height, originalSize.height);
+            const width = this.calculateDimension(config.dimensions.width, this.dimensions.width);
+            const height = this.calculateDimension(config.dimensions.height, this.dimensions.height);
             if (element.setSize) {
                 element.setSize(width, height);
             }
         }
 
-        // Depth handling
+        // Ajusta profundidade
         if (config.depth !== undefined) {
             element.setDepth(config.depth);
         }
 
-        // Font size handling
-        if (config.fontSize && element.setFontSize) {
-            const baseFontSize = config.fontSize.base || 16;
-            const mobileFontSize = config.fontSize.mobile || baseFontSize * 0.8;
-            const tabletFontSize = config.fontSize.tablet || baseFontSize * 0.9;
-            const deviceFontSize = isMobile ? mobileFontSize : isTablet ? tabletFontSize : baseFontSize;
-            const finalFontSize = Math.round(deviceFontSize * this.scaleRatios.uniform);
-            element.setFontSize(finalFontSize);
-        }
-
-        // Visibility handling
+        // Ajusta visibilidade
         if (config.visibility) {
             element.setVisible(this.evaluateVisibilityCondition(config.visibility));
         }
     }
 
-    calculatePosition(pos, containerSize, originalPos) {
-        if (typeof pos === 'number') return pos * this.scaleRatios.uniform;
+    calculatePosition(pos, containerSize) {
+        if (typeof pos === 'number') return pos;
         if (typeof pos === 'string') {
             if (pos.endsWith('%')) {
                 return (parseFloat(pos) / 100) * containerSize;
@@ -132,19 +96,16 @@ export default class ScreenManager {
             if (pos === 'center') {
                 return containerSize / 2;
             }
-            if (pos === 'original') {
-                return originalPos * this.scaleRatios.uniform;
-            }
         }
-        return originalPos * this.scaleRatios.uniform;
+        return 0;
     }
 
-    calculateDimension(dim, containerSize, originalDim) {
-        if (typeof dim === 'number') return dim * this.scaleRatios.uniform;
+    calculateDimension(dim, containerSize) {
+        if (typeof dim === 'number') return dim;
         if (typeof dim === 'string' && dim.endsWith('%')) {
             return (parseFloat(dim) / 100) * containerSize;
         }
-        return originalDim * this.scaleRatios.uniform;
+        return containerSize;
     }
 
     evaluateVisibilityCondition(condition) {
@@ -168,8 +129,7 @@ export default class ScreenManager {
             isMobile: this.dimensions.width <= 768,
             isTablet: this.dimensions.width <= 1024 && this.dimensions.width > 768,
             isDesktop: this.dimensions.width > 1024,
-            pixelRatio: window.devicePixelRatio || 1,
-            scaleRatios: this.scaleRatios
+            pixelRatio: window.devicePixelRatio || 1
         };
     }
 }

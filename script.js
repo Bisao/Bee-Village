@@ -154,9 +154,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    const structuresBtn = document.getElementById('toggleStructures');
-    const sidePanel = document.getElementById('side-panel');
-
     // Settings controls
     const gameSoundControl = document.getElementById('gameSound');
     const backgroundMusicControl = document.getElementById('backgroundMusic');

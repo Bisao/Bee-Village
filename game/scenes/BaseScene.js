@@ -1,28 +1,14 @@
-import MobileManager from './components/MobileManager.js';
-import AssetCacheManager from '../services/AssetCacheManager.js';
-import ServiceManager from '../services/ServiceManager.js';
 
 export default class BaseScene extends Phaser.Scene {
     constructor(config) {
         super(config);
         this.screenDimensions = {
-            width: window.innerWidth || 800,
-            height: window.innerHeight || 600
-        };
-    }
-
-    init() {
-        if (!this.mobileManager) {
-            this.mobileManager = new MobileManager(this);
-        }
-    }
-
-    create() {
-        this.assetCache = new AssetCacheManager(this);
-        this.screenDimensions = {
             width: window.innerWidth,
             height: window.innerHeight
         };
+    }
+
+    create() {
         this.setupScreenManager();
     }
 
@@ -52,7 +38,7 @@ export default class BaseScene extends Phaser.Scene {
         // Atualiza as dimensões da cena
         this.isMobile = this.screenDimensions.width <= 768;
         this.isTablet = this.screenDimensions.width <= 1024 && this.screenDimensions.width > 768;
-
+        
         // Método a ser sobrescrito pelas scenes filhas
         if (this.onDimensionsUpdate) {
             this.onDimensionsUpdate();

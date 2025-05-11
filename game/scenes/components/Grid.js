@@ -8,6 +8,7 @@ export default class Grid {
         this.tileHeight = 64;
         this.grid = [];
         this.buildingGrid = {};
+        this.farmableTiles = {};
     }
 
     create() {
@@ -44,9 +45,17 @@ export default class Grid {
         const {tileX, tileY} = this.gridToIso(x, y);
         const randomTile = this.getRandomTile(x, y);
         
+        // Calcular o centro da viewport disponível
+        const viewportCenterX = this.scene.cameras.main.width / 2;
+        const viewportCenterY = this.scene.cameras.main.height / 2;
+        
+        // Offset para centralizar o grid
+        const gridOffsetX = -(this.width * this.tileWidth) / 4;
+        const gridOffsetY = -(this.height * this.tileHeight) / 4;
+        
         const tile = this.scene.add.image(
-            this.scene.cameras.main.centerX + tileX,
-            this.scene.cameras.main.centerY + tileY,
+            viewportCenterX + tileX + gridOffsetX,
+            viewportCenterY + tileY + gridOffsetY,
             randomTile
         );
 
@@ -112,5 +121,60 @@ export default class Grid {
 
     isValidPosition(x, y) {
         return x >= 0 && x < this.width && y >= 0 && y < this.height;
+    }
+
+    makeTileFarmable(x, y) {
+        const key = `${x},${y}`;
+        if (!this.farmableTiles[key]) {
+            this.farmableTiles[key] = {
+                state: 'empty',
+                crop: null,
+                plantedAt: null
+            };
+        }
+        return true;
+    }
+
+    plantCrop(x, y, cropType) {
+        const key = `${x},${y}`;
+        if (!this.farmableTiles[key] || this.farmableTiles[key].state !== 'empty') {
+            return false;
+        }
+
+        this.farmableTiles[key] = {
+            state: 'growing',
+            crop: cropType,
+            plantedAt: Date.now(),
+            growthTime: this.getCropGrowthTime(cropType)
+        };
+
+        return true;
+    }
+
+    getCropGrowthTime(cropType) {
+        const times = {
+            'potato': 20000,  // 20 segundos
+            'tomato': 15000,  // 15 segundos
+            'pumpkin': 25000  // 25 segundos
+        };
+        return times[cropType] || 20000;
+    }
+
+    harvestCrop(x, y) {
+        const key = `${x},${y}`;
+        const tile = this.farmableTiles[key];
+        
+        if (!tile || tile.state !== 'ready') {
+            return null;
+        }
+
+        const harvestedCrop = tile.crop;
+        this.farmableTiles[key] = {
+            state: 'empty',
+            crop: null,
+            plantedAt: null
+        };
+
+        return harvestedCrop;
     }
 }
