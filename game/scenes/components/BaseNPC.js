@@ -8,6 +8,11 @@ export default class BaseNPC {
         this.isAutonomous = true;
         
         // Configurações customizáveis
+        this.storage = {
+            wood: 0,
+            maxWood: 5
+        };
+        
         this.config = {
             name: config.name || 'Unknown',
             profession: config.profession || 'Villager',
@@ -57,6 +62,14 @@ export default class BaseNPC {
 
     setupEvents() {
         this.sprite.on('pointerdown', () => this.showControls());
+        
+        // Inicializar sistema de corte de madeira para lenhadores
+        if (this.config.profession === 'Lumberjack') {
+            import('./LumberSystem.js').then(({ default: LumberSystem }) => {
+                this.lumberSystem = new LumberSystem(this.scene);
+                this.lumberSystem.startWorking(this);
+            });
+        }
         
         // Esconder sprite inicialmente
         this.sprite.setVisible(false);
@@ -211,6 +224,14 @@ export default class BaseNPC {
             ]
         };
         return toolsets[profession] || [];
+    }
+
+    addItemToStorage(item) {
+        if (item === 'wood' && this.storage.wood < this.storage.maxWood) {
+            this.storage.wood++;
+            return true;
+        }
+        return false;
     }
 
     destroy() {
