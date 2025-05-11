@@ -151,3 +151,41 @@ autoSave() {
         }
     }
 }
+
+showSiloModal(resources) {
+        const existingModal = document.querySelector('.silo-modal');
+        if (existingModal) existingModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'silo-modal';
+        modal.innerHTML = `
+            <div class="silo-content">
+                <div class="silo-header">
+                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
+                    <button class="close-button">✕</button>
+                </div>
+                <div class="resources-grid">
+                    ${resources.map(resource => `
+                        <div class="resource-item">
+                            <div class="resource-icon">${resource.icon}</div>
+                            <div class="resource-name">${resource.name}</div>
+                            <div class="resource-amount">${resource.amount}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Fechar modal
+        const closeButton = modal.querySelector('.close-button');
+        closeButton.onclick = () => modal.remove();
+
+        // Fechar ao clicar fora
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
+    }
+
+    enablePlayerControl(npc) {
