@@ -311,4 +311,95 @@ export default class BaseNPC {
     hasInventorySpace(itemType) {
         return this.inventory[itemType] < this.inventory.maxCapacity;
     }
+
+    interactWithNearbyResource() {
+        if (this.isMoving || !this.isAutonomous) return;
+
+        const range = 2; // Alcance de interação
+        const resourceTypes = {
+            'Farmer': 'crop',
+            'Miner': 'ore',
+            'Fisher': 'fish',
+            'Lumberjack': 'tree'
+        };
+
+        const resourceType = resourceTypes[this.config.profession];
+        if (!resourceType) return;
+
+        // Procura recursos próximos
+        for (let dx = -range; dx <= range; dx++) {
+            for (let dy = -range; dy <= range; dy++) {
+                const checkX = this.gridX + dx;
+                const checkY = this.gridY + dy;
+                const key = `${checkX},${checkY}`;
+                const tile = this.scene.grid.buildingGrid[key];
+
+                if (tile && tile.type === resourceType && !tile.isProcessed) {
+                    this.processResource(tile, key);
+                    return;
+                }
+            }
+        }
+    }
+
+    processResource(resource, key) {
+        if (!this.hasInventorySpace(resource.type)) return;
+
+        const processingTime = 2000; // 2 segundos para processar
+        this.isProcessing = true;
+        
+        // Feedback visual
+        this.config.emoji = '⚡';
+        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+
+        this.scene.time.delayedCall(processingTime, () => {
+            this.addItemToStorage(resource.type);
+            this.isProcessing = false;
+            this.config.emoji = this.getDefaultEmoji();
+            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+            
+            // Marca recurso como processado
+            resource.isProcessed = true;
+            
+            // Ganha XP
+            this.gainExperience(10);
+        });
+    }
+
+    getDefaultEmoji() {
+        const emojis = {
+            'Farmer': '👨‍🌾',
+            'Miner': '⛏️',
+            'Fisher': '🎣',
+            'Lumberjack': '🪓'
+        };
+        return emojis[this.config.profession] || '👤';
+    }
+
+    gainExperience(amount) {
+        this.config.xp += amount;
+        
+        // Level up se atingir XP máximo
+        if (this.config.xp >= this.config.maxXp) {
+            this.config.level++;
+            this.config.xp = 0;
+            this.config.maxXp *= 1.5;
+            
+            // Feedback visual de level up
+            const levelUpText = this.scene.add.text(
+                this.sprite.x,
+                this.sprite.y - 50,
+                '⭐ Level Up!',
+                { fontSize: '20px', fill: '#FFD700' }
+            ).setOrigin(0.5);
+
+            this.scene.tweens.add({
+                targets: levelUpText,
+                y: levelUpText.y - 30,
+                alpha: 0,
+                duration: 1500,
+                onComplete: () => levelUpText.destroy()
+            });
+        }
+    }
 }
