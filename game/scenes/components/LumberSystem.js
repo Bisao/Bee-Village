@@ -159,9 +159,11 @@ export default class LumberSystem {
     }
 
     isAdjacentToTree(npc, tree) {
-        const dx = Math.abs(npc.gridX - tree.gridX);
-        const dy = Math.abs(npc.gridY - tree.gridY);
-        return dx + dy === 1;
+        return npc.gridX === tree.gridX && npc.gridY === tree.gridY;
+    }
+
+    findBestAdjacentPosition(treeX, treeY) {
+        return {x: treeX, y: treeY};
     }
 
     async cutTree(npc, tree) {
