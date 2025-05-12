@@ -1,3 +1,4 @@
+
 export default class BaseNPC {
     constructor(scene, x, y, config = {}) {
         this.scene = scene;
@@ -5,7 +6,7 @@ export default class BaseNPC {
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-
+        
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -18,19 +19,6 @@ export default class BaseNPC {
             xp: config.xp || 0,
             maxXp: config.maxXp || 100,
             tools: this.getToolsByProfession(config.profession),
-            // Sistema de Fadiga
-            stamina: 100,
-            maxStamina: 100,
-            staminaDecreaseRate: 5,
-            staminaRecoveryRate: 2,
-            // Sistema de Habilidades
-            skills: {
-                efficiency: 1,
-                carryCapacity: 1,
-                workSpeed: 1,
-                staminaEfficiency: 1
-            },
-            skillPoints: 0,
             ...config
         };
 
@@ -40,17 +28,17 @@ export default class BaseNPC {
     init() {
         // Inventário do NPC baseado na profissão
         this.inventory = this.getInitialInventory();
-
+        
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-
+        
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-
+        
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
@@ -102,93 +90,42 @@ export default class BaseNPC {
     }
 
     showControls() {
-        if (!this.controlPanel) {
-            this.controlPanel = new NPCControlPanel(this.scene);
-        }
-        this.controlPanel.show(this);
+        this.scene.showNPCControls(this);
     }
 
     startAutonomousMovement() {
         if (!this.isAutonomous) return;
 
-        switch (this.currentJob) {
-            case 'lumber':
-                if (!this.lumberSystem) {
-                    this.lumberSystem = new LumberSystem(this.scene);
+        if (this.currentJob === 'lumber') {
+            const lumberSystem = this.scene.lumberSystem;
+            if (lumberSystem && lumberSystem.isWorking) {
+                const tree = lumberSystem.findNearestTree(this);
+                if (tree) {
+                    lumberSystem.moveToTree(this, tree);
                 }
-                if (this.lumberSystem && this.lumberSystem.isWorking) {
-                    const tree = this.lumberSystem.findNearestTree(this);
-                    if (tree) {
-                        this.lumberSystem.moveToTree(this, tree);
-                    }
-                }
-                break;
-            case 'miner':
-                if (!this.mineSystem) {
-                    this.mineSystem = new MineSystem(this.scene);
-                }
-                if (this.mineSystem && this.mineSystem.isWorking) {
-                    const rock = this.mineSystem.findNearestRock(this);
-                    if (rock) {
-                        this.mineSystem.moveToRock(this, rock);
-                    }
-                }
-                break;
-            default:
-                // Se não está trabalhando, volta para casa
-                this.returnHome();
+            }
+            return;
         }
+
+        // Se não está trabalhando, volta para casa
+        this.returnHome();
     }
 
     setRestMode(enabled) {
         if (enabled) {
             // Finaliza o trabalho atual
-            switch (this.config.profession) {
-                case 'Lumberjack':
-                    if (this.scene.lumberSystem) {
-                        this.scene.lumberSystem.stopWorking();
-                    }
-                    break;
-                case 'Miner':
-                    if (this.scene.mineSystem) {
-                        this.scene.mineSystem.stopWorking();
-                    }
-                    break;
-                // Adicione outros sistemas aqui
+            if (this.currentJob === 'lumber') {
+                const lumberSystem = this.scene.lumberSystem;
+                if (lumberSystem) {
+                    lumberSystem.stopWorking();
+                }
             }
-
+            
             // Retorna para casa
             this.returnHome();
             this.currentJob = 'rest';
-            this.isAutonomous = false;
-            this.config.emoji = '😴';
-            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
         } else {
-            // Retorna ao trabalho
             this.currentJob = null;
-            this.isAutonomous = true;
-
-            // Inicia o trabalho específico baseado na profissão
-            switch (this.config.profession) {
-                case 'Lumberjack':
-                    if (this.scene.lumberSystem) {
-                        this.scene.lumberSystem.startWorking(this);
-                    }
-                    break;
-                case 'Miner':
-                    if (this.scene.mineSystem) {
-                        this.scene.mineSystem.startWorking(this);
-                    }
-                    break;
-                // Adicione outros sistemas aqui
-            }
-
-            // Restaura o emoji padrão
-            this.config.emoji = this.getDefaultEmoji();
-            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-
-            // Sai de casa para trabalhar
-            this.leaveHouse();
         }
     }
 
@@ -314,7 +251,7 @@ export default class BaseNPC {
     addItemToStorage(itemType) {
         if (this.inventory[itemType] < this.inventory.maxCapacity) {
             this.inventory[itemType]++;
-
+            
             // Feedback visual
             const text = this.scene.add.text(
                 this.sprite.x, 
@@ -322,7 +259,7 @@ export default class BaseNPC {
                 `+1 ${itemType}`, 
                 { fontSize: '16px', fill: '#fff' }
             );
-
+            
             this.scene.tweens.add({
                 targets: text,
                 y: text.y - 30,
@@ -330,10 +267,10 @@ export default class BaseNPC {
                 duration: 1000,
                 onComplete: () => text.destroy()
             });
-
+            
             return true;
         }
-
+        
         // Feedback de inventário cheio
         const text = this.scene.add.text(
             this.sprite.x,
@@ -341,7 +278,7 @@ export default class BaseNPC {
             'Inventário cheio!',
             { fontSize: '16px', fill: '#ff0000' }
         );
-
+        
         this.scene.tweens.add({
             targets: text,
             y: text.y - 30,
@@ -349,74 +286,8 @@ export default class BaseNPC {
             duration: 1000,
             onComplete: () => text.destroy()
         });
-
+        
         return false;
-    }
-
-    // Sistema de Fadiga
-    recoverStamina() {
-        if (this.config.stamina < this.config.maxStamina) {
-            this.config.stamina = Math.min(
-                this.config.maxStamina,
-                this.config.stamina + this.config.staminaRecoveryRate
-            );
-            this.updateStaminaBar();
-        }
-    }
-
-    updateStaminaBar() {
-        const staminaPercent = (this.config.stamina / this.config.maxStamina) * 100;
-        if (this.nameText) {
-            this.nameText.setText(
-                `${this.config.emoji} ${this.config.name}\n[${'▮'.repeat(Math.floor(staminaPercent/10))}${'▯'.repeat(10-Math.floor(staminaPercent/10))}]`
-            );
-        }
-    }
-
-    // Sistema de Habilidades
-    gainSkillPoint() {
-        this.config.skillPoints++;
-        this.showFeedback('🌟 Novo ponto de habilidade!', 'success');
-    }
-
-    upgradeSkill(skillName) {
-        if (this.config.skillPoints > 0 && this.config.skills[skillName]) {
-            this.config.skills[skillName]++;
-            this.config.skillPoints--;
-            this.showFeedback(`Habilidade ${skillName} melhorada! ⬆️`, 'success');
-            return true;
-        }
-        return false;
-    }
-
-    // Feedback Visual Melhorado
-    showFeedback(message, type = 'info') {
-        const colors = {
-            success: '#00ff00',
-            warning: '#ffff00',
-            error: '#ff0000',
-            info: '#ffffff'
-        };
-
-        const text = this.scene.add.text(
-            this.sprite.x,
-            this.sprite.y - 40,
-            message,
-            {
-                fontSize: '16px',
-                fill: colors[type],
-                stroke: '#000000',
-                strokeThickness: 4
-            }
-        ).setOrigin(0.5);
-
-        this.scene.tweens.add({
-            targets: text,
-            y: text.y - 30,
-            alpha: 0,
-            duration: 2000,
-            onComplete: () => text.destroy()
-        });
     }
 
     getInitialInventory() {
@@ -478,35 +349,12 @@ export default class BaseNPC {
     }
 
     processResource(resource, key) {
-        // Verifica se tem energia suficiente
-        if (this.config.stamina <= 0) {
-            this.showFeedback('Sem energia! Preciso descansar...', 'warning');
-            this.setRestMode(true);
-            return;
-        }
+        if (!this.hasInventorySpace(resource.type)) return;
 
-        // Verifica espaço no inventário
-        if (!this.hasInventorySpace(resource.type)) {
-            this.showFeedback('Inventário cheio! 🎒 Procurando silo...', 'warning');
-            const nearestSilo = this.scene.resourceSystem.findNearestSilo(this.gridX, this.gridY);
-
-            if (!nearestSilo) {
-                this.showFeedback('Nenhum silo encontrado! Voltando para casa...', 'error');
-                console.log(`[${this.config.name}] Nenhum silo encontrado, voltando para casa`);
-                this.setRestMode(true);
-                return;
-            }
-
-            this.depositInSilo(nearestSilo);
-            return;
-        }
-
-        // Consome energia baseado na eficiência
-        this.config.stamina -= (this.config.staminaDecreaseRate / this.config.skills.staminaEfficiency);
-
-        const processingTime = 2000;
+        const processingTime = 2000; // 2 segundos para processar
         this.isProcessing = true;
-
+        
+        // Feedback visual
         this.config.emoji = '⚡';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
 
@@ -515,54 +363,12 @@ export default class BaseNPC {
             this.isProcessing = false;
             this.config.emoji = this.getDefaultEmoji();
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-
+            
+            // Marca recurso como processado
             resource.isProcessed = true;
+            
+            // Ganha XP
             this.gainExperience(10);
-
-            // Verifica se o inventário está cheio após adicionar o recurso
-            if (!this.hasInventorySpace(resource.type)) {
-                const nearestSilo = this.scene.resourceSystem.findNearestSilo(this.gridX, this.gridY);
-                if (!nearestSilo) {
-                    console.log(`[${this.config.name}] Nenhum silo encontrado, voltando para casa`);
-                    this.returnHome();
-                    return;
-                }
-                this.depositInSilo(nearestSilo);
-            }
-        });
-    }
-
-    async depositInSilo(silo) {
-        this.config.emoji = '🚶';
-        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-
-        // Move até o silo
-        const targetX = silo.x;
-        const targetY = silo.y + 1; // Posição adjacente ao silo
-        await this.moveTo(targetX, targetY);
-
-        // Deposita os recursos
-        Object.keys(this.inventory).forEach(resourceType => {
-            if (typeof this.inventory[resourceType] === 'number' && this.inventory[resourceType] > 0) {
-                const amount = this.inventory[resourceType];
-                if (this.scene.resourceSystem.depositResource(silo.x, silo.y, resourceType, amount)) {
-                    this.inventory[resourceType] = 0;
-                    const text = this.scene.add.text(
-                        this.sprite.x,
-                        this.sprite.y - 40,
-                        `+ ${amount} ${resourceType} depositado!`,
-                        { fontSize: '16px', fill: '#fff' }
-                    );
-
-                    this.scene.tweens.add({
-                        targets: text,
-                        y: text.y - 30,
-                        alpha: 0,
-                        duration: 1000,
-                        onComplete: () => text.destroy()
-                    });
-                }
-            }
         });
     }
 
@@ -578,13 +384,13 @@ export default class BaseNPC {
 
     gainExperience(amount) {
         this.config.xp += amount;
-
+        
         // Level up se atingir XP máximo
         if (this.config.xp >= this.config.maxXp) {
             this.config.level++;
             this.config.xp = 0;
             this.config.maxXp *= 1.5;
-
+            
             // Feedback visual de level up
             const levelUpText = this.scene.add.text(
                 this.sprite.x,
