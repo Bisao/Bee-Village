@@ -290,7 +290,7 @@ showSiloModal(resources) {
             jobsList.appendChild(button);
 
             button.onclick = (e) => {
-                const jobId = option.dataset.job;
+                const jobId = button.dataset.job;
                 if (jobId === 'lumber' && npc.config.profession === 'Lumberjack') {
                     if (!npc.lumberSystem) {
                         npc.lumberSystem = new LumberSystem(this);
