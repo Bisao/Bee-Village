@@ -114,18 +114,52 @@ export default class BaseNPC {
     setRestMode(enabled) {
         if (enabled) {
             // Finaliza o trabalho atual
-            if (this.currentJob === 'lumber') {
-                const lumberSystem = this.scene.lumberSystem;
-                if (lumberSystem) {
-                    lumberSystem.stopWorking();
-                }
+            switch (this.config.profession) {
+                case 'Lumberjack':
+                    if (this.scene.lumberSystem) {
+                        this.scene.lumberSystem.stopWorking();
+                    }
+                    break;
+                case 'Miner':
+                    if (this.scene.mineSystem) {
+                        this.scene.mineSystem.stopWorking();
+                    }
+                    break;
+                // Adicione outros sistemas aqui
             }
             
             // Retorna para casa
             this.returnHome();
             this.currentJob = 'rest';
+            this.isAutonomous = false;
+            this.config.emoji = '😴';
+            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
         } else {
+            // Retorna ao trabalho
             this.currentJob = null;
+            this.isAutonomous = true;
+            
+            // Inicia o trabalho específico baseado na profissão
+            switch (this.config.profession) {
+                case 'Lumberjack':
+                    if (this.scene.lumberSystem) {
+                        this.scene.lumberSystem.startWorking(this);
+                    }
+                    break;
+                case 'Miner':
+                    if (this.scene.mineSystem) {
+                        this.scene.mineSystem.startWorking(this);
+                    }
+                    break;
+                // Adicione outros sistemas aqui
+            }
+            
+            // Restaura o emoji padrão
+            this.config.emoji = this.getDefaultEmoji();
+            this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+            
+            // Sai de casa para trabalhar
+            this.leaveHouse();
         }
     }
 
