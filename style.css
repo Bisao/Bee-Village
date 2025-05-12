@@ -974,18 +974,175 @@ html, body {
 }
 .npc-modal {
     position: fixed;
-    top: 65px;
+    top: 0;
     left: 0;
     width: 100%;
-    height: calc(100% - 65px);
-    background: rgba(0, 0, 0, 0.5);
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
     z-index: 3000;
+}
+
+.dark-panel {
+    background: rgba(40, 40, 40, 0.95);
+    border-radius: 15px;
     padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    width: 90%;
+    max-width: 400px;
+    color: white;
+    position: relative;
+}
+
+.npc-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.npc-avatar {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2em;
+}
+
+.npc-info h2 {
+    margin: 0;
+    font-size: 1.5em;
+}
+
+.npc-profession {
+    color: #aaa;
+    font-size: 0.9em;
+    margin: 5px 0;
+}
+
+.npc-level {
+    margin-top: 10px;
+}
+
+.xp-bar {
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin: 5px 0;
+    overflow: hidden;
+}
+
+.xp-fill {
+    height: 100%;
+    background: #4CAF50;
+    transition: width 0.3s ease;
+}
+
+.xp-text {
+    font-size: 0.8em;
+    color: #aaa;
+}
+
+.control-modes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.mode-btn {
+    padding: 10px;
+    border: none;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.mode-btn.active {
+    background: #4CAF50;
+}
+
+.mode-status {
+    text-align: center;
+    color: #aaa;
+    margin: 10px 0;
+}
+
+.panel-tabs {
+    display: flex;
+    gap: 10px;
+    margin: 20px 0;
+}
+
+.tab-btn {
+    padding: 8px 15px;
+    border: none;
+    background: none;
+    color: #aaa;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+}
+
+.tab-btn.active {
+    color: white;
+    border-bottom-color: #4CAF50;
+}
+
+.tools-section {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tool-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.tool-icon {
+    font-size: 1.5em;
+}
+
+.tool-name {
+    font-weight: bold;
+}
+
+.tool-desc {
+    font-size: 0.8em;
+    color: #aaa;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+}
+
+.inventory-slot {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+}
+
+.slot-icon {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+}
+
+.slot-count {
+    font-size: 0.8em;
+    color: #aaa;
 }
 
 .modal-content {

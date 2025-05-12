@@ -1,160 +1,106 @@
-
 export default class NPCControlPanel {
     constructor(scene) {
         this.scene = scene;
     }
 
     show(npc) {
-        // Remove painéis anteriores
-        const existingPanel = document.querySelector('.npc-control-panel');
+        const existingPanel = document.querySelector('.npc-modal');
         if (existingPanel) existingPanel.remove();
 
-        // Cria o painel
-        const panel = document.createElement('div');
-        panel.className = 'npc-control-panel';
-        panel.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            z-index: 1000;
-            color: white;
-            text-align: center;
+        const modal = document.createElement('div');
+        modal.className = 'npc-modal';
+        modal.innerHTML = `
+            <div class="modal-content dark-panel">
+                <button class="close-button">✕</button>
+                <div class="npc-header">
+                    <div class="npc-avatar">
+                        ${npc.config.emoji}
+                    </div>
+                    <div class="npc-info">
+                        <h2>${npc.config.name}</h2>
+                        <div class="npc-profession">${npc.config.profession}</div>
+                        <div class="npc-level">
+                            <span>Nível ${npc.config.level}</span>
+                            <div class="xp-bar">
+                                <div class="xp-fill" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
+                            </div>
+                            <span class="xp-text">${npc.config.xp}/${npc.config.maxXp} XP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-modes">
+                    <button class="mode-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
+                        🤖 Modo Autônomo
+                    </button>
+                    <button class="mode-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                        🕹️ Modo Controlado 
+                    </button>
+                </div>
+
+                <div class="mode-status">
+                    <span>👁️ NPC se move livremente</span>
+                </div>
+
+                <div class="panel-tabs">
+                    <button class="tab-btn active" data-tab="inventory">Inventário</button>
+                    <button class="tab-btn" data-tab="jobs">Trabalhos</button>
+                </div>
+
+                <div class="tab-content" id="inventory-content">
+                    <div class="tools-section">
+                        ${npc.config.tools.map(tool => `
+                            <div class="tool-card">
+                                <div class="tool-icon">${tool.emoji}</div>
+                                <div class="tool-info">
+                                    <div class="tool-name">${tool.name}</div>
+                                    <div class="tool-desc">${tool.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    <div class="inventory-grid">
+                        ${Array(4).fill().map(() => `
+                            <div class="inventory-slot">
+                                <div class="slot-icon">🌳</div>
+                                <div class="slot-count">0/1</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
         `;
 
-        // Título
-        const title = document.createElement('h2');
-        title.textContent = `${npc.config.name}`;
-        title.style.cssText = `
-            margin: 0 0 15px 0;
-            text-align: center;
-            width: 100%;
-            font-size: 1.4em;
-            padding: 5px 0;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
-        `;
-        panel.appendChild(title);
+        document.body.appendChild(modal);
 
-        // Lista de trabalhos
-        const jobsList = this.createJobsList(npc);
-        panel.appendChild(jobsList);
-
-        // Botão fechar
-        const closeButton = document.createElement('button');
-        closeButton.textContent = 'Fechar Painel';
-        closeButton.style.cssText = `
-            margin-top: 15px;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #d9534f;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
-            transition: background-color 0.3s ease;
-        `;
-        closeButton.onclick = () => panel.remove();
-        panel.appendChild(closeButton);
-
-        document.body.appendChild(panel);
+        this.setupEventListeners(modal, npc);
     }
 
-    createJobsList(npc) {
-        const jobsList = document.createElement('div');
-        jobsList.className = 'jobs-list';
-        jobsList.style.cssText = `
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-        `;
+    setupEventListeners(modal, npc) {
+        const closeBtn = modal.querySelector('.close-button');
+        closeBtn.onclick = () => modal.remove();
 
-        const availableJobs = this.getAvailableJobs(npc);
-        availableJobs.forEach(job => {
-            const button = this.createJobButton(job, npc);
-            jobsList.appendChild(button);
-        });
+        const autonomousBtn = modal.querySelector('#autonomous');
+        const controlledBtn = modal.querySelector('#controlled');
 
-        return jobsList;
+        autonomousBtn.onclick = () => {
+            npc.isAutonomous = true;
+            this.updateModeButtons(autonomousBtn, controlledBtn);
+            this.scene.startNPCMovement(npc);
+            modal.querySelector('.mode-status span').textContent = '👁️ NPC se move livremente';
+        };
+
+        controlledBtn.onclick = () => {
+            npc.isAutonomous = false;
+            this.updateModeButtons(controlledBtn, autonomousBtn);
+            this.scene.enablePlayerControl(npc);
+            modal.querySelector('.mode-status span').textContent = '🕹️ Use WASD para controlar';
+        };
     }
 
-    createJobButton(job, npc) {
-        const button = document.createElement('button');
-        button.textContent = `${job.icon} ${job.name}`;
-        button.dataset.job = job.id;
-        button.style.cssText = `
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            background-color: #5cb85c;
-            color: white;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            transition: background-color 0.3s ease;
-        `;
-
-        button.onclick = () => this.handleJobSelection(job, npc);
-        return button;
-    }
-
-    handleJobSelection(job, npc) {
-        switch (job.id) {
-            case 'lumber':
-                if (npc.config.profession === 'Lumberjack') {
-                    if (!npc.lumberSystem) {
-                        npc.lumberSystem = new LumberSystem(this.scene);
-                    }
-                    npc.isAutonomous = false;
-                    npc.currentJob = 'lumber';
-                    npc.config.emoji = '🪓';
-                    npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-                    npc.lumberSystem.startWorking(npc);
-                }
-                break;
-            case 'miner':
-                if (npc.config.profession === 'Miner') {
-                    if (!npc.mineSystem) {
-                        npc.mineSystem = new MineSystem(this.scene);
-                    }
-                    npc.isAutonomous = false;
-                    npc.currentJob = 'miner';
-                    npc.config.emoji = '⛏️';
-                    npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-                    npc.mineSystem.startWorking(npc);
-                }
-                break;
-        }
-    }
-
-    getAvailableJobs(npc) {
-        const jobs = [];
-        
-        if (npc.config.profession === 'Lumberjack') {
-            jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
-            jobs.push({ 
-                id: 'lumber', 
-                name: 'Cortar Madeira', 
-                icon: '🪓', 
-                description: 'Corta árvores e coleta madeira.' 
-            });
-        } else if (npc.config.profession === 'Miner') {
-            jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
-            jobs.push({
-                id: 'miner',
-                name: 'Minerar',
-                icon: '⛏️',
-                description: 'Minera rochas e coleta minérios.'
-            });
-        } else {
-            jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
-        }
-
-        return jobs;
+    updateModeButtons(activeBtn, inactiveBtn) {
+        activeBtn.classList.add('active');
+        inactiveBtn.classList.remove('active');
     }
 }
