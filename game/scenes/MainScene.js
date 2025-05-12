@@ -7,6 +7,7 @@ export default class MainScene extends Phaser.Scene {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
         this.previewBuilding = null;
+        this.resourceSystem = null;
 
         // Emoji mapping for professions
         this.professionEmojis = {
@@ -49,6 +50,7 @@ export default class MainScene extends Phaser.Scene {
         }
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
+        this.resourceSystem = new ResourceSystem(this);
 
         this.grid.create();
         this.inputManager.init();
@@ -646,11 +648,13 @@ export default class MainScene extends Phaser.Scene {
             // Adicionar interatividade ao silo
             if (this.selectedBuilding === 'silo') {
                 building.setInteractive({ useHandCursor: true });
+                this.resourceSystem.registerSilo(gridX, gridY, building);
                 building.on('pointerdown', () => {
+                    const resources = this.resourceSystem.getSiloResources(gridX, gridY);
                     this.showSiloModal([
-                        { name: 'Madeira', amount: 0 },
-                        { name: 'Trigo', amount: 0 },
-                        { name: 'Minério', amount: 0 }
+                        { name: 'Madeira', amount: resources.wood },
+                        { name: 'Trigo', amount: resources.wheat },
+                        { name: 'Minério', amount: resources.ore }
                     ]);
                 });
             }

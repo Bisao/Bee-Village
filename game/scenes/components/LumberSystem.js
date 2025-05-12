@@ -147,9 +147,15 @@ export default class LumberSystem {
         await this.waitFor(3000);
         if (npc.inventory.wood > 0) {
             const amount = npc.inventory.wood;
-            npc.inventory.wood = 0;
-            this.showResourceGain(npc, `+ ${amount} Madeira depositada!`);
-            this.updateInventoryUI(npc);
+            const silo = this.findNearestSilo(npc);
+            
+            if (silo && this.scene.resourceSystem.depositResource(silo.gridX, silo.gridY, 'wood', amount)) {
+                npc.inventory.wood = 0;
+                this.showResourceGain(npc, `+ ${amount} Madeira depositada!`);
+                this.updateInventoryUI(npc);
+            } else {
+                this.showResourceGain(npc, 'Silo cheio!');
+            }
         }
     }
 
