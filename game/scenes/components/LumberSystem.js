@@ -113,7 +113,11 @@ export default class LumberSystem {
     }
 
     async cutTree(npc, tree) {
-        if (!this.isAdjacentToTree(npc, tree)) return;
+        // Validar se está adjacente antes de iniciar o corte
+        if (!this.isAdjacentToTree(npc, tree)) {
+            console.log('[LumberSystem] NPC muito longe da árvore');
+            return false;
+        }
 
         this.state.isProcessingTree = true;
         this.updateNPCStatus(npc, '🪓', 'Cortando');
@@ -122,8 +126,10 @@ export default class LumberSystem {
         await this.waitFor(this.config.cuttingTime);
         clearInterval(cutEffect);
 
-        await this.processTreeCut(npc, tree);
+        // Processar o corte e atualizar inventário
+        const success = await this.processTreeCut(npc, tree);
         this.state.isProcessingTree = false;
+        return success;
     }
 
     // Resource Management
@@ -307,16 +313,31 @@ export default class LumberSystem {
 
     async processTreeCut(npc, tree) {
         const treeData = this.scene.grid.buildingGrid[tree.key];
-        if (!treeData) return;
+        if (!treeData) return false;
 
+        // Verificar se o NPC tem espaço no inventário
+        if (!npc.hasInventorySpace('wood')) {
+            this.showResourceGain(npc, 'Inventário cheio!');
+            return false;
+        }
+
+        // Marcar árvore como cortada
         treeData.isCut = true;
         treeData.sprite.setVisible(false);
 
+        // Adicionar madeira ao inventário
         if (npc.addItemToStorage('wood')) {
             this.showResourceGain(npc, '+1 ' + this.resources.wood);
+            
+            // Atualizar UI do inventário
+            this.updateInventoryUI(npc);
+            
+            // Agendar respawn da árvore
+            this.scheduleTreeRespawn(treeData);
+            return true;
         }
 
-        this.scheduleTreeRespawn(treeData);
+        return false;
     }
 
     scheduleTreeRespawn(treeData) {
