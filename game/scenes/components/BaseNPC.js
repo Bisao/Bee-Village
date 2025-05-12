@@ -18,6 +18,19 @@ export default class BaseNPC {
             xp: config.xp || 0,
             maxXp: config.maxXp || 100,
             tools: this.getToolsByProfession(config.profession),
+            // Sistema de Fadiga
+            stamina: 100,
+            maxStamina: 100,
+            staminaDecreaseRate: 5,
+            staminaRecoveryRate: 2,
+            // Sistema de Habilidades
+            skills: {
+                efficiency: 1,
+                carryCapacity: 1,
+                workSpeed: 1,
+                staminaEfficiency: 1
+            },
+            skillPoints: 0,
             ...config
         };
 
@@ -334,6 +347,73 @@ export default class BaseNPC {
             onComplete: () => text.destroy()
         });
 
+
+    // Sistema de Fadiga
+    recoverStamina() {
+        if (this.config.stamina < this.config.maxStamina) {
+            this.config.stamina = Math.min(
+                this.config.maxStamina,
+                this.config.stamina + this.config.staminaRecoveryRate
+            );
+            this.updateStaminaBar();
+        }
+    }
+
+    updateStaminaBar() {
+        const staminaPercent = (this.config.stamina / this.config.maxStamina) * 100;
+        if (this.nameText) {
+            this.nameText.setText(
+                `${this.config.emoji} ${this.config.name}\n[${'▮'.repeat(Math.floor(staminaPercent/10))}${'▯'.repeat(10-Math.floor(staminaPercent/10))}]`
+            );
+        }
+    }
+
+    // Sistema de Habilidades
+    gainSkillPoint() {
+        this.config.skillPoints++;
+        this.showFeedback('🌟 Novo ponto de habilidade!', 'success');
+    }
+
+    upgradeSkill(skillName) {
+        if (this.config.skillPoints > 0 && this.config.skills[skillName]) {
+            this.config.skills[skillName]++;
+            this.config.skillPoints--;
+            this.showFeedback(`Habilidade ${skillName} melhorada! ⬆️`, 'success');
+            return true;
+        }
+        return false;
+    }
+
+    // Feedback Visual Melhorado
+    showFeedback(message, type = 'info') {
+        const colors = {
+            success: '#00ff00',
+            warning: '#ffff00',
+            error: '#ff0000',
+            info: '#ffffff'
+        };
+
+        const text = this.scene.add.text(
+            this.sprite.x,
+            this.sprite.y - 40,
+            message,
+            {
+                fontSize: '16px',
+                fill: colors[type],
+                stroke: '#000000',
+                strokeThickness: 4
+            }
+        ).setOrigin(0.5);
+
+        this.scene.tweens.add({
+            targets: text,
+            y: text.y - 30,
+            alpha: 0,
+            duration: 2000,
+            onComplete: () => text.destroy()
+        });
+    }
+
         return false;
     }
 
@@ -396,11 +476,20 @@ export default class BaseNPC {
     }
 
     processResource(resource, key) {
+        // Verifica se tem energia suficiente
+        if (this.config.stamina <= 0) {
+            this.showFeedback('Sem energia! Preciso descansar...', 'warning');
+            this.setRestMode(true);
+            return;
+        }
+
+        // Verifica espaço no inventário
         if (!this.hasInventorySpace(resource.type)) {
+            this.showFeedback('Inventário cheio! 🎒 Procurando silo...', 'warning');
             const nearestSilo = this.scene.resourceSystem.findNearestSilo(this.gridX, this.gridY);
 
             if (!nearestSilo) {
-                // Se não houver silo, para o trabalho e volta para casa
+                this.showFeedback('Nenhum silo encontrado! Voltando para casa...', 'error');
                 console.log(`[${this.config.name}] Nenhum silo encontrado, voltando para casa`);
                 this.setRestMode(true);
                 return;
@@ -409,6 +498,9 @@ export default class BaseNPC {
             this.depositInSilo(nearestSilo);
             return;
         }
+
+        // Consome energia baseado na eficiência
+        this.config.stamina -= (this.config.staminaDecreaseRate / this.config.skills.staminaEfficiency);
 
         const processingTime = 2000;
         this.isProcessing = true;
