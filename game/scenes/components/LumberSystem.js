@@ -152,9 +152,12 @@ export default class LumberSystem {
     }
 
     async moveToTree(npc, tree) {
-        if (!tree.targetX || !tree.targetY) return false;
+        if (!tree) return false;
+        
+        const adjacentPos = this.findBestAdjacentPosition(tree.gridX, tree.gridY);
+        if (!adjacentPos) return false;
 
-        await npc.moveTo(tree.targetX, tree.targetY);
+        await npc.moveTo(adjacentPos.x, adjacentPos.y);
         return this.isAdjacentToTree(npc, tree);
     }
 
