@@ -26,11 +26,8 @@ export default class BaseNPC {
     }
 
     init() {
-        // Inventário do NPC
-        this.inventory = {
-            wood: 0,
-            maxCapacity: 5
-        };
+        // Inventário do NPC baseado na profissão
+        this.inventory = this.getInitialInventory();
         
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
@@ -293,7 +290,31 @@ export default class BaseNPC {
         return false;
     }
 
+    getInitialInventory() {
+        const baseInventory = {
+            maxCapacity: 5
+        };
+
+        switch (this.config.profession) {
+            case 'Lumberjack':
+                return { ...baseInventory, wood: 0 };
+            case 'Farmer':
+                return { ...baseInventory, wheat: 0, seeds: 0 };
+            case 'Miner':
+                return { ...baseInventory, ore: 0 };
+            case 'Fisher':
+                return { ...baseInventory, fish: 0 };
+            default:
+                return baseInventory;
+        }
+    }
+
     hasInventorySpace(itemType) {
+        // Verifica se o NPC pode armazenar este tipo de item
+        if (!this.inventory.hasOwnProperty(itemType)) {
+            console.log(`[${this.config.name}] Não pode armazenar ${itemType}`);
+            return false;
+        }
         return this.inventory[itemType] < this.inventory.maxCapacity;
     }
 
