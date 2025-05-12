@@ -349,12 +349,22 @@ export default class BaseNPC {
     }
 
     processResource(resource, key) {
-        if (!this.hasInventorySpace(resource.type)) return;
+        if (!this.hasInventorySpace(resource.type)) {
+            const nearestSilo = this.scene.resourceSystem.findNearestSilo(this.gridX, this.gridY);
+            
+            if (!nearestSilo) {
+                console.log(`[${this.config.name}] Nenhum silo encontrado, voltando para casa`);
+                this.returnHome();
+                return;
+            }
 
-        const processingTime = 2000; // 2 segundos para processar
+            this.depositInSilo(nearestSilo);
+            return;
+        }
+
+        const processingTime = 2000;
         this.isProcessing = true;
         
-        // Feedback visual
         this.config.emoji = '⚡';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
 
@@ -364,11 +374,53 @@ export default class BaseNPC {
             this.config.emoji = this.getDefaultEmoji();
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
             
-            // Marca recurso como processado
             resource.isProcessed = true;
-            
-            // Ganha XP
             this.gainExperience(10);
+
+            // Verifica se o inventário está cheio após adicionar o recurso
+            if (!this.hasInventorySpace(resource.type)) {
+                const nearestSilo = this.scene.resourceSystem.findNearestSilo(this.gridX, this.gridY);
+                if (!nearestSilo) {
+                    console.log(`[${this.config.name}] Nenhum silo encontrado, voltando para casa`);
+                    this.returnHome();
+                    return;
+                }
+                this.depositInSilo(nearestSilo);
+            }
+        });
+    }
+
+    async depositInSilo(silo) {
+        this.config.emoji = '🚶';
+        this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
+        
+        // Move até o silo
+        const targetX = silo.x;
+        const targetY = silo.y + 1; // Posição adjacente ao silo
+        await this.moveTo(targetX, targetY);
+
+        // Deposita os recursos
+        Object.keys(this.inventory).forEach(resourceType => {
+            if (typeof this.inventory[resourceType] === 'number' && this.inventory[resourceType] > 0) {
+                const amount = this.inventory[resourceType];
+                if (this.scene.resourceSystem.depositResource(silo.x, silo.y, resourceType, amount)) {
+                    this.inventory[resourceType] = 0;
+                    const text = this.scene.add.text(
+                        this.sprite.x,
+                        this.sprite.y - 40,
+                        `+ ${amount} ${resourceType} depositado!`,
+                        { fontSize: '16px', fill: '#fff' }
+                    );
+                    
+                    this.scene.tweens.add({
+                        targets: text,
+                        y: text.y - 30,
+                        alpha: 0,
+                        duration: 1000,
+                        onComplete: () => text.destroy()
+                    });
+                }
+            }
         });
     }
 
