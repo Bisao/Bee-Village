@@ -95,19 +95,29 @@ export default class BaseNPC {
     startAutonomousMovement() {
         if (!this.isAutonomous) return;
 
-        if (this.currentJob === 'lumber') {
-            const lumberSystem = this.scene.lumberSystem;
-            if (lumberSystem && lumberSystem.isWorking) {
-                const tree = lumberSystem.findNearestTree(this);
-                if (tree) {
-                    lumberSystem.moveToTree(this, tree);
+        switch (this.currentJob) {
+            case 'lumber':
+                const lumberSystem = this.scene.lumberSystem;
+                if (lumberSystem && lumberSystem.isWorking) {
+                    const tree = lumberSystem.findNearestTree(this);
+                    if (tree) {
+                        lumberSystem.moveToTree(this, tree);
+                    }
                 }
-            }
-            return;
+                break;
+            case 'miner':
+                const mineSystem = this.scene.mineSystem;
+                if (mineSystem && mineSystem.isWorking) {
+                    const rock = mineSystem.findNearestRock(this);
+                    if (rock) {
+                        mineSystem.moveToRock(this, rock);
+                    }
+                }
+                break;
+            default:
+                // Se não está trabalhando, volta para casa
+                this.returnHome();
         }
-
-        // Se não está trabalhando, volta para casa
-        this.returnHome();
     }
 
     setRestMode(enabled) {
