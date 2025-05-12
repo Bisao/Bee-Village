@@ -2,6 +2,7 @@ import Grid from '../scenes/components/Grid.js';
 import InputManager from '../scenes/components/InputManager.js';
 import LumberSystem from '../scenes/components/LumberSystem.js';
 import ResourceSystem from '../scenes/components/ResourceSystem.js';
+import NPCControlPanel from '../scenes/components/UI/NPCControlPanel.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
