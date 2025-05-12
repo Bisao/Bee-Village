@@ -166,7 +166,7 @@ export default class MineSystem {
                tile.type === 'rock' && 
                tile.sprite && 
                !tile.isMined && 
-               ['small_rock', '2_rock', 'big_rock'].includes(tile.sprite.texture.key);
+               ['big_rock', 'small_rock'].includes(tile.sprite.texture.key);
     }
 
     validateNPC(npc) {
