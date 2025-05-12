@@ -643,6 +643,18 @@ export default class MainScene extends Phaser.Scene {
                 gridY: gridY
             };
 
+            // Adicionar interatividade ao silo
+            if (this.selectedBuilding === 'silo') {
+                building.setInteractive({ useHandCursor: true });
+                building.on('pointerdown', () => {
+                    this.showSiloModal([
+                        { name: 'Madeira', amount: 0 },
+                        { name: 'Trigo', amount: 0 },
+                        { name: 'Minério', amount: 0 }
+                    ]);
+                });
+            }
+
             // Create NPC for each house if it's a valid house type
             if (['farmerHouse', 'minerHouse', 'FishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
