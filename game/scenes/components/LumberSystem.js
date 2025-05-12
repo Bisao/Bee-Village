@@ -7,21 +7,21 @@ export default class LumberSystem {
         };
 
         this.config = {
-            cuttingTime: 15000,        // 15 segundos para cortar
-            respawnTime: 60000,        // 1 minuto para reaparecer
-            searchRadius: 10,          // Raio de busca para árvores
-            maxInventory: 4           // Capacidade máxima de madeira (4 slots)
+            cuttingTime: 15000,
+            respawnTime: 60000,
+            searchRadius: 10,
+            maxInventory: 4
         };
 
         this.resources = {
-            wood: '🌳',               // Alterado para árvore para representar log
-            log: '🌳' 
+            wood: '🪵',
+            log: '🌳'
         };
     }
 
+    // Core Methods
     startWorking(npc) {
         if (!this.validateNPC(npc)) return;
-
         if (!npc.leaveHouse()) {
             console.log('[LumberSystem] NPC não conseguiu sair da casa');
             return;
@@ -30,16 +30,7 @@ export default class LumberSystem {
         this.state.isWorking = true;
         npc.currentJob = 'lumber';
         npc.isAutonomous = true;
-
         this.workCycle(npc);
-    }
-
-    validateNPC(npc) {
-        if (!npc || npc.config.profession !== 'Lumberjack') {
-            console.log('[LumberSystem] NPC inválido ou não é lenhador');
-            return false;
-        }
-        return true;
     }
 
     async workCycle(npc) {
@@ -64,7 +55,6 @@ export default class LumberSystem {
                 if (npc.inventory.wood >= this.config.maxInventory) {
                     await this.depositWood(npc);
                 }
-
             } catch (error) {
                 console.error('[LumberSystem] Erro no ciclo:', error);
                 await this.waitFor(1000);
@@ -72,31 +62,25 @@ export default class LumberSystem {
         }
     }
 
+    stopWorking() {
+        this.state.isWorking = false;
+        this.state.isProcessingTree = false;
+    }
+
+    // Tree Management
     async findAndProcessTree(npc) {
-        // 1. Procurar árvore
         this.updateNPCStatus(npc, '🔍', 'Procurando');
         const tree = this.findNearestTree(npc);
+        if (!tree) return null;
 
-        if (!tree) {
-            console.log('[LumberSystem] Nenhuma árvore disponível');
-            return null;
-        }
-
-        // 2. Mover até a árvore
         this.updateNPCStatus(npc, '🚶', 'Movendo');
         const reached = await this.moveToTree(npc, tree);
+        if (!reached) return null;
 
-        if (!reached) {
-            console.log('[LumberSystem] Não alcançou a árvore');
-            return null;
-        }
-
-        // 3. Cortar a árvore
         if (this.isAdjacentToTree(npc, tree)) {
             await this.cutTree(npc, tree);
             return tree;
         }
-
         return null;
     }
 
@@ -105,30 +89,71 @@ export default class LumberSystem {
         let shortestDistance = Infinity;
 
         for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
-            if (this.isValidTree(value)) {
-                const [treeX, treeY] = key.split(',').map(Number);
-                const distance = Math.abs(npc.gridX - treeX) + Math.abs(npc.gridY - treeY);
+            if (!this.isValidTree(value)) continue;
 
-                if (distance < shortestDistance) {
-                    const adjacentPos = this.findBestAdjacentPosition(treeX, treeY);
-                    if (adjacentPos) {
-                        shortestDistance = distance;
-                        nearestTree = {
-                            gridX: treeX,
-                            gridY: treeY,
-                            targetX: adjacentPos.x,
-                            targetY: adjacentPos.y,
-                            sprite: value.sprite,
-                            key: key
-                        };
-                    }
+            const [treeX, treeY] = key.split(',').map(Number);
+            const distance = Math.abs(npc.gridX - treeX) + Math.abs(npc.gridY - treeY);
+
+            if (distance < shortestDistance) {
+                const adjacentPos = this.findBestAdjacentPosition(treeX, treeY);
+                if (adjacentPos) {
+                    shortestDistance = distance;
+                    nearestTree = {
+                        gridX: treeX,
+                        gridY: treeY,
+                        targetX: adjacentPos.x,
+                        targetY: adjacentPos.y,
+                        sprite: value.sprite,
+                        key: key
+                    };
                 }
             }
         }
-
         return nearestTree;
     }
 
+    async cutTree(npc, tree) {
+        if (!this.isAdjacentToTree(npc, tree)) return;
+
+        this.state.isProcessingTree = true;
+        this.updateNPCStatus(npc, '🪓', 'Cortando');
+
+        const cutEffect = this.createCutEffect(tree);
+        await this.waitFor(this.config.cuttingTime);
+        clearInterval(cutEffect);
+
+        await this.processTreeCut(npc, tree);
+        this.state.isProcessingTree = false;
+    }
+
+    // Resource Management
+    async depositWood(npc) {
+        const silo = this.findNearestSilo(npc);
+        if (!silo) {
+            console.log('[LumberSystem] Nenhum silo encontrado');
+            return;
+        }
+
+        this.updateNPCStatus(npc, '🚶', 'Indo ao silo');
+        const reached = await this.moveToSilo(npc, silo);
+
+        if (reached) {
+            this.updateNPCStatus(npc, '📦', 'Depositando');
+            await this.depositResources(npc);
+        }
+    }
+
+    async depositResources(npc) {
+        await this.waitFor(3000);
+        if (npc.inventory.wood > 0) {
+            const amount = npc.inventory.wood;
+            npc.inventory.wood = 0;
+            this.showResourceGain(npc, `+ ${amount} Madeira depositada!`);
+            this.updateInventoryUI(npc);
+        }
+    }
+
+    // Helper Methods
     isValidTree(tile) {
         return tile && 
                tile.type === 'tree' && 
@@ -137,28 +162,8 @@ export default class LumberSystem {
                ['tree_simple', 'tree_pine', 'tree_fruit'].includes(tile.sprite.texture.key);
     }
 
-    findBestAdjacentPosition(treeX, treeY) {
-        const positions = [
-            {x: treeX + 1, y: treeY},
-            {x: treeX - 1, y: treeY},
-            {x: treeX, y: treeY + 1},
-            {x: treeX, y: treeY - 1}
-        ];
-
-        return positions.find(pos => 
-            this.scene.grid.isValidPosition(pos.x, pos.y) && 
-            !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
-        );
-    }
-
-    async moveToTree(npc, tree) {
-        if (!tree) return false;
-
-        const adjacentPos = this.findBestAdjacentPosition(tree.gridX, tree.gridY);
-        if (!adjacentPos) return false;
-
-        await npc.moveTo(adjacentPos.x, adjacentPos.y);
-        return this.isAdjacentToTree(npc, tree);
+    validateNPC(npc) {
+        return npc && npc.config.profession === 'Lumberjack';
     }
 
     isAdjacentToTree(npc, tree) {
@@ -178,80 +183,50 @@ export default class LumberSystem {
         return positions.find(pos => 
             this.scene.grid.isValidPosition(pos.x, pos.y) && 
             !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
-        ) || positions[0];
+        );
     }
 
-    async cutTree(npc, tree) {
-        if (!this.isAdjacentToTree(npc, tree)) return;
-
-        this.state.isProcessingTree = true;
-        this.updateNPCStatus(npc, '🪓', 'Cortando');
-
-        const cutEffect = this.createCutEffect(tree);
-        await this.waitFor(this.config.cuttingTime);
-        clearInterval(cutEffect);
-
-        await this.processTreeCut(npc, tree);
-        this.state.isProcessingTree = false;
-    }
-
+    // UI and Visual Effects
     createCutEffect(tree) {
         return setInterval(() => {
-            if (tree.sprite?.active) {
-                // Texto "Toc"
-                const text = this.scene.add.text(
-                    tree.sprite.x, 
-                    tree.sprite.y - 10,
-                    'Toc', 
-                    {
-                        fontSize: '20px',
-                        fill: '#fff',
-                        stroke: '#000',
-                        strokeThickness: 2
-                    }
-                ).setDepth(5).setOrigin(0.5);
+            if (!tree.sprite?.active) return;
 
-                // Animação do texto
-                this.scene.tweens.add({
-                    targets: text,
-                    y: text.y - 15,
-                    alpha: 0,
-                    duration: 800,
-                    onComplete: () => text.destroy()
-                });
+            const text = this.scene.add.text(
+                tree.sprite.x, 
+                tree.sprite.y - 10,
+                'Toc', 
+                {
+                    fontSize: '20px',
+                    fill: '#fff',
+                    stroke: '#000',
+                    strokeThickness: 2
+                }
+            ).setDepth(5).setOrigin(0.5);
 
-                // Animação da árvore
-                this.scene.tweens.add({
-                    targets: tree.sprite,
-                    angle: { from: -2, to: 2 },
-                    duration: 100,
-                    yoyo: true,
-                    repeat: 1,
-                    ease: 'Sine.easeInOut'
-                });
-            }
+            this.scene.tweens.add({
+                targets: text,
+                y: text.y - 15,
+                alpha: 0,
+                duration: 800,
+                onComplete: () => text.destroy()
+            });
+
+            this.scene.tweens.add({
+                targets: tree.sprite,
+                angle: { from: -2, to: 2 },
+                duration: 100,
+                yoyo: true,
+                repeat: 1,
+                ease: 'Sine.easeInOut'
+            });
         }, 2500);
     }
 
-    async processTreeCut(npc, tree) {
-        const treeData = this.scene.grid.buildingGrid[tree.key];
-        if (!treeData) return;
-
-        treeData.isCut = true;
-        treeData.sprite.setVisible(false);
-
-        if (npc.addItemToStorage('wood')) {
-            this.showResourceGain(npc);
-        }
-
-        this.scheduleTreeRespawn(treeData);
-    }
-
-    showResourceGain(npc) {
+    showResourceGain(npc, message) {
         const text = this.scene.add.text(
             npc.sprite.x,
             npc.sprite.y - 40,
-            `+1 ${this.resources.wood}`,
+            message,
             { fontSize: '16px', fill: '#00ff00' }
         );
 
@@ -264,29 +239,37 @@ export default class LumberSystem {
         });
     }
 
-    scheduleTreeRespawn(treeData) {
-        this.scene.time.delayedCall(this.config.respawnTime, () => {
-            if (treeData) {
-                treeData.isCut = false;
-                treeData.sprite.setVisible(true);
-            }
-        });
+    updateNPCStatus(npc, emoji, status) {
+        npc.config.emoji = emoji;
+        npc.nameText.setText(`${emoji} ${npc.config.name}`);
+        console.log(`[LumberSystem] ${npc.config.name}: ${status}`);
     }
 
-    async depositWood(npc) {
-        const silo = this.findNearestSilo(npc);
-        if (!silo) {
-            console.log('[LumberSystem] Nenhum silo encontrado');
-            return;
-        }
+    updateInventoryUI(npc) {
+        const controlPanel = document.querySelector('.npc-modal');
+        if (controlPanel && controlPanel.dataset.npcId === npc.id) {
+            const storageSlots = controlPanel.querySelectorAll('.storage-slot');
+            const woodCount = npc.inventory.wood;
 
-        this.updateNPCStatus(npc, '🚶', 'Indo ao silo');
-        const reached = await this.moveToSilo(npc, silo);
-
-        if (reached) {
-            this.updateNPCStatus(npc, '📦', 'Depositando');
-            await this.depositResources(npc);
+            storageSlots.forEach((slot, index) => {
+                const hasWood = index < woodCount;
+                slot.querySelector('.storage-amount').textContent = hasWood ? '1/1' : '0/1';
+            });
         }
+    }
+
+    waitFor(ms) {
+        return new Promise(resolve => this.scene.time.delayedCall(ms, resolve));
+    }
+
+    async moveToTree(npc, tree) {
+        if (!tree) return false;
+
+        const adjacentPos = this.findBestAdjacentPosition(tree.gridX, tree.gridY);
+        if (!adjacentPos) return false;
+
+        await npc.moveTo(adjacentPos.x, adjacentPos.y);
+        return this.isAdjacentToTree(npc, tree);
     }
 
     findNearestSilo(npc) {
@@ -316,67 +299,26 @@ export default class LumberSystem {
         return true;
     }
 
-    async depositResources(npc) {
-        await this.waitFor(3000);
-
-        if (npc.inventory.wood > 0) {
-            const amount = npc.inventory.wood;
-            npc.inventory.wood = 0;
-
-            const text = this.scene.add.text(
-                npc.sprite.x,
-                npc.sprite.y - 40,
-                `+ ${amount} Madeira depositada!`,
-                { fontSize: '16px', fill: '#00ff00' }
-            );
-
-            this.scene.tweens.add({
-                targets: text,
-                y: text.y - 30,
-                alpha: 0,
-                duration: 1000,
-                onComplete: () => text.destroy()
-            });
-        }
-    }
-
-    updateNPCStatus(npc, emoji, status) {
-        npc.config.emoji = emoji;
-        npc.nameText.setText(`${emoji} ${npc.config.name}`);
-        console.log(`[LumberSystem] ${npc.config.name}: ${status}`);
-    }
-
-    waitFor(ms) {
-        return new Promise(resolve => this.scene.time.delayedCall(ms, resolve));
-    }
-
-    stopWorking() {
-        this.state.isWorking = false;
-        this.state.isProcessingTree = false;
-    }
-
-    async cutTree(npc, treeData) {
-        if (!treeData || treeData.isCut) return;
+    async processTreeCut(npc, tree) {
+        const treeData = this.scene.grid.buildingGrid[tree.key];
+        if (!treeData) return;
 
         treeData.isCut = true;
         treeData.sprite.setVisible(false);
 
         if (npc.addItemToStorage('wood')) {
-            this.showResourceGain(npc);
-
-            // Atualiza o painel de controle se estiver aberto
-            const controlPanel = document.querySelector('.npc-modal');
-            if (controlPanel && controlPanel.dataset.npcId === npc.id) {
-                const storageSlots = controlPanel.querySelectorAll('.storage-slot');
-                const woodCount = npc.inventory.wood;
-
-                storageSlots.forEach((slot, index) => {
-                    const hasWood = index < woodCount;
-                    slot.querySelector('.storage-amount').textContent = hasWood ? '1/1' : '0/1';
-                });
-            }
+            this.showResourceGain(npc, '+1 ' + this.resources.wood);
         }
 
         this.scheduleTreeRespawn(treeData);
+    }
+
+    scheduleTreeRespawn(treeData) {
+        this.scene.time.delayedCall(this.config.respawnTime, () => {
+            if (treeData) {
+                treeData.isCut = false;
+                treeData.sprite.setVisible(true);
+            }
+        });
     }
 }
