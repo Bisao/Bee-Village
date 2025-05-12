@@ -102,7 +102,10 @@ export default class BaseNPC {
     }
 
     showControls() {
-        this.scene.showNPCControls(this);
+        if (!this.controlPanel) {
+            this.controlPanel = new NPCControlPanel(this.scene);
+        }
+        this.controlPanel.show(this);
     }
 
     startAutonomousMovement() {
