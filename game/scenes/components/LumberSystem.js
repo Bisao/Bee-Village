@@ -153,7 +153,7 @@ export default class LumberSystem {
 
     async moveToTree(npc, tree) {
         if (!tree) return false;
-        
+
         const adjacentPos = this.findBestAdjacentPosition(tree.gridX, tree.gridY);
         if (!adjacentPos) return false;
 
@@ -353,5 +353,30 @@ export default class LumberSystem {
     stopWorking() {
         this.state.isWorking = false;
         this.state.isProcessingTree = false;
+    }
+
+    async cutTree(npc, treeData) {
+        if (!treeData || treeData.isCut) return;
+
+        treeData.isCut = true;
+        treeData.sprite.setVisible(false);
+
+        if (npc.addItemToStorage('wood')) {
+            this.showResourceGain(npc);
+
+            // Atualiza o painel de controle se estiver aberto
+            const controlPanel = document.querySelector('.npc-modal');
+            if (controlPanel && controlPanel.dataset.npcId === npc.id) {
+                const storageSlots = controlPanel.querySelectorAll('.storage-slot');
+                const woodCount = npc.inventory.wood;
+
+                storageSlots.forEach((slot, index) => {
+                    const hasWood = index < woodCount;
+                    slot.querySelector('.storage-amount').textContent = hasWood ? '1/1' : '0/1';
+                });
+            }
+        }
+
+        this.scheduleTreeRespawn(treeData);
     }
 }
