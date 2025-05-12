@@ -914,6 +914,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
+        const modal = document.createElement('div');
+        modal.className = 'npc-modal';
+        
         if (!npc.controlPanel) {
             npc.controlPanel = new NPCControlPanel(this);
         }
