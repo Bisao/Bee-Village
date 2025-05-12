@@ -958,22 +958,16 @@ export default class MainScene extends Phaser.Scene {
                         `).join('')}
                     </div>
                     <div class="storage-grid">
-                        <div class="storage-slot">
-                            <div class="storage-icon">🪵</div>
-                            <div class="storage-amount">${npc.inventory.wood || 0}/5</div>
-                        </div>
-                        <div class="storage-slot">
-                            <div class="storage-icon">🌾</div>
-                            <div class="storage-amount">${npc.inventory.wheat || 0}/5</div>
-                        </div>
-                        <div class="storage-slot">
-                            <div class="storage-icon">⛏️</div>
-                            <div class="storage-amount">${npc.inventory.ore || 0}/5</div>
-                        </div>
-                        <div class="storage-slot">
-                            <div class="storage-icon">🐟</div>
-                            <div class="storage-amount">${npc.inventory.fish || 0}/5</div>
-                        </div>
+                        ${Array(4).fill().map((_, i) => `
+                            <div class="storage-slot">
+                                <div class="storage-icon">${npc.config.profession === 'Lumberjack' ? '🌳' : 
+                                    npc.config.profession === 'Farmer' ? '🌾' :
+                                    npc.config.profession === 'Miner' ? '⛏️' : '🐟'}</div>
+                                <div class="storage-amount">${i < (npc.inventory[npc.config.profession === 'Lumberjack' ? 'wood' : 
+                                    npc.config.profession === 'Farmer' ? 'wheat' :
+                                    npc.config.profession === 'Miner' ? 'ore' : 'fish'] || 0) ? '1' : '0'}/1</div>
+                            </div>
+                        `).join('')}
                     </div>
                 </div>
 

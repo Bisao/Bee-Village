@@ -10,12 +10,12 @@ export default class LumberSystem {
             cuttingTime: 15000,        // 15 segundos para cortar
             respawnTime: 60000,        // 1 minuto para reaparecer
             searchRadius: 10,          // Raio de busca para árvores
-            maxInventory: 5           // Capacidade máxima de madeira
+            maxInventory: 4           // Capacidade máxima de madeira (4 slots)
         };
 
         this.resources = {
-            wood: '🪵',
-            log: '🌳'
+            wood: '🌳',               // Alterado para árvore para representar log
+            log: '🌳' 
         };
     }
 
