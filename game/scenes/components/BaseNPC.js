@@ -347,6 +347,8 @@ export default class BaseNPC {
             onComplete: () => text.destroy()
         });
 
+        return false;
+    }
 
     // Sistema de Fadiga
     recoverStamina() {
@@ -412,9 +414,6 @@ export default class BaseNPC {
             duration: 2000,
             onComplete: () => text.destroy()
         });
-    }
-
-        return false;
     }
 
     getInitialInventory() {
