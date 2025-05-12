@@ -97,20 +97,24 @@ export default class BaseNPC {
 
         switch (this.currentJob) {
             case 'lumber':
-                const lumberSystem = this.scene.lumberSystem;
-                if (lumberSystem && lumberSystem.isWorking) {
-                    const tree = lumberSystem.findNearestTree(this);
+                if (!this.lumberSystem) {
+                    this.lumberSystem = new LumberSystem(this.scene);
+                }
+                if (this.lumberSystem && this.lumberSystem.isWorking) {
+                    const tree = this.lumberSystem.findNearestTree(this);
                     if (tree) {
-                        lumberSystem.moveToTree(this, tree);
+                        this.lumberSystem.moveToTree(this, tree);
                     }
                 }
                 break;
             case 'miner':
-                const mineSystem = this.scene.mineSystem;
-                if (mineSystem && mineSystem.isWorking) {
-                    const rock = mineSystem.findNearestRock(this);
+                if (!this.mineSystem) {
+                    this.mineSystem = new MineSystem(this.scene);
+                }
+                if (this.mineSystem && this.mineSystem.isWorking) {
+                    const rock = this.mineSystem.findNearestRock(this);
                     if (rock) {
-                        mineSystem.moveToRock(this, rock);
+                        this.mineSystem.moveToRock(this, rock);
                     }
                 }
                 break;
