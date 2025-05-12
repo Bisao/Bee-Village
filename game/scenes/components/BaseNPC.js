@@ -1,4 +1,3 @@
-
 export default class BaseNPC {
     constructor(scene, x, y, config = {}) {
         this.scene = scene;
@@ -6,7 +5,7 @@ export default class BaseNPC {
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-        
+
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -28,17 +27,17 @@ export default class BaseNPC {
     init() {
         // Inventário do NPC baseado na profissão
         this.inventory = this.getInitialInventory();
-        
+
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-        
+
         // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-        
+
         // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
@@ -127,7 +126,7 @@ export default class BaseNPC {
                     break;
                 // Adicione outros sistemas aqui
             }
-            
+
             // Retorna para casa
             this.returnHome();
             this.currentJob = 'rest';
@@ -138,7 +137,7 @@ export default class BaseNPC {
             // Retorna ao trabalho
             this.currentJob = null;
             this.isAutonomous = true;
-            
+
             // Inicia o trabalho específico baseado na profissão
             switch (this.config.profession) {
                 case 'Lumberjack':
@@ -153,11 +152,11 @@ export default class BaseNPC {
                     break;
                 // Adicione outros sistemas aqui
             }
-            
+
             // Restaura o emoji padrão
             this.config.emoji = this.getDefaultEmoji();
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-            
+
             // Sai de casa para trabalhar
             this.leaveHouse();
         }
@@ -285,7 +284,7 @@ export default class BaseNPC {
     addItemToStorage(itemType) {
         if (this.inventory[itemType] < this.inventory.maxCapacity) {
             this.inventory[itemType]++;
-            
+
             // Feedback visual
             const text = this.scene.add.text(
                 this.sprite.x, 
@@ -293,7 +292,7 @@ export default class BaseNPC {
                 `+1 ${itemType}`, 
                 { fontSize: '16px', fill: '#fff' }
             );
-            
+
             this.scene.tweens.add({
                 targets: text,
                 y: text.y - 30,
@@ -301,10 +300,10 @@ export default class BaseNPC {
                 duration: 1000,
                 onComplete: () => text.destroy()
             });
-            
+
             return true;
         }
-        
+
         // Feedback de inventário cheio
         const text = this.scene.add.text(
             this.sprite.x,
@@ -312,7 +311,7 @@ export default class BaseNPC {
             'Inventário cheio!',
             { fontSize: '16px', fill: '#ff0000' }
         );
-        
+
         this.scene.tweens.add({
             targets: text,
             y: text.y - 30,
@@ -320,7 +319,7 @@ export default class BaseNPC {
             duration: 1000,
             onComplete: () => text.destroy()
         });
-        
+
         return false;
     }
 
@@ -385,10 +384,11 @@ export default class BaseNPC {
     processResource(resource, key) {
         if (!this.hasInventorySpace(resource.type)) {
             const nearestSilo = this.scene.resourceSystem.findNearestSilo(this.gridX, this.gridY);
-            
+
             if (!nearestSilo) {
+                // Se não houver silo, para o trabalho e volta para casa
                 console.log(`[${this.config.name}] Nenhum silo encontrado, voltando para casa`);
-                this.returnHome();
+                this.setRestMode(true);
                 return;
             }
 
@@ -398,7 +398,7 @@ export default class BaseNPC {
 
         const processingTime = 2000;
         this.isProcessing = true;
-        
+
         this.config.emoji = '⚡';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
 
@@ -407,7 +407,7 @@ export default class BaseNPC {
             this.isProcessing = false;
             this.config.emoji = this.getDefaultEmoji();
             this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-            
+
             resource.isProcessed = true;
             this.gainExperience(10);
 
@@ -427,7 +427,7 @@ export default class BaseNPC {
     async depositInSilo(silo) {
         this.config.emoji = '🚶';
         this.nameText.setText(`${this.config.emoji} ${this.config.name}`);
-        
+
         // Move até o silo
         const targetX = silo.x;
         const targetY = silo.y + 1; // Posição adjacente ao silo
@@ -445,7 +445,7 @@ export default class BaseNPC {
                         `+ ${amount} ${resourceType} depositado!`,
                         { fontSize: '16px', fill: '#fff' }
                     );
-                    
+
                     this.scene.tweens.add({
                         targets: text,
                         y: text.y - 30,
@@ -470,13 +470,13 @@ export default class BaseNPC {
 
     gainExperience(amount) {
         this.config.xp += amount;
-        
+
         // Level up se atingir XP máximo
         if (this.config.xp >= this.config.maxXp) {
             this.config.level++;
             this.config.xp = 0;
             this.config.maxXp *= 1.5;
-            
+
             // Feedback visual de level up
             const levelUpText = this.scene.add.text(
                 this.sprite.x,
