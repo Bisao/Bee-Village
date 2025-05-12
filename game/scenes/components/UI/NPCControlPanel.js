@@ -1,3 +1,4 @@
+
 export default class NPCControlPanel {
     constructor(scene) {
         this.scene = scene;
@@ -29,28 +30,16 @@ export default class NPCControlPanel {
                     </div>
                 </div>
 
-                <div class="control-modes">
-                    <button class="mode-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
-                        🤖 Modo Autônomo
-                    </button>
-                    <button class="mode-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
-                        🕹️ Modo Controlado 
-                    </button>
-                </div>
-
-                <div class="mode-status">
-                    <span>👁️ NPC se move livremente</span>
-                </div>
-
                 <div class="panel-tabs">
                     <button class="tab-btn active" data-tab="inventory">Inventário</button>
                     <button class="tab-btn" data-tab="jobs">Trabalhos</button>
                 </div>
 
-                <div class="tab-content" id="inventory-content">
-                    <div class="tools-section">
+                <div class="tab-content active" id="inventory-tab">
+                    <h3>Ferramentas</h3>
+                    <div class="tools-grid">
                         ${npc.config.tools.map(tool => `
-                            <div class="tool-card">
+                            <div class="tool-slot">
                                 <div class="tool-icon">${tool.emoji}</div>
                                 <div class="tool-info">
                                     <div class="tool-name">${tool.name}</div>
@@ -60,13 +49,23 @@ export default class NPCControlPanel {
                         `).join('')}
                     </div>
 
+                    <h3>Inventário</h3>
                     <div class="inventory-grid">
-                        ${Array(4).fill().map(() => `
-                            <div class="inventory-slot">
-                                <div class="slot-icon">🌳</div>
-                                <div class="slot-count">0/1</div>
+                        ${Array(8).fill().map((_, i) => `
+                            <div class="inventory-slot empty">
+                                <div class="slot-icon">?</div>
+                                <div class="slot-count">0/5</div>
                             </div>
                         `).join('')}
+                    </div>
+                </div>
+
+                <div class="tab-content" id="jobs-tab">
+                    <div class="jobs-list">
+                        <button class="job-btn rest-btn">
+                            ☕ Descansar
+                        </button>
+                        ${this.getJobButtonByProfession(npc.config.profession)}
                     </div>
                 </div>
             </div>
@@ -74,33 +73,61 @@ export default class NPCControlPanel {
 
         document.body.appendChild(modal);
 
+        // Setup event listeners
         this.setupEventListeners(modal, npc);
+    }
+
+    getJobButtonByProfession(profession) {
+        const jobs = {
+            'Lumberjack': '<button class="job-btn work-btn">🪓 Cortar Árvores</button>',
+            'Miner': '<button class="job-btn work-btn">⛏️ Minerar</button>',
+            'Farmer': '<button class="job-btn work-btn">🌾 Cultivar</button>',
+            'Fisher': '<button class="job-btn work-btn">🎣 Pescar</button>'
+        };
+        return jobs[profession] || '';
     }
 
     setupEventListeners(modal, npc) {
         const closeBtn = modal.querySelector('.close-button');
+        const tabBtns = modal.querySelectorAll('.tab-btn');
+        const restBtn = modal.querySelector('.rest-btn');
+        const workBtn = modal.querySelector('.work-btn');
+
         closeBtn.onclick = () => modal.remove();
 
-        const autonomousBtn = modal.querySelector('#autonomous');
-        const controlledBtn = modal.querySelector('#controlled');
+        // Tab switching
+        tabBtns.forEach(btn => {
+            btn.onclick = () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                const tabId = btn.getAttribute('data-tab');
+                modal.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                modal.querySelector(`#${tabId}-tab`).classList.add('active');
+            };
+        });
 
-        autonomousBtn.onclick = () => {
-            npc.isAutonomous = true;
-            this.updateModeButtons(autonomousBtn, controlledBtn);
-            this.scene.startNPCMovement(npc);
-            modal.querySelector('.mode-status span').textContent = '👁️ NPC se move livremente';
-        };
+        // Rest button
+        if (restBtn) {
+            restBtn.onclick = () => {
+                npc.setRestMode(true);
+                this.updateJobButtons(restBtn, workBtn);
+            };
+        }
 
-        controlledBtn.onclick = () => {
-            npc.isAutonomous = false;
-            this.updateModeButtons(controlledBtn, autonomousBtn);
-            this.scene.enablePlayerControl(npc);
-            modal.querySelector('.mode-status span').textContent = '🕹️ Use WASD para controlar';
-        };
+        // Work button
+        if (workBtn) {
+            workBtn.onclick = () => {
+                npc.setRestMode(false);
+                this.updateJobButtons(workBtn, restBtn);
+            };
+        }
     }
 
-    updateModeButtons(activeBtn, inactiveBtn) {
-        activeBtn.classList.add('active');
-        inactiveBtn.classList.remove('active');
+    updateJobButtons(activeBtn, inactiveBtn) {
+        if (activeBtn) activeBtn.classList.add('active');
+        if (inactiveBtn) inactiveBtn.classList.remove('active');
     }
 }
