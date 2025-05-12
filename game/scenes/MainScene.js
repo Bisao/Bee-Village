@@ -957,6 +957,24 @@ export default class MainScene extends Phaser.Scene {
                             </div>
                         `).join('')}
                     </div>
+                    <div class="storage-grid">
+                        <div class="storage-slot">
+                            <div class="storage-icon">🪵</div>
+                            <div class="storage-amount">${npc.inventory.wood || 0}/5</div>
+                        </div>
+                        <div class="storage-slot">
+                            <div class="storage-icon">🌾</div>
+                            <div class="storage-amount">${npc.inventory.wheat || 0}/5</div>
+                        </div>
+                        <div class="storage-slot">
+                            <div class="storage-icon">⛏️</div>
+                            <div class="storage-amount">${npc.inventory.ore || 0}/5</div>
+                        </div>
+                        <div class="storage-slot">
+                            <div class="storage-icon">🐟</div>
+                            <div class="storage-amount">${npc.inventory.fish || 0}/5</div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="tab-panel" id="jobs-panel">
