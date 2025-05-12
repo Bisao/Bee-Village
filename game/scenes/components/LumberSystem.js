@@ -198,6 +198,7 @@ export default class LumberSystem {
     createCutEffect(tree) {
         return setInterval(() => {
             if (tree.sprite?.active) {
+                // Texto "Toc"
                 const text = this.scene.add.text(
                     tree.sprite.x, 
                     tree.sprite.y - 10,
@@ -210,12 +211,23 @@ export default class LumberSystem {
                     }
                 ).setDepth(5).setOrigin(0.5);
 
+                // Animação do texto
                 this.scene.tweens.add({
                     targets: text,
                     y: text.y - 15,
                     alpha: 0,
                     duration: 800,
                     onComplete: () => text.destroy()
+                });
+
+                // Animação da árvore
+                this.scene.tweens.add({
+                    targets: tree.sprite,
+                    angle: { from: -2, to: 2 },
+                    duration: 100,
+                    yoyo: true,
+                    repeat: 1,
+                    ease: 'Sine.easeInOut'
                 });
             }
         }, 2500);
