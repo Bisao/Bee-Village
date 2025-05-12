@@ -249,8 +249,15 @@ showSiloModal(resources) {
 
         // Título do painel
         const title = document.createElement('h2');
-        title.textContent = `Painel de Controle do ${npc.config.name}`;
-        title.style.marginBottom = '10px';
+        title.textContent = `${npc.config.name}`;
+        title.style.cssText = `
+            margin: 0 0 15px 0;
+            text-align: center;
+            width: 100%;
+            font-size: 1.4em;
+            padding: 5px 0;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        `;
         panel.appendChild(title);
 
         // Lista de trabalhos
