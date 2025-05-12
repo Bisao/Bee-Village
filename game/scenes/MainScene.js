@@ -2,7 +2,6 @@ import Grid from '../scenes/components/Grid.js';
 import InputManager from '../scenes/components/InputManager.js';
 import LumberSystem from '../scenes/components/LumberSystem.js';
 import ResourceSystem from '../scenes/components/ResourceSystem.js';
-import NPCControlPanel from '../scenes/components/UI/NPCControlPanel.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -914,10 +913,98 @@ export default class MainScene extends Phaser.Scene {
     }
 
     showNPCControls(npc) {
-        if (!npc.controlPanel) {
-            npc.controlPanel = new NPCControlPanel(this);
-        }
-        npc.controlPanel.show(npc);
+        // Cleanup previous NPC controls
+        this.cleanupNPCControls();
+
+        const modal = document.createElement('div');
+        modal.className ='npc-modal';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <button class="close-button">✕</button>
+                <div class="npc-header">
+                    <div class="npc-avatar">
+                        ${npc.config.emoji}
+                    </div>
+                    <div class="npc-info">
+                        <div class="npc-name-row">
+                            <h3>${npc.config.name}</h3>
+                            <button class="camera-follow-btn">👁️ Seguir</button>
+                        </div>
+                        <p class="npc-profession">${npc.config.profession}</p>
+                        <div class="npc-level-info">
+                            <span class="level-text">Nível ${npc.config.level}</span>
+                            <div class="xp-bar">
+                                <div class="xp-progress" style="width: ${(npc.config.xp / npc.config.maxXp) * 100}%"></div>
+                            </div>
+                            <span class="xp-text">${npc.config.xp}/${npc.config.maxXp} XP</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-buttons">
+                    <button class="control-btn ${npc.isAutonomous ? 'active' : ''}" id="autonomous">
+                        🤖 Modo Autônomo
+                    </button>
+                    <button class="control-btn ${!npc.isAutonomous ? 'active' : ''}" id="controlled">
+                        🕹️ Modo Controlado
+                    </button>
+                </div>
+
+                <div class="mode-info">
+                    <p class="autonomous-info ${npc.isAutonomous ? 'visible' : ''}">
+                        🔄 NPC se move livremente
+                    </p>
+                    <p class="controlled-info ${!npc.isAutonomous ? 'visible' : ''}">
+                        📱 Use WASD ou controles mobile
+                    </p>
+                </div>
+
+                <div class="modal-tabs">
+                    <button class="modal-tab active" data-tab="inventory">Inventário</button>
+                    <button class="modal-tab" data-tab="jobs">Trabalhos</button>
+                </div>
+
+                <div class="tab-panel active" id="inventory-panel">
+                    <div class="npc-inventory">
+                        ${npc.config.tools.map(tool => `
+                            <div class="tool-slot">
+                                <div class="tool-emoji">${tool.emoji}</div>
+                                <div class="tool-name">${tool.name}</div>
+                                <div class="tool-description">${tool.description}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="storage-grid">
+                        ${Array(4).fill().map((_, i) => `
+                            <div class="storage-slot">
+                                <div class="storage-icon">${npc.config.profession === 'Lumberjack' ? '🌳' : 
+                                    npc.config.profession === 'Farmer' ? '🌾' :
+                                    npc.config.profession === 'Miner' ? '⛏️' : '🐟'}</div>
+                                <div class="storage-amount">${i < (npc.inventory[npc.config.profession === 'Lumberjack' ? 'wood' : 
+                                    npc.config.profession === 'Farmer' ? 'wheat' :
+                                    npc.config.profession === 'Miner' ? 'ore' : 'fish'] || 0) ? '1' : '0'}/1</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+
+                <div class="tab-panel" id="jobs-panel">
+                    <div class="jobs-list">
+                        ${this.getAvailableJobs(npc).map(job => `
+                            <div class="job-option ${npc.currentJob === job.id ? 'active' : ''}" data-job="${job.id}">
+                                <div class="job-icon">${job.icon}</div>
+                                <div class="job-info">
+                                    <div class="job-name">${job.name}</div>
+                                    <div class="job-description">${job.description}</div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
 
         // Adiciona manipuladores de eventos do trabalho
         modal.querySelectorAll('.job-option').forEach(option => {
