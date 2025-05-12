@@ -159,11 +159,23 @@ export default class LumberSystem {
     }
 
     isAdjacentToTree(npc, tree) {
-        return npc.gridX === tree.gridX && npc.gridY === tree.gridY;
+        const dx = Math.abs(npc.gridX - tree.gridX);
+        const dy = Math.abs(npc.gridY - tree.gridY);
+        return (dx === 1 && dy === 0) || (dx === 0 && dy === 1);
     }
 
     findBestAdjacentPosition(treeX, treeY) {
-        return {x: treeX, y: treeY};
+        const positions = [
+            {x: treeX + 1, y: treeY},
+            {x: treeX - 1, y: treeY},
+            {x: treeX, y: treeY + 1},
+            {x: treeX, y: treeY - 1}
+        ];
+
+        return positions.find(pos => 
+            this.scene.grid.isValidPosition(pos.x, pos.y) && 
+            !this.scene.grid.buildingGrid[`${pos.x},${pos.y}`]
+        ) || positions[0];
     }
 
     async cutTree(npc, tree) {
