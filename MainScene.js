@@ -339,11 +339,9 @@ showSiloModal(resources) {
     getAvailableJobs(npc) {
         const jobs = [];
 
-        // Trabalho básico para todos
-        jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
-
         // Trabalhos específicos por profissão
         if (npc.config.profession === 'Lumberjack') {
+            jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
             jobs.push({ 
                 id: 'lumber', 
                 name: 'Cortar Madeira', 
@@ -351,12 +349,15 @@ showSiloModal(resources) {
                 description: 'Corta árvores e coleta madeira.' 
             });
         } else if (npc.config.profession === 'Miner') {
+            jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
             jobs.push({
                 id: 'miner',
                 name: 'Minerar',
                 icon: '⛏️',
                 description: 'Minera rochas e coleta minérios.'
             });
+        } else {
+            jobs.push({ id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' });
         }
 
         return jobs;
