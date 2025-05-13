@@ -148,3 +148,10 @@ autoSave() {
     // Resource management moved to ResourceSystem.js
 
     enablePlayerControl(npc) {
+createFarmer() {
+        if (this.farmerCreated) return;
+        this.farmerCreated = true;
+
+        // Animation system moved to AnimationManager
+        this.animationManager.createFarmerAnimations();
+}
