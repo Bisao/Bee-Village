@@ -5,7 +5,6 @@ export default class BaseNPC {
         this.gridX = x;
         this.gridY = y;
         this.isMoving = false;
-        this.isAutonomous = true;
         
         // Configurações customizáveis
         this.config = {
@@ -93,23 +92,7 @@ export default class BaseNPC {
         this.scene.showNPCControls(this);
     }
 
-    startAutonomousMovement() {
-        if (!this.isAutonomous) return;
-
-        if (this.currentJob === 'lumber') {
-            const lumberSystem = this.scene.lumberSystem;
-            if (lumberSystem && lumberSystem.isWorking) {
-                const tree = lumberSystem.findNearestTree(this);
-                if (tree) {
-                    lumberSystem.moveToTree(this, tree);
-                }
-            }
-            return;
-        }
-
-        // Se não está trabalhando, volta para casa
-        this.returnHome();
-    }
+    // Removed autonomous movement code
 
     setRestMode(enabled) {
         if (enabled) {

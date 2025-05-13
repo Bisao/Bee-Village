@@ -3,62 +3,6 @@ export default class NPCManager {
         this.scene = scene;
         this.npcs = new Map();
         this.usedNames = new Map();
-        this.farmerCreated = false;
-    }
-
-    getToolsForProfession(profession) {
-        switch (profession) {
-            case 'Farmer':
-                return [
-                    { name: 'Pá', emoji: '🚜', description: 'Usada para arar a terra.' },
-                    { name: 'Semente', emoji: '🌱', description: 'Usada para plantar.' }
-                ];
-            case 'Miner':
-                return [
-                    { name: 'Picareta', emoji: '⛏️', description: 'Usada para minerar.' },
-                    { name: 'Lanterna', emoji: '🔦', description: 'Ilumina áreas escuras.' }
-                ];
-            case 'Fisher':
-                return [
-                    { name: 'Vara de pesca', emoji: '🎣', description: 'Usada para pescar.' },
-                    { name: 'Rede', emoji: '🕸️', description: 'Captura peixes em massa.' }
-                ];
-            case 'Lumberjack':
-                return [
-                    { name: 'Machado', emoji: '🪓', description: 'Usado para cortar árvores.' },
-                    { name: 'Serra', emoji: '🪚', description: 'Corta madeira mais rápido.' }
-                ];
-            default:
-                return [];
-        }
-    }
-
-    createNPC(profession, x, y) {
-        if (profession === 'Farmer' && this.farmerCreated) {
-            return null;
-        }
-
-        const npc = {
-            profession,
-            gridX: x,
-            gridY: y,
-            tools: this.getToolsForProfession(profession),
-            isMoving: false,
-            sprite: null
-        };
-
-        if (profession === 'Farmer') {
-            this.farmerCreated = true;
-        }
-
-        this.npcs.set(`${x},${y}`, npc);
-        return npc;
-    }
-
-    createFarmer() {
-        if (this.farmerCreated) return;
-        this.farmerCreated = true;
-        this.scene.animationManager.createFarmerAnimations();
     }
 
     async createFarmerNPC(houseX, houseY, worldX, worldY) {
@@ -96,6 +40,16 @@ export default class NPCManager {
 
     startNPCMovement(npc) {
         if (!npc.isAutonomous) return;
+
+        const firstStep = () => {
+            const newY = npc.gridY + 1;
+            if (this.scene.gridManager.isValidPosition(npc.gridX, newY) && 
+                !this.scene.gridManager.isTileOccupied(npc.gridX, newY)) {
+                this.scene.movementManager.moveNPCTo(npc, npc.gridX, newY);
+            }
+        };
+
+        firstStep();
 
         const moveNPC = () => {
             if (!npc.isAutonomous || npc.isMoving) return;
