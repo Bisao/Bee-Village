@@ -15,7 +15,5 @@ autoSave() {
 createFarmer() {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
-
-        // Animation system moved to AnimationManager
         this.animationManager.createFarmerAnimations();
-}
+    }

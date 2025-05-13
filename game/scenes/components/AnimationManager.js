@@ -1,8 +1,6 @@
-
 export default class AnimationManager {
     constructor(scene) {
         this.scene = scene;
-        this.anims = new Map();
     }
 
     createFarmerAnimations() {
