@@ -246,6 +246,15 @@ export default class NPCControlPanel {
             npc.config.emoji = "🪓";
             npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
             npc.lumberSystem.startWorking(npc);
+        } else if (jobId === "mine" && npc.config.profession === "Miner") {
+            if (!npc.mineSystem) {
+                npc.mineSystem = new this.scene.MineSystem(this.scene);
+            }
+            npc.isAutonomous = true;
+            npc.currentJob = "mine";
+            npc.config.emoji = "⛏️";
+            npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+            npc.mineSystem.startWorking(npc);
         } else if (jobId === "idle") {
             npc.isAutonomous = true;
             npc.currentJob = "idle";

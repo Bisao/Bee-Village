@@ -1023,6 +1023,16 @@ export default class MainScene extends Phaser.Scene {
 
                     console.log('Iniciando trabalho de lenhador:', npc.config.name);
                 }
+                if (jobId === 'mine') {
+                    npc.isAutonomous = false;
+                    npc.currentJob = 'mine';
+                    npc.config.emoji = '⛏️';
+                    npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                    // Start mining logic here
+                    modal.remove();
+
+                    console.log('Iniciando trabalho de mineração:', npc.config.name);
+                }
             });
         });
 
@@ -1282,9 +1292,18 @@ export default class MainScene extends Phaser.Scene {
             });
         }
 
+        if (npc.config.profession === 'Miner') {
+            jobs.push({
+                id: 'mine',
+                name: 'Minerar',
+                icon: '⛏️',
+                description: 'Minerar rochas próximas'
+            });
+        }
+
         return jobs;
     }
-    
+
     showSiloModal(resources) {
         const existingModal = document.querySelector('.silo-modal');
         if (existingModal) existingModal.remove();
