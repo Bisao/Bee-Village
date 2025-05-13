@@ -1,4 +1,3 @@
-
 export default class UIManager {
     constructor(scene) {
         this.scene = scene;
@@ -46,14 +45,14 @@ export default class UIManager {
         this.panels.set('npcControl', new NPCControlPanel(this.scene));
         this.panels.set('silo', new SiloPanel(this.scene));
         this.panels.set('settings', new SettingsPanel(this.scene));
-        
+
         // Initialize UI based on device
         if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
             this.ui = new MobileUI(this.scene);
         } else {
             this.ui = new DesktopUI(this.scene);
         }
-        
+
         this.ui.createUI();
     }
 
@@ -89,12 +88,58 @@ export default class UIManager {
         }
     }
 
-    hideAllPanels() {
-        this.panels.forEach(panel => {
-            if (panel.hide) {
-                panel.hide();
-            }
-        });
+    showSiloModal(resources) {
+        const existingModal = document.querySelector('.silo-modal');
+        if (existingModal) existingModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'silo-modal';
+        modal.innerHTML = `
+            <div class="silo-content">
+                <div class="silo-header">
+                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
+                    <button class="close-button">✕</button>
+                </div>
+                <div class="resources-grid">
+                    ${this.createResourceCategories(resources)}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        this.setupModalEvents(modal);
+    }
+
+    showNPCControls(npc) {
+        this.cleanupExistingModals();
+        const modal = this.createNPCModal(npc);
+        document.body.appendChild(modal);
+        this.setupNPCModalEvents(modal, npc);
+    }
+
+    showSettingsPanel() {
+        const panel = this.panels.get('settings');
+        if (panel) {
+            panel.show();
+        }
+    }
+
+    private createResourceCategories(resources) {
+        // Implementation of resource categories creation
+        return `
+            <div class="resource-category">
+                <h3>🪓 Recursos de Madeira</h3>
+                ${this.createResourceItem('Madeira', '🌳', resources)}
+            </div>
+            <div class="resource-category">
+                <h3>🌾 Recursos Agrícolas</h3>
+                ${this.createResourceItem('Trigo', '🌾', resources)}
+            </div>
+            <div class="resource-category">
+                <h3>⛏️ Recursos Minerais</h3>
+                ${this.createResourceItem('Minério', '⛏️', resources)}
+            </div>
+        `;
     }
 }
 export default class UIManager {
@@ -136,7 +181,7 @@ export default class UIManager {
         feedbackEl.className = `feedback ${isSuccess ? 'success' : 'error'}`;
         feedbackEl.textContent = message;
         document.body.appendChild(feedbackEl);
-        
+
         setTimeout(() => feedbackEl.remove(), 3000);
     }
 

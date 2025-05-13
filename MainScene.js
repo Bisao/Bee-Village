@@ -41,6 +41,10 @@ export default class MainScene extends Phaser.Scene {
         await this.uiManager.initializePanels();
     }
 
+    placeBuilding(gridX, gridY, worldX, worldY) {
+        return this.buildingManager.placeBuilding(gridX, gridY, worldX, worldY);
+    }
+
     update() {
         // Core update logic
         this.managers.forEach(manager => {
