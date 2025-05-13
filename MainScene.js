@@ -183,23 +183,18 @@ autoSave() {
 }
 
 showSiloModal(resources) {
-        if (!this.siloPanel) {
-            import('./components/UI/SiloPanel.js').then(module => {
-                this.siloPanel = new module.default(this);
-                this.siloPanel.show(resources);
-            });
-        } else {
-            this.siloPanel.show(resources);
-        }
+        this.uiPanels.siloPanel.show(resources);
+    }
+
+    showNPCControls(npc) {
+        this.uiPanels.npcPanel.show(npc);
+    }
+
+    showSettingsPanel() {
+        this.uiPanels.settingsPanel.show();
     }
 
     enablePlayerControl(npc) {
-showNPCControls(npc) {
-        if (!this.npcControlPanel) {
-            this.npcControlPanel = new NPCControlPanel(this);
-        }
-        this.npcControlPanel.show(npc);
-    }
 constructor() {
         super({ key: 'MainScene' });
         this.selectedBuilding = null;
