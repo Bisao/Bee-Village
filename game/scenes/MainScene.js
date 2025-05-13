@@ -62,7 +62,6 @@ export default class MainScene extends Phaser.Scene {
 
         this.grid.create();
         this.inputManager.init();
-        this.uiController.init();
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
