@@ -2,6 +2,7 @@ import Grid from '../scenes/components/Grid.js';
 import InputManager from '../scenes/components/InputManager.js';
 import LumberSystem from '../scenes/components/LumberSystem.js';
 import ResourceSystem from '../scenes/components/ResourceSystem.js';
+import MineSystem from '../scenes/components/MineSystem.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -49,13 +50,13 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
-        
+
         // Import e inicializa o UIController
         import('./components/UI/UIController.js').then(({default: UIController}) => {
             this.uiController = new UIController(this);
             this.uiController.init();
         });
-        
+
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
         this.resourceSystem = new ResourceSystem(this);
@@ -684,13 +685,13 @@ export default class MainScene extends Phaser.Scene {
                             if (!this.MineSystem) {
                                 this.MineSystem = MineSystem;
                             }
-                            
+
                             npc.mineSystem = new MineSystem(this);
                             npc.isAutonomous = false;
                             npc.currentJob = 'mine';
                             npc.config.emoji = '⛏️';
                             npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-                            
+
                             // Verificar se há rochas próximas antes de iniciar
                             const nearbyRocks = npc.mineSystem.findNearestRock(npc);
                             if (nearbyRocks) {
@@ -870,78 +871,6 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    startNPCMovement(npc) {
-        if (!npc.isAutonomous) return;
-
-        // First step down if possible
-        const firstStep = () => {
-            const newY = npc.gridY + 1;
-            if (this.grid.isValidPosition(npc.gridX, newY) && !this.isTileOccupied(npc.gridX, newY)) {
-                this.moveNPCTo(npc, npc.gridX, newY);
-            }
-        };
-
-        // Execute initial down step
-        firstStep();
-
-        const moveNPC = () => {
-            if (!npc.isAutonomous || npc.isMoving) return;
-
-            const directions = this.getAvailableDirections(npc.gridX, npc.gridY);
-            if (directions.length === 0) return;
-
-            const randomDir = directions[Math.floor(Math.random() * directions.length)];
-            this.moveNPCTo(npc, npc.gridX + randomDir.x, npc.gridY + randomDir.y);
-        };
-
-        this.time.addEvent({
-            delay: 2000,
-            callback: moveNPC,
-            loop: true
-        });
-    }
-
-    moveNPCTo(npc, newX, newY) {
-        if (npc.isMoving) return;
-
-        const {tileX, tileY} = this.grid.gridToIso(newX, newY);
-        npc.isMoving = true;
-
-        // Determina direção da animação
-        let animKey = 'farmer_right';
-        if (newY < npc.gridY) animKey = 'farmer_up';
-        else if (newY > npc.gridY) animKey = 'farmer_down';
-        else if (newX < npc.gridX) animKey = 'farmer_left';
-
-        // Verifica e toca a animação
-        if (this.anims.exists(animKey)) {
-            npc.sprite.play(animKey, true); // true força o reinício da animação
-        } else {
-            console.warn(`Animation ${animKey} not found`);
-            // Usa um frame estático como fallback
-            npc.sprite.setTexture('farmer1');
-        }
-
-        const scene = this;
-        this.tweens.add({
-            targets: [npc.sprite, npc.nameText],
-            x: this.cameras.main.centerX + tileX,
-            y: function (target, key, value, targetIndex) {
-                const baseY = scene.cameras.main.centerY + tileY;
-                return targetIndex === 0 ? baseY - 32 : baseY - 64;
-            },
-            duration: 600,
-            ease: 'Linear',
-            onComplete: () => {
-                npc.gridX = newX;
-                npc.gridY = newY;
-                npc.sprite.setDepth(newY + 2);
-                npc.isMoving = false;
-                npc.sprite.stop();
-            }
-        });
-    }
-
     showNPCControls(npc) {
         // Cleanup previous NPC controls
         this.cleanupNPCControls();
@@ -1091,7 +1020,6 @@ export default class MainScene extends Phaser.Scene {
                 onComplete: () => {
                     npc.isAutonomous = true;
                     this.cameras.main.stopFollow();
-                    this.startNPCMovement(npc);
                     // Hide controls panel on mobile
                     if (this.inputManager.isMobile) {
                         document.getElementById('controls-panel').style.display = 'none';
@@ -1107,7 +1035,6 @@ export default class MainScene extends Phaser.Scene {
             this.currentControlledNPC = npc;
             // Make camera follow the NPC
             this.cameras.main.startFollow(npc.sprite, true, 0.08, 0.08);
-            this.enablePlayerControl(npc);
             // Show controls panel on mobile
             const controlsPanel = document.getElementById('controls-panel');
             if (this.inputManager.isMobile && controlsPanel) {
@@ -1170,7 +1097,6 @@ export default class MainScene extends Phaser.Scene {
 
             // Start autonomous movement again after a short delay
             this.time.delayedCall(100, () => {
-                this.startNPCMovement(previousNPC);
             });
         }
     }
@@ -1205,78 +1131,6 @@ export default class MainScene extends Phaser.Scene {
         const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
         this.usedNames[buildingType].add(randomName);
         return randomName;
-    }
-
-    enablePlayerControl(npc) {
-        // Remove previous keyboard listeners if they exist
-        this.input.keyboard.removeAllListeners('keydown');
-
-        // Create unique controls for this NPC
-        npc.controls = this.input.keyboard.addKeys({
-            w: Phaser.Input.Keyboard.KeyCodes.W,
-            a: Phaser.Input.Keyboard.KeyCodes.A,
-            s: Phaser.Input.Keyboard.KeyCodes.S,
-            d: Phaser.Input.Keyboard.KeyCodes.D
-        });
-
-        // Mobile controls
-        if (this.inputManager.isMobile) {
-            const buttons = {
-                'mobile-up': 'w',
-                'mobile-down': 's',
-                'mobile-left': 'a',
-                'mobile-right': 'd'
-            };
-
-            // Remove existing mobile controls if any
-            Object.keys(buttons).forEach(className => {
-                const button = document.querySelector(`.${className}`);
-                if (button) {
-                    button.replaceWith(button.cloneNode(true));
-                }
-            });
-
-            // Add new mobile controls for this NPC
-            Object.entries(buttons).forEach(([className, key]) => {
-                const button = document.querySelector(`.${className}`);
-                if (button) {
-                    button.addEventListener('touchstart', (e) => {
-                        e.preventDefault();
-                        if (this.currentControlledNPC === npc) {
-                            npc.controls[key].isDown = true;
-                        }
-                    });
-                    button.addEventListener('touchend', (e) => {
-                        e.preventDefault();
-                        if (this.currentControlledNPC === npc) {
-                            npc.controls[key].isDown = false;
-                        }
-                    });
-                }
-            });
-        }
-
-        // Create unique update handler for this NPC
-        npc.updateHandler = () => {
-            if (!npc || npc.isMoving || npc.isAutonomous || this.currentControlledNPC !== npc) return;
-
-            let newX = npc.gridX;
-            let newY = npc.gridY;
-
-            if (npc.controls.w.isDown) newY--;
-            else if (npc.controls.s.isDown) newY++;
-            else if (npc.controls.a.isDown) newX--;
-            else if (npc.controls.d.isDown) newX++;
-
-            if (newX !== npc.gridX || newY !== npc.gridY) {
-                if (this.grid.isValidPosition(newX, newY) && !this.isTileOccupied(newX, newY)) {
-                    this.moveNPCTo(npc, newX, newY);
-                }
-            }
-        };
-
-        // Add update handler
-        this.events.on('update', npc.updateHandler);
     }
 
     getToolsForProfession(profession) {
@@ -1399,4 +1253,6 @@ export default class MainScene extends Phaser.Scene {
             modal.remove();
         };
     }
+
+    // NPC methods were moved to BaseNPC class
 }
