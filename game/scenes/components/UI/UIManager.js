@@ -97,3 +97,60 @@ export default class UIManager {
         });
     }
 }
+export default class UIManager {
+    constructor(scene) {
+        this.scene = scene;
+        this.panels = new Map();
+        this.initializePanels();
+    }
+
+    async initializePanels() {
+        const { default: NPCControlPanel } = await import('./NPCControlPanel.js');
+        const { default: SiloPanel } = await import('./SiloPanel.js');
+        const { default: SettingsPanel } = await import('./SettingsPanel.js');
+
+        this.panels.set('npcControl', new NPCControlPanel(this.scene));
+        this.panels.set('silo', new SiloPanel(this.scene));
+        this.panels.set('settings', new SettingsPanel(this.scene));
+    }
+
+    showSiloModal(resources) {
+        const panel = this.panels.get('silo');
+        if (panel) {
+            panel.show(resources);
+        }
+    }
+
+    setupUIHandlers() {
+        const buttons = document.querySelectorAll('.building-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buildingType = button.getAttribute('data-building');
+                this.scene.buildingManager.selectBuilding(buildingType);
+            });
+        });
+    }
+
+    showFeedback(message, isSuccess) {
+        const feedbackEl = document.createElement('div');
+        feedbackEl.className = `feedback ${isSuccess ? 'success' : 'error'}`;
+        feedbackEl.textContent = message;
+        document.body.appendChild(feedbackEl);
+        
+        setTimeout(() => feedbackEl.remove(), 3000);
+    }
+
+    showPanel(panelName, data) {
+        const panel = this.panels.get(panelName);
+        if (panel) {
+            panel.show(data);
+        }
+    }
+
+    hidePanel(panelName) {
+        const panel = this.panels.get(panelName);
+        if (panel && panel.hide) {
+            panel.hide();
+        }
+    }
+}

@@ -1,81 +1,135 @@
-placeBuilding(gridX, gridY, worldX, worldY) {
-    if (!this.validateBuildingPlacement(gridX, gridY)) {
-        return false;
+export default class MainScene extends Phaser.Scene {
+    constructor() {
+        super({ key: 'MainScene' });
+        this.selectedBuilding = null;
+        this.resourceSystem = null;
+        this.npcManager = null;
+        this.gridManager = null;
     }
 
-    const building = this.createBuilding(gridX, gridY);
-    if (!building) {
-        return false;
-    }
+    async create() {
+        if (!this.textures.exists('tile_grass')) {
+            return;
+        }
 
-    this.registerBuildingEvents(building);
-    this.updateGridState(gridX, gridY, building);
-    this.provideVisualFeedback(gridX, gridY);
+        // Initialize managers
+        this.assetManager = new AssetManager(this);
+        this.buildingManager = new BuildingManager(this);
+        this.uiManager = new UIManager(this);
+        this.npcManager = new NPCManager(this);
+        this.saveManager = new SaveManager(this);
+        this.movementManager = new MovementManager(this);
+        this.animationManager = new AnimationManager(this);
+        this.feedbackManager = new FeedbackManager(this);
+        this.gridManager = new GridManager(this);
+        this.inputManager = new InputManager(this);
+        this.professionManager = new ProfessionManager(this);
+        this.inventoryManager = new InventoryManager(this);
 
-    // Validar se é uma casa que pode ter NPC
-    const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
-    const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+        // Load initial assets
+        await this.assetManager.loadAssets();
 
-    // Create NPC for each house if it's a valid house type
-    if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
-        this.createFarmerNPC(gridX, gridY, worldX, worldY);
-    }
-
-    // Add click handler for silo
-    if (this.selectedBuilding === 'silo') {
-        building.setInteractive({ useHandCursor: true });
-        building.on('pointerdown', (pointer) => {
-            if (!pointer.rightButtonDown()) {
-                this.showSiloModal([
-            { name: 'Sementes', icon: '🌾', amount: 0 },
-            { name: 'Trigo', icon: '🌾', amount: 0 },
-            { name: 'Cenoura', icon: '🥕', amount: 0 },
-            { name: 'Milho', icon: '🌽', amount: 0 },
-            { name: 'Madeira', icon: '🪵', amount: 0 },
-            { name: 'Peixe', icon: '🐟', amount: 0 },
-            { name: 'Minério', icon: '⛏️', amount: 0 }
-        ]);
-            }
+        // Setup autosave
+        this.time.addEvent({
+            delay: 60000,
+            callback: () => this.saveManager.autoSave(),
+            loop: true
         });
+
+        // Setup input handlers
+        this.inputManager.init();
+
+        // Initialize UI components
+        const { default: NPCControlPanel } = await import('./components/UI/NPCControlPanel.js');
+        const { default: SiloPanel } = await import('./components/UI/SiloPanel.js');
+
+        this.uiComponents = {};
+        this.uiComponents.npcPanel = new NPCControlPanel(this);
+        this.uiComponents.siloPanel = new SiloPanel(this);
     }
 
-    return true;
-}
-
-validateBuildingPlacement(gridX, gridY) {
-    return this.grid.isValidPosition(gridX, gridY) && 
-           !this.grid.isOccupied(gridX, gridY);
-}
-
-createBuilding(gridX, gridY) {
-    try {
-        const building = this.add.sprite(
-            gridX * this.grid.tileWidth,
-            gridY * this.grid.tileHeight,
-            this.selectedBuilding
-        );
-        building.setDepth(1);
-        return building;
-    } catch (error) {
-        console.error('Failed to create building:', error);
-        return null;
+    update() {
+        // Core update logic here
     }
-}
 
-provideVisualFeedback(gridX, gridY) {
-    const tile = this.grid.grid[gridY][gridX];
-    if (tile) {
-        this.tweens.add({
-            targets: tile,
-            alpha: { from: 1, to: 0.5 },
-            yoyo: true,
-            duration: 200,
-            ease: 'Power2'
-        });
+    placeBuilding(gridX, gridY, worldX, worldY) {
+        if (!this.validateBuildingPlacement(gridX, gridY)) {
+            return false;
+        }
+
+        const building = this.createBuilding(gridX, gridY);
+        if (!building) {
+            return false;
+        }
+
+        this.registerBuildingEvents(building);
+        this.updateGridState(gridX, gridY, building);
+        this.provideVisualFeedback(gridX, gridY);
+
+        // Validar se é uma casa que pode ter NPC
+        const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
+        const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+
+        // Create NPC for each house if it's a valid house type
+        if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
+            this.createFarmerNPC(gridX, gridY, worldX, worldY);
+        }
+
+        // Add click handler for silo
+        if (this.selectedBuilding === 'silo') {
+            building.setInteractive({ useHandCursor: true });
+            building.on('pointerdown', (pointer) => {
+                if (!pointer.rightButtonDown()) {
+                    this.showSiloModal([
+                        { name: 'Sementes', icon: '🌾', amount: 0 },
+                        { name: 'Trigo', icon: '🌾', amount: 0 },
+                        { name: 'Cenoura', icon: '🥕', amount: 0 },
+                        { name: 'Milho', icon: '🌽', amount: 0 },
+                        { name: 'Madeira', icon: '🪵', amount: 0 },
+                        { name: 'Peixe', icon: '🐟', amount: 0 },
+                        { name: 'Minério', icon: '⛏️', amount: 0 }
+                    ]);
+                }
+            });
+        }
+
+        return true;
     }
-}
 
-autoSave() {
+    validateBuildingPlacement(gridX, gridY) {
+        return this.grid.isValidPosition(gridX, gridY) &&
+            !this.grid.isOccupied(gridX, gridY);
+    }
+
+    createBuilding(gridX, gridY) {
+        try {
+            const building = this.add.sprite(
+                gridX * this.grid.tileWidth,
+                gridY * this.grid.tileHeight,
+                this.selectedBuilding
+            );
+            building.setDepth(1);
+            return building;
+        } catch (error) {
+            console.error('Failed to create building:', error);
+            return null;
+        }
+    }
+
+    provideVisualFeedback(gridX, gridY) {
+        const tile = this.grid.grid[gridY][gridX];
+        if (tile) {
+            this.tweens.add({
+                targets: tile,
+                alpha: { from: 1, to: 0.5 },
+                yoyo: true,
+                duration: 200,
+                ease: 'Power2'
+            });
+        }
+    }
+
+    autoSave() {
         if (!this.farmer || !this.grid) {
             console.warn('Cannot save: game state not fully initialized');
             return;
@@ -109,7 +163,10 @@ autoSave() {
                     buildingType: value.sprite?.texture?.key || null
                 };
             });
-
+            let building = null;
+            let gridX = 0;
+            let gridY = 0;
+            let key = '';
             // Registrar no grid
             this.grid.buildingGrid[key] = {
                 sprite: building,
@@ -180,9 +237,8 @@ autoSave() {
             }
         }
     }
-}
 
-showSiloModal(resources) {
+    showSiloModal(resources) {
         this.uiPanels.siloPanel.show(resources);
     }
 
@@ -195,37 +251,6 @@ showSiloModal(resources) {
     }
 
     enablePlayerControl(npc) {
-constructor() {
-        super({ key: 'MainScene' });
-        this.selectedBuilding = null;
-        this.previewBuilding = null;
-        this.resourceSystem = null;
-        this.npcManager = null;
-        this.gridManager = null;
-}
-async create() {
-        if (!this.textures.exists('tile_grass')) {
-            return; // Wait for assets to load
-        }
 
-        // Initialize managers
-        this.assetManager = new AssetManager(this);
-        this.buildingManager = new BuildingManager(this);
-        this.uiManager = new UIManager(this);
-        this.npcManager = new NPCManager(this);
-        this.saveManager = new SaveManager(this);
-        this.movementManager = new MovementManager(this);
-        this.animationManager = new AnimationManager(this);
-        this.feedbackManager = new FeedbackManager(this);
-        this.professionManager = new ProfessionManager(this);
-        this.inventoryManager = new InventoryManager(this);
-
-        // Initialize core systems
-
-        // Initialize UI components
-        const { default: NPCControlPanel } = await import('./components/UI/NPCControlPanel.js');
-        const { default: SiloPanel } = await import('./components/UI/SiloPanel.js');
-
-        this.uiComponents.npcPanel = new NPCControlPanel(this);
-        this.uiComponents.siloPanel = new SiloPanel(this);
     }
+}
