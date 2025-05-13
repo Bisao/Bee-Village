@@ -205,6 +205,10 @@ constructor() {
         });
     }
 
+    showFeedback(message, success = true) {
+        this.uiController.showFeedback(message, success);
+    }
+
     showSiloModal(resources) {
         import('./components/UI/SiloPanel.js').then(({default: SiloPanel}) => {
             SiloPanel.showSiloModal(resources);
@@ -221,9 +225,5 @@ constructor() {
         if (this.npcControlPanel) {
             this.npcControlPanel.cleanupNPCControls();
         }
-    }
-
-    showFeedback(message, success = true) {
-        this.uiController.showFeedback(message, success);
     }
 }
