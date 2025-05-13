@@ -18,7 +18,13 @@ placeBuilding(gridX, gridY, worldX, worldY) {
 
     // Create NPC for each house if it's a valid house type
     if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
-        this.createFarmerNPC(gridX, gridY, worldX, worldY);
+        const npc = await this.npcManager.createFarmerNPC(gridX, gridY, worldX, worldY);
+        
+        // Iniciar sistema de mineração se for uma casa de minerador
+        if (this.selectedBuilding === 'minerHouse' && npc.config.profession === 'Miner') {
+            const mineSystem = new MineSystem(this);
+            mineSystem.startWorking(npc);
+        }
     }
 
     // Add click handler for silo
