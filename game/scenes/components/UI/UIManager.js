@@ -1,4 +1,3 @@
-
 export default class UIManager {
     constructor(scene) {
         this.scene = scene;
@@ -64,11 +63,35 @@ export default class UIManager {
         `;
 
         document.body.appendChild(modal);
+    }
 
-        const closeButton = modal.querySelector('.close-button');
-        closeButton.onclick = () => {
-            modal.remove();
-        };
+    setupUIHandlers() {
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.scene.selectedBuilding = btn.dataset.building;
+                if (this.scene.previewBuilding) {
+                    this.scene.previewBuilding.destroy();
+                    this.scene.previewBuilding = null;
+                }
+                document.getElementById('side-panel').style.display = 'none';
+            });
+        });
+
+        const toggleButton = document.getElementById('toggleStructures');
+        const sidePanel = document.getElementById('side-panel');
+
+        if (toggleButton && sidePanel) {
+            toggleButton.addEventListener('click', () => {
+                const isVisible = sidePanel.style.display === 'flex';
+                sidePanel.style.display = isVisible ? 'none' : 'flex';
+                if (!isVisible) {
+                    this.scene.clearBuildingSelection();
+                }
+            });
+        }
     }
 
     showFeedback(message, success = true) {
