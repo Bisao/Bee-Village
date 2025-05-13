@@ -1,32 +1,6 @@
-
 export default class MovementManager {
     constructor(scene) {
         this.scene = scene;
-    }
-
-    moveFarmer(direction, animKey) {
-        const newX = this.scene.farmer.gridX + direction.x;
-        const newY = this.scene.farmer.gridY + direction.y;
-        const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
-
-        this.scene.farmer.isMoving = true;
-        this.scene.farmer.play(animKey);
-
-        this.scene.tweens.add({
-            targets: this.scene.farmer,
-            x: this.scene.cameras.main.centerX + tileX,
-            y: this.scene.cameras.main.centerY + tileY - 16,
-            duration: 600,
-            ease: 'Quad.easeInOut',
-            onComplete: () => {
-                this.scene.farmer.gridX = newX;
-                this.scene.farmer.gridY = newY;
-                this.scene.farmer.setDepth(newY + 1);
-                this.scene.farmer.isMoving = false;
-                this.scene.farmer.stop();
-                this.scene.events.emit('farmerMoved');
-            }
-        });
     }
 
     moveNPCTo(npc, newX, newY) {
@@ -62,6 +36,46 @@ export default class MovementManager {
                 npc.sprite.setDepth(newY + 2);
                 npc.isMoving = false;
                 npc.sprite.stop();
+            }
+        });
+    }
+
+    getAvailableDirections(fromX, fromY) {
+        const directions = [
+            { x: 1, y: 0 },   // direita
+            { x: -1, y: 0 },  // esquerda
+            { x: 0, y: 1 },   // baixo
+            { x: 0, y: -1 }   // cima
+        ];
+
+        return directions.filter(dir => {
+            const newX = fromX + dir.x;
+            const newY = fromY + dir.y;
+            return this.scene.grid.isValidPosition(newX, newY) && !this.scene.gridManager.isTileOccupied(newX, newY);
+        });
+    }
+
+    moveFarmer(direction, animKey) {
+        const newX = this.scene.farmer.gridX + direction.x;
+        const newY = this.scene.farmer.gridY + direction.y;
+        const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
+
+        this.scene.farmer.isMoving = true;
+        this.scene.farmer.play(animKey);
+
+        this.scene.tweens.add({
+            targets: this.scene.farmer,
+            x: this.scene.cameras.main.centerX + tileX,
+            y: this.scene.cameras.main.centerY + tileY - 16,
+            duration: 600,
+            ease: 'Quad.easeInOut',
+            onComplete: () => {
+                this.scene.farmer.gridX = newX;
+                this.scene.farmer.gridY = newY;
+                this.scene.farmer.setDepth(newY + 1);
+                this.scene.farmer.isMoving = false;
+                this.scene.farmer.stop();
+                this.scene.events.emit('farmerMoved');
             }
         });
     }
