@@ -21,11 +21,7 @@ export default class MineSystem {
     }
 
     startWorking(npc) {
-        if (!this.validateNPC(npc)) {
-            console.log('[MineSystem] NPC inválido para mineração');
-            return;
-        }
-
+        if (!this.validateNPC(npc)) return;
         if (!npc.leaveHouse()) {
             console.log('[MineSystem] NPC não conseguiu sair da casa');
             return;
@@ -34,9 +30,6 @@ export default class MineSystem {
         this.state.isWorking = true;
         npc.currentJob = 'mine';
         npc.isAutonomous = true;
-        npc.config.emoji = '⛏️';
-        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-        console.log('[MineSystem] Iniciando trabalho:', npc.config.name);
         this.workCycle(npc);
     }
 
