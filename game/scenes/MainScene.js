@@ -1,15 +1,7 @@
-import Grid from './components/Grid.js';
-import InputManager from './components/InputManager.js';
-import BuildingManager from './components/BuildingManager.js';
-import UIManager from './components/UI/UIManager.js';
-import NPCManager from './components/NPCManager.js';
-import SaveManager from './components/SaveManager.js';
-import AssetManager from './components/AssetManager.js';
-import FeedbackManager from './components/FeedbackManager.js';
-import MovementManager from './components/MovementManager.js';
-import EnvironmentManager from './components/EnvironmentManager.js';
-import MobileManager from './components/MobileManager.js';
-import ProfessionManager from './components/ProfessionManager.js';
+import Grid from '../scenes/components/Grid.js';
+import InputManager from '../scenes/components/InputManager.js';
+import LumberSystem from '../scenes/components/LumberSystem.js';
+import ResourceSystem from '../scenes/components/ResourceSystem.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -47,9 +39,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.assetManager = new AssetManager(this);
-        this.assetManager.loadAssets();
-
+        this.loadAssets();
         this.load.on('complete', () => {
             this.game.events.emit('ready');
         });
@@ -57,60 +47,175 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         if (!this.textures.exists('tile_grass')) {
-            return;
+            return; // Wait for assets to load
         }
-
-        // Initialize all managers
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
-        this.buildingManager = new BuildingManager(this);
-        this.uiManager = new UIManager(this);
-        this.npcManager = new NPCManager(this);
-        this.saveManager = new SaveManager(this);
-        this.feedbackManager = new FeedbackManager(this);
-        this.movementManager = new MovementManager(this);
-        this.environmentManager = new EnvironmentManager(this);
-        this.mobileManager = new MobileManager(this);
-        this.professionManager = new ProfessionManager(this);
+        this.resourceSystem = new ResourceSystem(this);
 
-        // Initialize core systems
         this.grid.create();
         this.inputManager.init();
-        this.uiManager.setupUIHandlers();
         this.setupUIHandlers();
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
 
-        // Place initial environment and buildings
-        this.environmentManager.placeEnvironmentObjects();
         this.placeEnvironmentObjects();
 
-        // Place initial buildings
-        const initialBuildings = [
-            { x: 1, y: 1, type: 'lumberHouse' },
-            { x: 3, y: 1, type: 'silo' }
-        ];
+        // Posiciona a casa do lenhador inicial
+        this.placeBuilding(1, 1, 
+            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
+            'lumberHouse'
+        );
 
-        initialBuildings.forEach(building => {
-            const {tileX, tileY} = this.grid.gridToIso(building.x, building.y);
-            const worldX = this.cameras.main.centerX + tileX;
-            const worldY = this.cameras.main.centerY + tileY;
+        // Posiciona o silo inicial
+        this.placeBuilding(3, 1,
+            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
+            'silo'
+        );
 
-            this.buildingManager.placeBuilding(building.x, building.y, worldX, worldY, building.type);
-        });
+        // Adicionar casa de lenhador inicial
+        this.placeBuilding(1, 1, 
+            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
+            'lumberHouse'
+        );
+
+        // Adicionar silo inicial
+        this.placeBuilding(3, 1,
+            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
+            'silo'
+        );
 
         // Define zoom inicial diferente para mobile e desktop
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const initialZoom = isMobile ? 0.8 : 1.5;
         this.cameras.main.setZoom(initialZoom);
+    }
 
-        // Setup auto-save
-        this.time.addEvent({
-            delay: 60000,
-            callback: () => this.saveManager.autoSave(),
-            loop: true
+    createFarmer() {
+        if (this.farmerCreated) return;
+        this.farmerCreated = true;
+
+        const frames = [];
+        for (let i = 1; i <= 12; i++) {
+            const key = `farmer${i}`;
+            if (!this.textures.exists(key)) {
+                this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
+            }
+            frames.push({ key });
+        }
+
+        this.load.once('complete', () => {
+            this.anims.create({
+                key: 'farmer_walk',
+                frames: frames,
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_up',
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_down',
+                frames: [
+                    { key: 'farmer9' },
+                    { key: 'farmer10' },
+                    { key: 'farmer11' },
+                    { key: 'farmer12' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_left',
+                frames: [
+                    { key: 'farmer5' },
+                    { key: 'farmer6' },
+                    { key: 'farmer7' },
+                    { key: 'farmer8' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            this.anims.create({
+                key: 'farmer_right',
+                frames: [
+                    { key: 'farmer1' },
+                    { key: 'farmer2' },
+                    { key: 'farmer3' },
+                    { key: 'farmer4' }
+                ],
+                frameRate: 8,
+                repeat: -1
+            });
+
+            const startX = Math.floor(this.grid.width / 2);
+            const startY = Math.floor(this.grid.height / 2);
+            const {tileX, tileY} = this.grid.gridToIso(startX, startY);
+
+            this.farmer = this.add.sprite(
+                this.cameras.main.centerX + tileX,
+                this.cameras.main.centerY + tileY - 16,
+                'farmer1'
+            );
+
+            this.farmer.gridX = startX;
+            this.farmer.gridY = startY;
+            this.farmer.setScale(0.8);
+            this.farmer.setDepth(startY + 1);
+
+            this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
+
+            this.keys = this.input.keyboard.addKeys({
+                w: Phaser.Input.Keyboard.KeyCodes.W,
+                a: Phaser.Input.Keyboard.KeyCodes.A,
+                s: Phaser.Input.Keyboard.KeyCodes.S,
+                d: Phaser.Input.Keyboard.KeyCodes.D
+            });
+
+            this.input.keyboard.on('keydown', this.handleKeyDown, this);
+
+            if ('ontouchstart' in window) {
+                const buttons = {
+                    'mobile-up': 'W',
+                    'mobile-down': 'S', 
+                    'mobile-left': 'A',
+                    'mobile-right': 'D'
+                };
+
+                Object.entries(buttons).forEach(([className, key]) => {
+                    const button = document.querySelector(`.${className}`);
+                    if (button) {
+                        button.addEventListener('touchstart', (e) => {
+                            e.preventDefault();
+                            this.keys[key.toLowerCase()].isDown = true;
+                        });
+                        button.addEventListener('touchend', (e) => {
+                            e.preventDefault();
+                            this.keys[key.toLowerCase()].isDown = false;
+                        });
+                    }
+                });
+            }
         });
+
+        this.load.start();
     }
 
     update() {
@@ -226,7 +331,403 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    // Métodos de construção movidos para BuildingManager
+    updatePreview = (pointer) => {
+        if (!this.selectedBuilding) {
+            if (this.previewBuilding) {
+                this.previewBuilding.destroy();
+                this.previewBuilding = null;
+            }
+            this.clearTileHighlights();
+            return;
+        }
+
+        // Update tile highlights
+        this.updateTileHighlights();
+
+        const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const hoveredTile = this.grid.grid.flat().find(tile => {
+            const bounds = new Phaser.Geom.Rectangle(
+                tile.x - tile.displayWidth / 2,
+                tile.y - tile.displayHeight / 2,
+                tile.displayWidth,
+                tile.displayHeight
+            );
+            return bounds.contains(worldPoint.x, worldPoint.y);
+        });
+
+        if (hoveredTile) {
+            const gridPosition = hoveredTile.data;
+            const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
+            const worldX = this.cameras.main.centerX + tileX;
+            const worldY = this.cameras.main.centerY + tileY;
+
+            if (!this.previewBuilding) {
+                this.previewBuilding = this.add.sprite(
+                    worldX,
+                    worldY,
+                    this.selectedBuilding
+                );
+                const tileScale = 1.4;
+                const scale = (this.grid.tileWidth * tileScale) / this.previewBuilding.width;
+                this.previewBuilding.setScale(scale);
+                this.previewBuilding.setOrigin(0.5, 0.75);
+                this.previewBuilding.setAlpha(0.6);
+            } else {
+                this.previewBuilding.setPosition(worldX, worldY);
+            }
+            // Atualiza a profundidade do preview para garantir que ele fique visível
+            this.previewBuilding.setDepth(1000);
+            this.previewBuilding.setDepth(gridPosition.gridY + 1);
+        }
+    }
+
+    /**
+     * Carrega todos os assets do jogo
+     * @method loadAssets
+     * @private
+     */
+    loadAssets() {
+        // Cache de texturas para otimização
+        if (this.textures.exists('tile_grass')) return;
+
+        // Load farmer sprites
+        for (let i = 1; i <= 12; i++) {
+            this.load.image(`farmer${i}`, `game/assets/shared/Farmer_${i}-ezgif.com-resize.png`);
+        }
+
+        // Load tiles
+        const tiles = [
+            'tile_grass',
+            'tile_grass_2',
+            'tile_grass_2_flowers',
+            'tile_grass_3_flowers'
+        ];
+
+        tiles.forEach(tile => {
+            this.load.image(tile, `game/assets/tiles/${tile}.png`);
+        });
+
+        // Load rocks
+        const rocks = [
+            { key: 'rock_small', path: 'game/assets/rocks/small_rock.png' },
+            { key: 'rock_medium', path: 'game/assets/rocks/2_rock.png' },
+            { key: 'rock_large', path: 'game/assets/rocks/big_rock.png' }
+        ];
+
+        rocks.forEach(rock => {
+            this.load.image(rock.key, rock.path);
+        });
+
+        // Load trees
+        const trees = [
+            { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
+            { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
+            { key: 'tree_fruit', path: 'game/assets/trees/tree_autumn.png' }
+        ];
+
+        trees.forEach(tree => {
+            this.load.image(tree.key, tree.path);
+        });
+
+        // Load buildings
+        const buildings = [
+            'silo|Silo',
+            'well|WaterWell',
+            'windmill|Windmill',
+            'farmerHouse|FarmerHouse',
+            'FishermanHouse|FishermanHouse',
+            'lumberHouse|LumberJackHouse',
+            'minerHouse|MinerHouse'
+        ];
+
+        buildings.forEach(building => {
+            const [key, filename] = building.split('|');
+            this.load.image(key, `game/assets/buildings/${filename}.png`);
+        });
+    }
+
+    setupUIHandlers() {
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.selectedBuilding = btn.dataset.building;
+                if (this.previewBuilding) {
+                    this.previewBuilding.destroy();
+                    this.previewBuilding = null;
+                }
+                // Hide panel when structure is selected
+                document.getElementById('side-panel').style.display = 'none';
+            });
+        });
+
+        // Add toggle panel functionality
+        const toggleButton = document.getElementById('toggleStructures');
+        const sidePanel = document.getElementById('side-panel');
+
+        if (toggleButton && sidePanel) {
+            toggleButton.addEventListener('click', () => {
+                const isVisible = sidePanel.style.display === 'flex';
+                sidePanel.style.display = isVisible ? 'none' : 'flex';
+                if (!isVisible) {
+                    this.clearBuildingSelection();
+                }
+            });
+        }
+    }
+
+    placeEnvironmentObjects() {
+        this.placeRocks();
+        this.placeTrees();
+    }
+
+    placeRocks() {
+        const rockTypes = ['rock_small', 'rock_medium', 'rock_large'];
+        this.placeObjects(rockTypes, 8, 'rock');
+    }
+
+    placeTrees() {
+        const treeTypes = ['tree_simple', 'tree_pine', 'tree_fruit'];
+        this.placeObjects(treeTypes, 15, 'tree');
+    }
+
+    placeObjects(types, count, objectType) {
+        let placed = 0;
+        while (placed < count) {
+            const randomX = Math.floor(Math.random() * this.grid.width);
+            const randomY = Math.floor(Math.random() * this.grid.height);
+            const key = `${randomX},${randomY}`;
+
+            if (this.grid.buildingGrid[key]) continue;
+
+            try {
+                const randomType = types[Math.floor(Math.random() * types.length)];
+                const {tileX, tileY} = this.grid.gridToIso(randomX, randomY);
+
+                const object = this.add.image(
+                    this.cameras.main.centerX + tileX,
+                    this.cameras.main.centerY + tileY - (this.grid.tileHeight / 4),
+                    randomType
+                );
+
+                object.setDepth(randomY + 1);
+                const scale = (this.grid.tileWidth * (objectType === 'tree' ? 1.8 : 0.8)) / Math.max(object.width, 1);
+                object.setScale(scale);
+                object.setOrigin(0.5, 0.8);
+
+                this.grid.buildingGrid[key] = {
+                    sprite: object,
+                    type: objectType,
+                    gridX: randomX,
+                    gridY: randomY
+                };
+
+                placed++;
+            } catch (error) {
+                console.error(`Error placing ${objectType}:`, error);
+                continue;
+            }
+        }
+    }
+    handleClick(pointer) {
+        if (!this.selectedBuilding || pointer.rightButtonDown()) return;
+
+        try {
+            const worldPoint = this.cameras.main.getWorldPoint(pointer.x, pointer.y);
+            const hoveredTile = this.grid.grid.flat().find(tile => {
+                const bounds = new Phaser.Geom.Rectangle(
+                    tile.x - tile.displayWidth / 2,
+                    tile.y - tile.displayHeight / 2,
+                    tile.displayHeight,
+                    tile.displayHeight
+                );
+                return bounds.contains(worldPoint.x, worldPoint.y);
+            });
+
+            if (hoveredTile && hoveredTile.data) {
+                const gridPosition = hoveredTile.data;
+                const key = `${gridPosition.gridX},${gridPosition.gridY}`;
+
+                // Verifica se a posição está ocupada
+                if (this.grid.buildingGrid[key]) {
+                    this.showFeedback('Posição já ocupada', false);
+                    return;
+                }
+
+                // Verifica se a posição é válida
+                if (!this.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY)) {
+                    this.showFeedback('Posição inválida', false);
+                    return;
+                }
+
+                // Usa a posição exata do preview para posicionar a estrutura
+                const {tileX, tileY} = this.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
+                const worldX = this.cameras.main.centerX + tileX;
+                const worldY = this.cameras.main.centerY + tileY;
+
+                this.placeBuilding(gridPosition.gridX, gridPosition.gridY, worldX, worldY);
+                console.log('Building placed at:', gridPosition.gridX, gridPosition.gridY);
+            }
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.showFeedback('Erro ao posicionar estrutura', false);
+        }
+    }
+
+    showFeedback(message, success = true) {
+        const text = this.add.text(
+            this.cameras.main.centerX,
+            this.cameras.main.centerY - 100,
+            message,
+            { 
+                fontSize: '16px',
+                fill: success ? '#4CAF50' : '#f44336',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: { x: 10, y: 5 }
+            }
+        ).setOrigin(0.5);
+
+        this.tweens.add({
+            targets: text,
+            alpha: 0,
+            y: text.y - 20,
+            duration: 5000,
+            ease: 'Power2',
+            onComplete: () => text.destroy()
+        });
+    }
+
+    placeBuilding(gridX, gridY, worldX, worldY) {
+        try {
+            // Validações iniciais
+            if (!this.selectedBuilding) {
+                console.log('No building selected');
+                return false;
+            }
+            if (!worldX || !worldY) {
+                console.error('Invalid world coordinates');
+                return false;
+            }
+
+            if (!this.grid.isValidPosition(gridX, gridY)) {
+                this.showFeedback('Posição inválida', false);
+                return;
+            }
+
+            const key = `${gridX},${gridY}`;
+            if (this.grid.buildingGrid[key]) {
+                this.showFeedback('Posição já ocupada', false);
+                return;
+            }
+
+            // Validar se é uma casa que pode ter NPC
+            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
+            const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+
+            // Criar a estrutura
+            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
+            if (!building) {
+                throw new Error('Failed to create building sprite: sprite is null');
+            }
+
+            // Configurar a estrutura
+            const scale = (this.grid.tileWidth * 1.4) / building.width;
+            building.setScale(scale);
+            building.setOrigin(0.5, 0.75);
+            building.setDepth(gridY + 1);
+
+            // Registrar no grid
+            this.grid.buildingGrid[key] = {
+                sprite: building,
+                type: 'building',
+                buildingType: this.selectedBuilding,
+                gridX: gridX,
+                gridY: gridY
+            };
+
+            // Adicionar interatividade ao silo
+            if (this.selectedBuilding === 'silo') {
+                building.setInteractive({ useHandCursor: true });
+                this.resourceSystem.registerSilo(gridX, gridY, building);
+                building.on('pointerdown', () => {
+                    const resources = this.resourceSystem.getSiloResources(gridX, gridY);
+                    this.showSiloModal([
+                        { name: 'Madeira', amount: resources.wood },
+                        { name: 'Trigo', amount: resources.wheat },
+                        { name: 'Minério', amount: resources.ore }
+                    ]);
+                });
+            }
+
+            // Create NPC for each house if it's a valid house type
+            if (['farmerHouse', 'minerHouse', 'FishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
+                this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
+                    if (this.selectedBuilding === 'lumberHouse' && npc) {
+                        // Inicializa o sistema de trabalho do lenhador imediatamente
+                        npc.lumberSystem = new LumberSystem(this);
+                        npc.isAutonomous = false;
+                        npc.currentJob = 'lumber';
+                        npc.config.emoji = '🪓';
+                        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                        npc.lumberSystem.startWorking(npc);
+                        console.log('Lenhador iniciou o trabalho:', npc.config.name);
+                    }
+                });
+            }
+
+            // Efeito de partículas
+            const particles = this.add.particles(0, 0, 'tile_grass', {
+                x: worldX,
+                y: worldY,
+                speed: 150,
+                scale: { start: 0.3, end: 0 },
+                alpha: { start: 0.8, end: 0 },
+                lifespan: 400,
+                blendMode: 'ADD',
+                quantity: 6,
+                emitting: false
+            });
+
+            particles.start();
+
+            // Destruir o sistema de partículas após 500ms
+            this.time.delayedCall(500, () => {
+                particles.destroy();
+            });
+
+            // Feedback visual
+            this.showFeedback('Estrutura construída!', true);
+
+            // Limpar seleção e highlights
+            this.clearBuildingSelection();
+            this.clearTileHighlights();
+
+            // Notificar outros sistemas
+            this.events.emit('buildingPlaced', {
+                gridX,
+                gridY,
+                buildingType: this.selectedBuilding
+            });
+
+            // Show panel after structure placement
+            document.getElementById('side-panel').style.display = 'flex';
+
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.showFeedback('Erro ao construir estrutura', false);
+        }
+    }
+
+    clearBuildingSelection() {
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(b => b.classList.remove('selected'));
+        this.selectedBuilding = null;
+        if (this.previewBuilding) {
+            this.previewBuilding.destroy();
+            this.previewBuilding = null;
+        }
+    }
 
     isValidGridPosition(x, y) {
         return this.grid.isValidPosition(x, y);
@@ -476,10 +977,10 @@ export default class MainScene extends Phaser.Scene {
                     <div class="storage-grid">
                         ${Array(4).fill().map((_, i) => `
                             <div class="storage-slot">
-                                <div class="storage-icon">${npc.config.profession === 'Lumberjack' ? '🌳' :
+                                <div class="storage-icon">${npc.config.profession === 'Lumberjack' ? '🌳' : 
                                     npc.config.profession === 'Farmer' ? '🌾' :
                                     npc.config.profession === 'Miner' ? '⛏️' : '🐟'}</div>
-                                <div class="storage-amount">${i < (npc.inventory[npc.config.profession === 'Lumberjack' ? 'wood' :
+                                <div class="storage-amount">${i < (npc.inventory[npc.config.profession === 'Lumberjack' ? 'wood' : 
                                     npc.config.profession === 'Farmer' ? 'wheat' :
                                     npc.config.profession === 'Miner' ? 'ore' : 'fish'] || 0) ? '1' : '0'}/1</div>
                             </div>
@@ -650,7 +1151,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.usedNames[buildingType]) this.usedNames[buildingType] = new Set();
 
         // Filter available names
-        const availableNames = nameData.names.filter(name =>
+        const availableNames = nameData.names.filter(name => 
             !this.usedNames[buildingType].has(name)
         );
 
@@ -773,17 +1274,17 @@ export default class MainScene extends Phaser.Scene {
 
         // Trabalhos específicos por profissão
         if (npc.config.profession === 'Lumberjack') {
-            jobs.push({
-                id: 'lumber',
-                name: 'Cortar Madeira',
-                icon: '🪓',
-                description: 'Corta árvores e coleta madeira.'
+            jobs.push({ 
+                id: 'lumber', 
+                name: 'Cortar Madeira', 
+                icon: '🪓', 
+                description: 'Corta árvores e coleta madeira.' 
             });
         }
 
         return jobs;
     }
-
+    
     showSiloModal(resources) {
         const existingModal = document.querySelector('.silo-modal');
         if (existingModal) existingModal.remove();
@@ -848,163 +1349,5 @@ export default class MainScene extends Phaser.Scene {
         closeButton.onclick = () => {
             modal.remove();
         };
-    }
-
-    setupUIHandlers() {
-        const buildButtons = document.querySelectorAll('.build-button');
-        buildButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const buildingType = button.dataset.building;
-                this.startBuildingPlacement(buildingType);
-            });
-        });
-        const saveButton = document.querySelector('.save-button');
-        if (saveButton) {
-            saveButton.addEventListener('click', () => {
-                this.saveManager.autoSave();
-            });
-        }
-
-        const clearSaveButton = documentquerySelector('.clear-save-button');
-        if (clearSaveButton) {
-            clearSaveButton.addEventListener('click', () => {
-                localStorage.removeItem('gameState');
-                console.log('Save cleared');
-            });
-        }
-    }
-
-    loadAssets() {
-        this.load.image('tile_grass', 'attached_assets/tile_grass.png');
-        this.load.image('tile_dirt', 'attached_assets/tile_dirt.png');
-        this.load.image('tree', 'attached_assets/tree.png');
-        this.load.image('rock', 'attached_assets/rock.png');
-        this.load.image('lumberHouse', 'attached_assets/lumberHouse.png');
-        this.load.image('silo', 'attached_assets/silo.png');
-        this.load.image('farmerHouse', 'attached_assets/farmerHouse.png');
-        this.load.image('FishermanHouse', 'attached_assets/FishermanHouse.png');
-        this.load.image('minerHouse', 'attached_assets/minerHouse.png');
-
-        this.load.image('ui_lumberjack', 'attached_assets/ui_lumberjack.png');
-        this.load.image('ui_farmer', 'attached_assets/ui_farmer.png');
-        this.load.image('ui_miner', 'attached_assets/ui_miner.png');
-        this.load.image('ui_fisherman', 'attached_assets/ui_fisherman.png');
-
-        this.load.image('ui_house', 'attached_assets/ui_house.png');
-        this.load.image('ui_silo', 'attached_assets/ui_silo.png');
-
-        this.load.image('farmer1', 'attached_assets/Farmer_1-ezgif.com-resize.png');
-        this.load.image('farmer2', 'attached_assets/Farmer_2-ezgif.com-resize.png');
-        this.load.image('farmer3', 'attached_assets/Farmer_3-ezgif.com-resize.png');
-        this.load.image('farmer4', 'attached_assets/Farmer_4-ezgif.com-resize.png');
-        this.load.image('farmer5', 'attached_assets/Farmer_5-ezgif.com-resize.png');
-        this.load.image('farmer6', 'attached_assets/Farmer_6-ezgif.com-resize.png');
-        this.load.image('farmer7', 'attached_assets/Farmer_7-ezgif.com-resize.png');
-        this.load.image('farmer8', 'attached_assets/Farmer_8-ezgif.com-resize.png');
-        this.load.image('farmer9', 'attached_assets/Farmer_9-ezgif.com-resize.png');
-        this.load.image('farmer10', 'attached_assets/Farmer_10-ezgif.com-resize.png');
-        this.load.image('farmer11', 'attached_assets/Farmer_11-ezgif.com-resize.png');
-        this.load.image('farmer12', 'attached_assets/Farmer_12-ezgif.com-resize.png');
-    }
-
-    handleClick(pointer) {
-        if (this.selectedBuilding) {
-            const gridX = Math.floor((pointer.worldX - this.cameras.main.centerX) / this.grid.tileWidth);
-            const gridY = Math.floor((pointer.worldY - this.cameras.main.centerY) / this.grid.tileHeight);
-
-            if (this.isValidGridPosition(gridX, gridY) && !this.isTileOccupied(gridX, gridY)) {
-                const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
-                const worldX = this.cameras.main.centerX + tileX;
-                const worldY = this.cameras.main.centerY + tileY;
-
-                this.buildingManager.placeBuilding(gridX, gridY, worldX, worldY, this.selectedBuilding);
-
-                this.cancelBuildingSelection();
-            } else {
-                console.log("Invalid position for building.");
-                this.feedbackManager.showFeedback("Invalid position!", false);
-            }
-        }
-    }
-
-    updatePreview(pointer) {
-        if (this.selectedBuilding) {
-            const gridX = Math.floor((pointer.worldX - this.cameras.main.centerX) / this.grid.tileWidth);
-            const gridY = Math.floor((pointer.worldY - this.cameras.main.centerY) / this.grid.tileHeight);
-
-            if (this.isValidGridPosition(gridX, gridY)) {
-                const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
-                const worldX = this.cameras.main.centerX + tileX;
-                const worldY = this.cameras.main.centerY + tileY;
-
-                if (!this.previewBuilding) {
-                    this.previewBuilding = this.add.sprite(worldX, worldY, this.selectedBuilding);
-                    this.previewBuilding.setOrigin(0.5, 1);
-                    this.previewBuilding.setAlpha(0.5);
-                } else {
-                    this.previewBuilding.x = worldX;
-                    this.previewBuilding.y = worldY;
-                }
-            } else {
-                if (this.previewBuilding) {
-                    this.previewBuilding.destroy();
-                    this.previewBuilding = null;
-                }
-            }
-        }
-    }
-
-    startBuildingPlacement(buildingType) {
-        this.selectedBuilding = buildingType;
-    }
-
-    placeBuilding(x, y, worldX, worldY, buildingType) {
-        const building = this.add.sprite(worldX, worldY, buildingType);
-        building.setOrigin(0.5, 1);
-        building.type = 'building';
-        building.gridX = x;
-        building.gridY = y;
-
-        const key = `${x},${y}`;
-        this.grid.buildingGrid[key] = building;
-    }
-
-    placeEnvironmentObjects() {
-        const treeCount = 10;
-        for (let i = 0; i < treeCount; i++) {
-            let x, y;
-            do {
-                x = Phaser.Math.Between(0, this.grid.width - 1);
-                y = Phaser.Math.Between(0, this.grid.height - 1);
-            } while (this.isTileOccupied(x, y));
-
-            const {tileX, tileY} = this.grid.gridToIso(x, y);
-            const worldX = this.cameras.main.centerX + tileX;
-            const worldY = this.cameras.main.centerY + tileY;
-
-            const tree = this.add.sprite(worldX, worldY, 'tree');
-            tree.setOrigin(0.5, 1);
-            tree.setDepth(y);
-
-            const key = `${x},${y}`;
-            this.grid.buildingGrid[key] = tree;
-        }
-    }
-
-    showFeedback(text, isGood) {
-        const feedbackElement = document.createElement('div');
-        feedbackElement.classList.add('feedback');
-        feedbackElement.textContent = text;
-
-        if (isGood) {
-            feedbackElement.classList.add('good');
-        } else {
-            feedbackElement.classList.add('bad');
-        }
-
-        document.body.appendChild(feedbackElement);
-        setTimeout(() => {
-            feedbackElement.remove();
-        }, 3000);
     }
 }
