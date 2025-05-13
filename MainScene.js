@@ -231,3 +231,9 @@ showSiloModal(resources) {
     }
 
     enablePlayerControl(npc) {
+showNPCControls(npc) {
+        if (!this.npcControlPanel) {
+            this.npcControlPanel = new NPCControlPanel(this);
+        }
+        this.npcControlPanel.show(npc);
+    }
