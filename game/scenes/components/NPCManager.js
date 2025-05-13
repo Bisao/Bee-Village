@@ -3,60 +3,7 @@ export default class NPCManager {
         this.scene = scene;
         this.npcs = new Map();
         this.usedNames = new Map();
-    }
-
-    createFarmerNPC(houseX, houseY, worldX, worldY) {
-        const buildingKey = `${houseX},${houseY}`;
-        const buildingType = this.scene.grid.buildingGrid[buildingKey]?.buildingType;
-        const nameData = this.scene.professionManager.professionNames[buildingType];
-        const randomName = this.getRandomName(buildingType);
-
-        const npcConfig = {
-            name: randomName,
-            profession: nameData?.prefix || 'Villager',
-            emoji: this.scene.professionManager.getProfessionEmoji(nameData?.prefix),
-            spritesheet: 'farmer',
-            scale: 0.8,
-            movementDelay: 2000,
-            tools: this.getToolsForProfession(nameData?.prefix),
-            level: 1,
-            xp: 0,
-            maxXp: 100
-        };
-
-        const npc = new BaseNPC(this.scene, houseX, houseY, npcConfig);
-        this.npcs.set(buildingKey, npc);
-        
-        const house = this.scene.grid.buildingGrid[buildingKey].sprite;
-        if (house) {
-            house.setInteractive();
-            house.on('pointerdown', () => this.showNPCControls(npc));
-        }
-        return npc;
-    }
-
-    getRandomName(buildingType) {
-        const nameData = this.scene.professionManager.professionNames[buildingType];
-        if (!nameData || !nameData.names || nameData.names.length === 0) {
-            return 'Unknown';
-        }
-
-        if (!this.usedNames.has(buildingType)) {
-            this.usedNames.set(buildingType, new Set());
-        }
-
-        const availableNames = nameData.names.filter(name => 
-            !this.usedNames.get(buildingType).has(name)
-        );
-
-        if (availableNames.length === 0) {
-            this.usedNames.get(buildingType).clear();
-            return this.getRandomName(buildingType);
-        }
-
-        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
-        this.usedNames.get(buildingType).add(randomName);
-        return randomName;
+        this.farmerCreated = false;
     }
 
     getToolsForProfession(profession) {
@@ -85,9 +32,27 @@ export default class NPCManager {
                 return [];
         }
     }
-        this.npcs = new Map();
-        this.usedNames = new Map();
-        this.farmerCreated = false;
+
+    createNPC(profession, x, y) {
+        if (profession === 'Farmer' && this.farmerCreated) {
+            return null;
+        }
+
+        const npc = {
+            profession,
+            gridX: x,
+            gridY: y,
+            tools: this.getToolsForProfession(profession),
+            isMoving: false,
+            sprite: null
+        };
+
+        if (profession === 'Farmer') {
+            this.farmerCreated = true;
+        }
+
+        this.npcs.set(`${x},${y}`, npc);
+        return npc;
     }
 
     createFarmer() {
@@ -131,16 +96,6 @@ export default class NPCManager {
 
     startNPCMovement(npc) {
         if (!npc.isAutonomous) return;
-
-        const firstStep = () => {
-            const newY = npc.gridY + 1;
-            if (this.scene.gridManager.isValidPosition(npc.gridX, newY) && 
-                !this.scene.gridManager.isTileOccupied(npc.gridX, newY)) {
-                this.scene.movementManager.moveNPCTo(npc, npc.gridX, newY);
-            }
-        };
-
-        firstStep();
 
         const moveNPC = () => {
             if (!npc.isAutonomous || npc.isMoving) return;

@@ -1,116 +1,51 @@
-
 export default class Grid {
-    constructor(scene, width, height) {
+    constructor(scene) {
         this.scene = scene;
-        this.width = width;
-        this.height = height;
         this.tileWidth = 64;
-        this.tileHeight = 64;
+        this.tileHeight = 32;
         this.grid = [];
         this.buildingGrid = {};
     }
 
-    create() {
-        this.visibleTiles = new Set();
-        for (let y = 0; y < this.height; y++) {
+    create(width, height) {
+        for (let y = 0; y < height; y++) {
             this.grid[y] = [];
-            for (let x = 0; x < this.width; x++) {
+            for (let x = 0; x < width; x++) {
                 const tile = this.createTile(x, y);
-                if (this.isInViewport(x, y)) {
-                    this.visibleTiles.add(tile);
-                    tile.setVisible(true);
-                } else {
-                    tile.setVisible(false);
-                }
+                this.grid[y][x] = tile;
             }
         }
-        
-        this.scene.cameras.main.on('camerascroll', () => this.updateVisibleTiles());
-    }
-    
-    isInViewport(x, y) {
-        return true; // Show all tiles for now
-    }
-    
-    updateVisibleTiles() {
-        this.grid.flat().forEach(tile => {
-            if (tile) {
-                tile.setVisible(true);
-            }
-        });
     }
 
     createTile(x, y) {
-        const {tileX, tileY} = this.gridToIso(x, y);
-        const randomTile = this.getRandomTile(x, y);
-        
-        const tile = this.scene.add.image(
-            this.scene.cameras.main.centerX + tileX,
-            this.scene.cameras.main.centerY + tileY,
-            randomTile
+        const position = this.gridToIso(x, y);
+        const tile = this.scene.add.sprite(
+            this.scene.cameras.main.centerX + position.tileX,
+            this.scene.cameras.main.centerY + position.tileY,
+            'tile_grass'
         );
 
-        tile.displayWidth = this.tileWidth;
-        tile.displayHeight = this.tileHeight;
-        tile.setOrigin(0.5, 0.75);
+        tile.setDepth(y);
         tile.setInteractive();
         tile.data = { gridX: x, gridY: y };
 
-        this.grid[y][x] = tile;
         return tile;
     }
 
-    getRandomTile(x, y) {
-        const tileTypes = [
-            'tile_grass',
-            'tile_grass',
-            'tile_grass',
-            'tile_grass_2',
-            'tile_grass_2',
-            'tile_grass_2'
-        ];
-
-        if (!this.hasAdjacentFlowers(x, y) && this.getFlowerCount(x, y) < 3 && Math.random() < 0.15) {
-            return Math.random() < 0.5 ? 'tile_grass_2_flowers' : 'tile_grass_3_flowers';
-        }
-        
-        return tileTypes[Math.floor(Math.random() * tileTypes.length)];
-    }
-
-    hasAdjacentFlowers(x, y) {
-        const neighbors = [
-            [x-1, y], [x+1, y],
-            [x, y-1], [x, y+1],
-            [x-1, y-1], [x+1, y-1],
-            [x-1, y+1], [x+1, y+1]
-        ];
-        return neighbors.some(([nx, ny]) => 
-            this.grid[ny]?.[nx]?.texture.key.includes('flower')
-        );
-    }
-
-    getFlowerCount(x, y, radius = 2) {
-        let count = 0;
-        for (let dy = -radius; dy <= radius; dy++) {
-            for (let dx = -radius; dx <= radius; dx++) {
-                const nx = x + dx;
-                const ny = y + dy;
-                if (this.grid[ny]?.[nx]?.texture.key.includes('flower')) {
-                    count++;
-                }
-            }
-        }
-        return count;
-    }
-
-    gridToIso(gridX, gridY) {
+    gridToIso(x, y) {
         return {
-            tileX: (gridX - gridY) * this.tileWidth,
-            tileY: (gridX + gridY) * this.tileHeight / 2
+            tileX: (x - y) * this.tileWidth / 2,
+            tileY: (x + y) * this.tileHeight / 2
         };
     }
 
+    isoToGrid(x, y) {
+        const tileX = Math.round((x / this.tileWidth + y / this.tileHeight));
+        const tileY = Math.round((y / this.tileHeight - x / this.tileWidth));
+        return { x: tileX, y: tileY };
+    }
+
     isValidPosition(x, y) {
-        return x >= 0 && x < this.width && y >= 0 && y < this.height;
+        return x >= 0 && x < this.grid[0]?.length && y >= 0 && y < this.grid.length;
     }
 }
