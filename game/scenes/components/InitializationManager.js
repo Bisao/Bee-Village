@@ -6,7 +6,11 @@ export default class InitializationManager {
     }
 
     initializeManagers() {
-        // Initialize all managers
+        // Core managers
+        this.managers.set('state', new StateManager(this.scene));
+        this.managers.set('event', new EventManager(this.scene));
+        
+        // Game managers
         this.managers.set('asset', new AssetManager(this.scene));
         this.managers.set('building', new BuildingManager(this.scene));
         this.managers.set('ui', new UIManager(this.scene));

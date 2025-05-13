@@ -8,19 +8,32 @@ export default class MainScene extends Phaser.Scene {
             return;
         }
 
-        // Initialize managers
+        // Initialize core managers
         this.initManager = new InitializationManager(this);
         this.updateManager = new UpdateManager(this);
-
-        // Initialize all systems through InitializationManager
+        
+        // Initialize all managers
         this.managers = this.initManager.initializeManagers();
-
-        // Register managers that need updates
+        
+        // Get core managers
+        this.stateManager = this.managers.get('state');
+        this.eventManager = this.managers.get('event');
+        
+        // Register managers for updates
         this.managers.forEach(manager => {
-            this.updateManager.registerManager(manager);
+            if (manager.update) {
+                this.updateManager.registerManager(manager);
+            }
         });
 
-        // Setup autosave
+        // Configure autosave
+        this.configureAutosave();
+        
+        // Emit scene ready event
+        this.eventManager.emit('sceneReady');
+    }
+
+    configureAutosave() {
         this.time.addEvent({
             delay: 60000,
             callback: () => this.managers.get('save').autoSave(),
@@ -29,7 +42,7 @@ export default class MainScene extends Phaser.Scene {
     }
 
     update() {
-        // Delegate updates to UpdateManager
+        if (this.stateManager.getState('paused')) return;
         this.updateManager.update();
     }
 }
