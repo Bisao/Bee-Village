@@ -3,6 +3,13 @@ export default class NPCManager {
         this.scene = scene;
         this.npcs = new Map();
         this.usedNames = new Map();
+        this.farmerCreated = false;
+    }
+
+    createFarmer() {
+        if (this.farmerCreated) return;
+        this.farmerCreated = true;
+        this.scene.animationManager.createFarmerAnimations();
     }
 
     async createFarmerNPC(houseX, houseY, worldX, worldY) {

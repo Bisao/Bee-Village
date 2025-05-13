@@ -12,8 +12,3 @@ autoSave() {
         this.assetManager = new AssetManager(this);
         this.assetManager.loadAssets();
     }
-createFarmer() {
-        if (this.farmerCreated) return;
-        this.farmerCreated = true;
-        this.animationManager.createFarmerAnimations();
-    }
