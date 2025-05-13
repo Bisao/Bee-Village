@@ -1,67 +1,65 @@
 
 export default class SiloPanel {
-    constructor(scene) {
-        this.scene = scene;
-    }
+    static showSiloModal(resources) {
+        const existingModal = document.querySelector('.silo-modal');
+        if (existingModal) existingModal.remove();
 
-    show(resources) {
-        this.cleanupExistingModals();
-        const modal = this.createModal(resources);
-        document.body.appendChild(modal);
-        this.setupEventListeners(modal);
-    }
-
-    cleanupExistingModals() {
-        const existingModals = document.querySelectorAll('.silo-modal');
-        existingModals.forEach(modal => modal.remove());
-    }
-
-    createModal(resources) {
         const modal = document.createElement('div');
         modal.className = 'silo-modal';
-        modal.innerHTML = this.getModalHTML(resources);
-        return modal;
-    }
-
-    getModalHTML(resources) {
-        return `
+        modal.innerHTML = `
             <div class="silo-content">
                 <div class="silo-header">
                     <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
                     <button class="close-button">✕</button>
                 </div>
                 <div class="resources-grid">
-                    ${this.getResourceCategoryHTML('🪓 Recursos de Madeira', 'Madeira', '🌳', resources)}
-                    ${this.getResourceCategoryHTML('🌾 Recursos Agrícolas', 'Trigo', '🌾', resources)}
-                    ${this.getResourceCategoryHTML('⛏️ Recursos Minerais', 'Minério', '⛏️', resources)}
+                    <div class="resource-category">
+                        <h3>🪓 Recursos de Madeira</h3>
+                        <div class="resource-item">
+                            <div class="resource-icon">🌳</div>
+                            <div class="resource-info">
+                                <div class="resource-name">Toras de Madeira</div>
+                                <div class="resource-amount">${resources.find(r => r.name === 'Madeira')?.amount || 0}</div>
+                            </div>
+                            <div class="resource-progress">
+                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Madeira')?.amount || 0) / 100 * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-category">
+                        <h3>🌾 Recursos Agrícolas</h3>
+                        <div class="resource-item">
+                            <div class="resource-icon">🌾</div>
+                            <div class="resource-info">
+                                <div class="resource-name">Trigo</div>
+                                <div class="resource-amount">${resources.find(r => r.name === 'Trigo')?.amount || 0}</div>
+                            </div>
+                            <div class="resource-progress">
+                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Trigo')?.amount || 0) / 100 * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="resource-category">
+                        <h3>⛏️ Recursos Minerais</h3>
+                        <div class="resource-item">
+                            <div class="resource-icon">⛏️</div>
+                            <div class="resource-info">
+                                <div class="resource-name">Minério</div>
+                                <div class="resource-amount">${resources.find(r => r.name === 'Minério')?.amount || 0}</div>
+                            </div>
+                            <div class="resource-progress">
+                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Minério')?.amount || 0) / 100 * 100}%"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
-    }
 
-    getResourceCategoryHTML(title, resourceName, icon, resources) {
-        const resource = resources.find(r => r.name === resourceName);
-        const amount = resource?.amount || 0;
-        const percentage = (amount / 100) * 100;
+        document.body.appendChild(modal);
 
-        return `
-            <div class="resource-category">
-                <h3>${title}</h3>
-                <div class="resource-item">
-                    <div class="resource-icon">${icon}</div>
-                    <div class="resource-info">
-                        <div class="resource-name">${resourceName}</div>
-                        <div class="resource-amount">${amount}</div>
-                    </div>
-                    <div class="resource-progress">
-                        <div class="progress-bar" style="width: ${percentage}%"></div>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    setupEventListeners(modal) {
         const closeButton = modal.querySelector('.close-button');
         closeButton.onclick = () => modal.remove();
     }
