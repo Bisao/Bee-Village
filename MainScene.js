@@ -124,10 +124,10 @@ autoSave() {
                 }, 1000);
             }
 
-            this.showFeedback('Jogo salvo!', true);
+            // UI methods moved to UIManager
         } catch (error) {
             console.error('Error saving game:', error);
-            this.showFeedback('Erro ao salvar o jogo', false);
+           // UI methods moved to UIManager
 
             // Try to save minimal state in emergency backup
             try {
@@ -144,7 +144,6 @@ autoSave() {
             }
         }
     }
-}
 
     // Resource management moved to ResourceSystem.js
 
