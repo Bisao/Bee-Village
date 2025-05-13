@@ -1,4 +1,3 @@
-
 import Grid from './game/scenes/components/Grid.js';
 import InputManager from './game/scenes/components/InputManager.js';
 import ResourceSystem from './game/scenes/components/ResourceSystem.js';
@@ -10,6 +9,7 @@ import EnvironmentManager from './game/scenes/components/EnvironmentManager.js';
 import MovementManager from './game/scenes/components/MovementManager.js';
 import StateManager from './game/scenes/components/StateManager.js';
 import AssetManager from './game/scenes/components/AssetManager.js';
+import InitializationManager from './game/scenes/components/InitializationManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -17,11 +17,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
+        this.initManager = new InitializationManager(this);
         this.assetManager = new AssetManager(this);
-        this.assetManager.loadAssets();
-        this.load.on('complete', () => {
-            this.game.events.emit('ready');
-        });
+        this.initManager.preload();
     }
 
     create() {
@@ -29,32 +27,9 @@ export default class MainScene extends Phaser.Scene {
             return;
         }
 
-        this.initializeManagers();
-        this.setupInitialState();
+        this.initManager.initializeManagers();
+        this.initManager.setupInitialState();
         this.setupEventListeners();
-    }
-
-    initializeManagers() {
-        this.grid = new Grid(this, 10, 10);
-        this.stateManager = new StateManager(this);
-        this.inputManager = new InputManager(this);
-        this.resourceSystem = new ResourceSystem(this);
-        this.buildingManager = new BuildingManager(this);
-        this.npcManager = new NPCManager(this);
-        this.gridManager = new GridManager(this);
-        this.professionManager = new ProfessionManager(this);
-        this.environmentManager = new EnvironmentManager(this);
-        this.movementManager = new MovementManager(this);
-    }
-
-    setupInitialState() {
-        this.grid.create();
-        this.inputManager.init();
-        this.environmentManager.placeInitialEnvironment();
-
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        const initialZoom = isMobile ? 0.8 : 1.5;
-        this.cameras.main.setZoom(initialZoom);
     }
 
     setupEventListeners() {
@@ -63,19 +38,17 @@ export default class MainScene extends Phaser.Scene {
     }
 
     handleClick(pointer) {
-        if (pointer.rightButtonDown()) return;
-        if (this.stateManager.getState('buildMode')) {
-            this.buildingManager.handleBuildingPlacement(pointer);
-        }
+        this.inputManager.handleClick(pointer);
     }
 
     handleMouseMove(pointer) {
-        if (this.stateManager.getState('buildMode')) {
-            this.buildingManager.updateBuildingPreview(pointer);
-        }
+        this.inputManager.handleMouseMove(pointer);
     }
 
     update() {
-        // Lógica de update específica da cena principal
+        // Delegating update to UpdateManager
+        if (this.updateManager) {
+            this.updateManager.update();
+        }
     }
 }

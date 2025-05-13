@@ -70,6 +70,19 @@ export default class InputManager {
         }
     }
 
+    handleClick(pointer) {
+        if (pointer.rightButtonDown()) return;
+        if (this.scene.stateManager.getState('buildMode')) {
+            this.scene.buildingManager.handleBuildingPlacement(pointer);
+        }
+    }
+
+    handleMouseMove(pointer) {
+        if (this.scene.stateManager.getState('buildMode')) {
+            this.scene.buildingManager.updateBuildingPreview(pointer);
+        }
+    }
+
     handlePointerMove(pointer) {
         if (this.isDragging) {
             this.scene.cameras.main.scrollX -= (pointer.x - pointer.prevPosition.x) / this.scene.cameras.main.zoom;

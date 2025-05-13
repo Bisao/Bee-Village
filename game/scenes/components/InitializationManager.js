@@ -6,10 +6,29 @@ export default class InitializationManager {
     }
 
     preload() {
-        this.loadAssets();
+        this.scene.assetManager.loadAssets();
         this.scene.load.on('complete', () => {
             this.scene.game.events.emit('ready');
         });
+    }
+
+    initializeManagers() {
+        this.scene.grid = new Grid(this.scene, 10, 10);
+        this.scene.stateManager = new StateManager(this.scene);
+        this.scene.inputManager = new InputManager(this.scene);
+        this.scene.resourceSystem = new ResourceSystem(this.scene);
+        this.scene.buildingManager = new BuildingManager(this.scene);
+        this.scene.npcManager = new NPCManager(this.scene);
+        this.scene.gridManager = new GridManager(this.scene);
+        this.scene.professionManager = new ProfessionManager(this.scene);
+        this.scene.environmentManager = new EnvironmentManager(this.scene);
+        this.scene.movementManager = new MovementManager(this.scene);
+    }
+
+    setupInitialState() {
+        this.scene.grid.create();
+        this.scene.inputManager.init();
+        this.scene.environmentManager.placeInitialEnvironment();
     }
 
     loadAssets() {
