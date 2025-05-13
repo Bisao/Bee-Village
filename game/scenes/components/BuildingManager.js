@@ -4,6 +4,56 @@ export default class BuildingManager {
         this.scene = scene;
         this.selectedBuilding = null;
         this.previewBuilding = null;
+        this.setupInputHandlers();
+    }
+
+    setupInputHandlers() {
+        this.scene.input.on('pointerdown', this.handleClick, this);
+        this.scene.input.on('pointermove', this.updatePreview, this);
+    }
+
+    handleClick(pointer) {
+        if (pointer.rightButtonDown()) return;
+        
+        const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const { gridX, gridY } = this.scene.grid.worldToGrid(worldPoint.x, worldPoint.y);
+        
+        if (this.selectedBuilding) {
+            this.placeBuilding(gridX, gridY, worldPoint.x, worldPoint.y);
+        }
+    }
+
+    updatePreview(pointer) {
+        if (!this.selectedBuilding || !this.previewBuilding) return;
+
+        const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const { gridX, gridY } = this.scene.grid.worldToGrid(worldPoint.x, worldPoint.y);
+        
+        if (this.isValidGridPosition(gridX, gridY)) {
+            this.previewBuilding.setPosition(worldPoint.x, worldPoint.y);
+            this.previewBuilding.setAlpha(0.5);
+        } else {
+            this.previewBuilding.setAlpha(0.2);
+        }
+    }
+
+    isValidGridPosition(gridX, gridY) {
+        return gridX >= 0 && gridY >= 0 && 
+               gridX < this.scene.grid.width && 
+               gridY < this.scene.grid.height;
+    }
+
+    clearBuildingSelection() {
+        this.selectedBuilding = null;
+        if (this.previewBuilding) {
+            this.previewBuilding.destroy();
+            this.previewBuilding = null;
+        }
+    }
+
+    cancelBuildingSelection() {
+        this.clearBuildingSelection();
+        this.scene.showFeedback('Seleção cancelada', true);
     }
 
     placeBuilding(gridX, gridY, worldX, worldY) {

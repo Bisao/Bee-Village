@@ -81,4 +81,20 @@ export default class InputManager {
         this.isDragging = false;
         this.scene.game.canvas.style.cursor = 'default';
     }
+
+    setupUIHandlers() {
+        const buttons = document.querySelectorAll('.building-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buildingType = button.getAttribute('data-building');
+                this.scene.buildingManager.selectBuilding(buildingType);
+            });
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.scene.buildingManager.cancelBuildingSelection();
+            }
+        });
+    }
 }
