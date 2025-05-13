@@ -41,32 +41,39 @@ export default class MineSystem {
     }
 
     async workCycle(npc) {
-        while (this.state.isWorking) {
+        while (this.state.isWorking && npc.currentJob === 'mine') {
             try {
-                if (npc.currentJob === 'rest') {
-                    this.stopWorking();
-                    return;
+                // Verificar se precisa depositar recursos
+                if (npc.inventory.ore >= this.config.maxInventory) {
+                    this.updateNPCStatus(npc, '📦', 'Inventário cheio');
+                    await this.depositOre(npc);
+                    continue;
                 }
 
+                // Verificar se está processando
                 if (this.state.isProcessingRock) {
                     await this.waitFor(1000);
                     continue;
                 }
 
+                // Procurar e minerar rocha
                 const rock = await this.findAndProcessRock(npc);
                 if (!rock) {
+                    this.updateNPCStatus(npc, '🔍', 'Procurando rochas');
                     await this.waitFor(3000);
                     continue;
                 }
 
-                if (npc.inventory.ore >= this.config.maxInventory) {
-                    await this.depositOre(npc);
-                }
             } catch (error) {
                 console.error('[MineSystem] Erro no ciclo:', error);
+                this.updateNPCStatus(npc, '⚠️', 'Erro no sistema');
                 await this.waitFor(1000);
             }
         }
+        
+        // Limpar estado ao finalizar
+        this.stopWorking();
+        this.updateNPCStatus(npc, '💤', 'Descansando');
     }
 
     stopWorking() {

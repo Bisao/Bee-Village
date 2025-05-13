@@ -673,15 +673,29 @@ export default class MainScene extends Phaser.Scene {
                         npc.lumberSystem.startWorking(npc);
                         console.log('Lenhador iniciou o trabalho:', npc.config.name);
                     } else if (this.selectedBuilding === 'minerHouse' && npc) {
-                        // Inicializa o sistema de trabalho do minerador
-                        this.MineSystem = MineSystem;
-                        npc.mineSystem = new MineSystem(this);
-                        npc.isAutonomous = false;
-                        npc.currentJob = 'mine';
-                        npc.config.emoji = '⛏️';
-                        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-                        npc.mineSystem.startWorking(npc);
-                        console.log('Minerador iniciou o trabalho:', npc.config.name);
+                        try {
+                            // Inicializa o sistema de trabalho do minerador
+                            if (!this.MineSystem) {
+                                this.MineSystem = MineSystem;
+                            }
+                            
+                            npc.mineSystem = new MineSystem(this);
+                            npc.isAutonomous = false;
+                            npc.currentJob = 'mine';
+                            npc.config.emoji = '⛏️';
+                            npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                            
+                            // Verificar se há rochas próximas antes de iniciar
+                            const nearbyRocks = npc.mineSystem.findNearestRock(npc);
+                            if (nearbyRocks) {
+                                npc.mineSystem.startWorking(npc);
+                                console.log('[MineSystem] Minerador iniciou trabalho:', npc.config.name);
+                            } else {
+                                console.log('[MineSystem] Sem rochas próximas para', npc.config.name);
+                            }
+                        } catch (error) {
+                            console.error('[MineSystem] Erro ao inicializar minerador:', error);
+                        }
                     }
                 });
             }

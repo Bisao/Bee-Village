@@ -168,12 +168,21 @@ export default class BaseNPC {
         // Mostra o sprite ao sair da casa
         this.sprite.setVisible(true);
 
-        // Define frames da animação baseado na direção
-        let frameRange;
-        if (newY < this.gridY) frameRange = [1, 4];  // up
-        else if (newY > this.gridY) frameRange = [9, 12];  // down
-        else if (newX < this.gridX) frameRange = [5, 8];  // left
-        else frameRange = [1, 4];  // right/default
+        // Determina direção e configura animação
+        let animationKey;
+        if (newY < this.gridY) animationKey = 'up';
+        else if (newY > this.gridY) animationKey = 'down';
+        else if (newX < this.gridX) animationKey = 'left';
+        else animationKey = 'right';
+
+        // Configura frames baseado na direção
+        const frameConfig = {
+            'up': [1, 4],
+            'down': [9, 12],
+            'left': [5, 8],
+            'right': [1, 4]
+        };
+        const frameRange = frameConfig[animationKey];
 
         // Atualiza frame estático quando não há animação
         const baseFrame = `${this.config.spritesheet}${frameRange[0]}`;
