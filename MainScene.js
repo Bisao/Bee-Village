@@ -54,5 +54,5 @@ export default class MainScene extends Phaser.Scene {
         }
     }
 
-    // Grid functionality moved to GridManager
+    // UI functionality moved to UIManager
 }
