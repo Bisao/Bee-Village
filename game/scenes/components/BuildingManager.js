@@ -3,6 +3,77 @@ export default class BuildingManager {
         this.scene = scene;
     }
 
+    placeBuilding(gridX, gridY, worldX, worldY, buildingType) {
+        if (!this.validateBuildingPlacement(gridX, gridY)) {
+            return false;
+        }
+
+        const building = this.createBuilding(gridX, gridY, buildingType);
+        if (!building) {
+            return false;
+        }
+
+        this.registerBuildingEvents(building);
+        this.updateGridState(gridX, gridY, building, buildingType);
+        this.provideVisualFeedback(gridX, gridY);
+
+        const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
+        if (npcHouses.includes(buildingType)) {
+            this.scene.npcManager.createNPC(gridX, gridY, worldX, worldY, buildingType);
+        }
+
+        return true;
+    }
+
+    validateBuildingPlacement(gridX, gridY) {
+        return this.scene.gridManager.isValidGridPosition(gridX, gridY) && 
+               !this.scene.gridManager.isTileOccupied(gridX, gridY);
+    }
+
+    createBuilding(gridX, gridY, buildingType) {
+        try {
+            const building = this.scene.add.sprite(
+                gridX * this.scene.grid.tileWidth,
+                gridY * this.scene.grid.tileHeight,
+                buildingType
+            );
+            building.setDepth(1);
+            return building;
+        } catch (error) {
+            console.error('Failed to create building:', error);
+            return null;
+        }
+    }
+
+    registerBuildingEvents(building) {
+        // Future building event handlers
+    }
+
+    updateGridState(gridX, gridY, building, buildingType) {
+        const key = `${gridX},${gridY}`;
+        this.scene.grid.buildingGrid[key] = {
+            sprite: building,
+            type: 'building',
+            buildingType: buildingType,
+            gridX: gridX,
+            gridY: gridY
+        };
+    }
+
+    provideVisualFeedback(gridX, gridY) {
+        const tile = this.scene.grid.grid[gridY][gridX];
+        if (tile) {
+            this.scene.tweens.add({
+                targets: tile,
+                alpha: { from: 1, to: 0.5 },
+                yoyo: true,
+                duration: 200,
+                ease: 'Power2'
+            });
+        }
+    }
+}
+
     placeBuilding(gridX, gridY, worldX, worldY) {
         try {
             if (!this.scene.selectedBuilding) {
