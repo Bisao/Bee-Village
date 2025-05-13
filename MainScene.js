@@ -53,5 +53,6 @@ export default class MainScene extends Phaser.Scene {
             this.updateManager.update();
         }
     }
+
+    // Building functionality moved to BuildingManager
 }
-```
