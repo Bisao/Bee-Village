@@ -26,7 +26,6 @@ export default class SaveManager {
                 }
             };
 
-            // Validate and convert building grid
             Object.entries(this.scene.grid.buildingGrid).forEach(([key, value]) => {
                 if (!value || !value.gridX || !value.gridY) return;
 
@@ -41,26 +40,22 @@ export default class SaveManager {
             const backupKey = `gameState_backup_${timestamp}`;
             const backups = JSON.parse(localStorage.getItem('gameStateBackups') || '[]');
             backups.unshift(backupKey);
-            
             while (backups.length > 3) {
                 const oldBackup = backups.pop();
                 localStorage.removeItem(oldBackup);
             }
-            
             localStorage.setItem('gameStateBackups', JSON.stringify(backups));
             localStorage.setItem(backupKey, JSON.stringify(gameState));
             localStorage.setItem('gameState', JSON.stringify(gameState));
 
             this.showSaveIndicator();
-            this.scene.showFeedback('Jogo salvo!', true);
         } catch (error) {
             console.error('Error saving game:', error);
-            this.scene.showFeedback('Erro ao salvar o jogo', false);
-            this.saveEmergencyBackup();
+            this.createEmergencyBackup();
         }
     }
 
-    private showSaveIndicator() {
+    showSaveIndicator() {
         const saveIndicator = document.querySelector('.save-indicator');
         if (saveIndicator) {
             saveIndicator.classList.add('saving');
@@ -70,7 +65,7 @@ export default class SaveManager {
         }
     }
 
-    private saveEmergencyBackup() {
+    createEmergencyBackup() {
         try {
             const minimalState = {
                 farmerPosition: {
@@ -82,45 +77,6 @@ export default class SaveManager {
             localStorage.setItem('gameState_emergency', JSON.stringify(minimalState));
         } catch (emergencyError) {
             console.error('Emergency save failed:', emergencyError);
-        }
-    }
-
-    autoSave() {
-        if (!this.scene.farmer || !this.scene.grid) {
-            console.warn('Cannot save: game state not fully initialized');
-            return;
-        }
-
-        try {
-            const gameState = {
-                buildingGrid: {},
-                farmerPosition: {
-                    x: this.scene.farmer.gridX,
-                    y: this.scene.farmer.gridY
-                }
-            };
-
-            Object.entries(this.scene.grid.buildingGrid).forEach(([key, value]) => {
-                gameState.buildingGrid[key] = {
-                    type: value.type,
-                    gridX: value.gridX,
-                    gridY: value.gridY,
-                    buildingType: value.sprite ? value.sprite.texture.key : null
-                };
-            });
-
-            const saveIndicator = document.querySelector('.save-indicator');
-            if (saveIndicator) {
-                saveIndicator.classList.add('saving');
-                setTimeout(() => {
-                    saveIndicator.classList.remove('saving');
-                }, 1000);
-            }
-
-            localStorage.setItem('gameState', JSON.stringify(gameState));
-            console.log('Game saved successfully');
-        } catch (error) {
-            console.error('Error saving game:', error);
         }
     }
 }
