@@ -5,6 +5,22 @@ export default class UIController {
         this.uiElements = new Map();
     }
 
+    setupTabHandlers(panel) {
+        const tabs = panel.querySelectorAll('.tab-btn');
+        const contents = panel.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const content = panel.querySelector(`#${tab.dataset.tab}-tab`);
+                if (content) content.classList.add('active');
+            });
+        });
+    }
+
     init() {
         this.setupUIHandlers();
         this.createSidePanel();
