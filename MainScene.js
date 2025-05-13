@@ -1,3 +1,6 @@
+
+import Grid from './scenes/components/Grid.js';
+
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
@@ -12,21 +15,21 @@ export default class MainScene extends Phaser.Scene {
         this.initManager = new InitializationManager(this);
         this.updateManager = new UpdateManager(this);
         
-        // Initialize all managers
+        // Initialize all managers through InitializationManager
         this.managers = this.initManager.initializeManagers();
         
-        // Get core managers
+        // Get core manager references
         this.stateManager = this.managers.get('state');
         this.eventManager = this.managers.get('event');
         
-        // Register managers for updates
+        // Register managers that need updates
         this.managers.forEach(manager => {
             if (manager.update) {
                 this.updateManager.registerManager(manager);
             }
         });
 
-        // Configure autosave
+        // Configure auto-save
         this.configureAutosave();
         
         // Emit scene ready event
