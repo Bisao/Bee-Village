@@ -27,6 +27,50 @@ export default class FeedbackManager {
         });
     }
 
+    showParticles(x, y, texture = 'tile_grass', config = {}) {
+        const defaultConfig = {
+            speed: 150,
+            scale: { start: 0.3, end: 0 },
+            alpha: { start: 0.8, end: 0 },
+            lifespan: 400,
+            blendMode: 'ADD',
+            quantity: 6,
+            emitting: false
+        };
+
+        const particles = this.scene.add.particles(0, 0, texture, {
+            ...defaultConfig,
+            ...config,
+            x, y
+        });
+
+        particles.start();
+        this.scene.time.delayedCall(500, () => particles.destroy());
+    }
+
+    showFeedback(message, success = true) {
+        const text = this.scene.add.text(
+            this.scene.cameras.main.centerX,
+            this.scene.cameras.main.centerY - 100,
+            message,
+            { 
+                fontSize: '16px',
+                fill: success ? '#4CAF50' : '#f44336',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: { x: 10, y: 5 }
+            }
+        ).setOrigin(0.5);
+
+        this.scene.tweens.add({
+            targets: text,
+            alpha: 0,
+            y: text.y - 20,
+            duration: 5000,
+            ease: 'Power2',
+            onComplete: () => text.destroy()
+        });
+    }
+
     clearTileHighlights() {
         this.scene.grid.grid.flat().forEach(tile => {
             tile.clearTint();
