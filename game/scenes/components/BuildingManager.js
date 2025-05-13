@@ -1,4 +1,4 @@
-export default export default class BuildingManager {
+export default class BuildingManager {
     constructor(scene) {
         this.scene = scene;
         this.selectedBuilding = null;
