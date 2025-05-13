@@ -199,6 +199,53 @@ export default class BuildingManager {
         }
     }
 
+    updatePreview(pointer) {
+        if (!this.selectedBuilding) {
+            if (this.previewBuilding) {
+                this.previewBuilding.destroy();
+                this.previewBuilding = null;
+            }
+            this.scene.feedbackManager.clearTileHighlights();
+            return;
+        }
+
+        this.scene.feedbackManager.updateTileHighlights();
+
+        const worldPoint = this.scene.cameras.main.getWorldPoint(pointer.x, pointer.y);
+        const hoveredTile = this.scene.grid.grid.flat().find(tile => {
+            const bounds = new Phaser.Geom.Rectangle(
+                tile.x - tile.displayWidth / 2,
+                tile.y - tile.displayHeight / 2,
+                tile.displayWidth,
+                tile.displayHeight
+            );
+            return bounds.contains(worldPoint.x, worldPoint.y);
+        });
+
+        if (hoveredTile) {
+            const gridPosition = hoveredTile.data;
+            const {tileX, tileY} = this.scene.grid.gridToIso(gridPosition.gridX, gridPosition.gridY);
+            const worldX = this.scene.cameras.main.centerX + tileX;
+            const worldY = this.scene.cameras.main.centerY + tileY;
+
+            if (!this.previewBuilding) {
+                this.previewBuilding = this.scene.add.sprite(
+                    worldX,
+                    worldY,
+                    this.selectedBuilding
+                );
+                const tileScale = 1.4;
+                const scale = (this.scene.grid.tileWidth * tileScale) / this.previewBuilding.width;
+                this.previewBuilding.setScale(scale);
+                this.previewBuilding.setOrigin(0.5, 0.75);
+                this.previewBuilding.setAlpha(0.6);
+            } else {
+                this.previewBuilding.setPosition(worldX, worldY);
+            }
+            this.previewBuilding.setDepth(gridPosition.gridY + 1);
+        }
+    }
+
     showPlacementFeedback(worldX, worldY) {
         const particles = this.scene.add.particles(0, 0, 'tile_grass', {
             x: worldX,

@@ -197,24 +197,7 @@ showSiloModal(resources) {
     enablePlayerControl(npc) {
 constructor() {
         super({ key: 'MainScene' });
-        
-        // Core systems
-        this.grid = null;
-        this.inputManager = null;
         this.resourceSystem = null;
-
-        // Managers
-        this.assetManager = null;
-        this.buildingManager = null;
-        this.uiManager = null;
-        this.npcManager = null;
-        this.saveManager = null;
-        this.movementManager = null;
-        this.animationManager = null;
-        this.feedbackManager = null;
-        this.professionManager = null;
-        this.inventoryManager = null;
-        this.uiComponents = {};
 }
 async create() {
         if (!this.textures.exists('tile_grass')) {

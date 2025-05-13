@@ -2,6 +2,36 @@
 export default class UIManager {
     constructor(scene) {
         this.scene = scene;
+        this.setupUIHandlers();
+    }
+
+    setupUIHandlers() {
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.scene.buildingManager.selectedBuilding = btn.dataset.building;
+                if (this.scene.buildingManager.previewBuilding) {
+                    this.scene.buildingManager.previewBuilding.destroy();
+                    this.scene.buildingManager.previewBuilding = null;
+                }
+                document.getElementById('side-panel').style.display = 'none';
+            });
+        });
+
+        const toggleButton = document.getElementById('toggleStructures');
+        const sidePanel = document.getElementById('side-panel');
+
+        if (toggleButton && sidePanel) {
+            toggleButton.addEventListener('click', () => {
+                const isVisible = sidePanel.style.display === 'flex';
+                sidePanel.style.display = isVisible ? 'none' : 'flex';
+                if (!isVisible) {
+                    this.scene.buildingManager.clearBuildingSelection();
+                }
+            });
+        }
         this.panels = new Map();
         this.initializePanels();
     }
