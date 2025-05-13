@@ -197,7 +197,11 @@ showSiloModal(resources) {
     enablePlayerControl(npc) {
 constructor() {
         super({ key: 'MainScene' });
+        this.selectedBuilding = null;
+        this.previewBuilding = null;
         this.resourceSystem = null;
+        this.npcManager = null;
+        this.gridManager = null;
 }
 async create() {
         if (!this.textures.exists('tile_grass')) {
