@@ -53,6 +53,7 @@ export default class MainScene extends Phaser.Scene {
         // Import e inicializa o UIController
         import('./components/UI/UIController.js').then(({default: UIController}) => {
             this.uiController = new UIController(this);
+            this.uiController.init();
         });
         
         this.grid = new Grid(this, 10, 10);
