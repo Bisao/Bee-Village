@@ -1,3 +1,4 @@
+
 import Grid from './game/scenes/components/Grid.js';
 import InputManager from './game/scenes/components/InputManager.js';
 import ResourceSystem from './game/scenes/components/ResourceSystem.js';
@@ -47,7 +48,6 @@ export default class MainScene extends Phaser.Scene {
     }
 
     update() {
-        // Delegating update to UpdateManager
         if (this.updateManager) {
             this.updateManager.update();
         }
