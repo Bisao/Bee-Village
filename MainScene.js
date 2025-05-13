@@ -70,11 +70,6 @@ export default class MainScene extends Phaser.Scene {
         const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
         const isNPCHouse = npcHouses.includes(this.selectedBuilding);
 
-        // Create NPC for each house if it's a valid house type
-        if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
-            this.createFarmerNPC(gridX, gridY, worldX, worldY);
-        }
-
         // Add click handler for silo
         if (this.selectedBuilding === 'silo') {
             building.setInteractive({ useHandCursor: true });
