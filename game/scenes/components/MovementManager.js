@@ -3,6 +3,67 @@ export default class MovementManager {
         this.scene = scene;
     }
 
+    moveFarmer(direction, animKey) {
+        const newX = this.scene.farmer.gridX + direction.x;
+        const newY = this.scene.farmer.gridY + direction.y;
+        const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
+
+        this.scene.farmer.isMoving = true;
+        this.scene.farmer.play(animKey);
+
+        this.scene.tweens.add({
+            targets: this.scene.farmer,
+            x: this.scene.cameras.main.centerX + tileX,
+            y: this.scene.cameras.main.centerY + tileY - 16,
+            duration: 600,
+            ease: 'Quad.easeInOut',
+            onComplete: () => {
+                this.scene.farmer.gridX = newX;
+                this.scene.farmer.gridY = newY;
+                this.scene.farmer.setDepth(newY + 1);
+                this.scene.farmer.isMoving = false;
+                this.scene.farmer.stop();
+                this.scene.events.emit('farmerMoved');
+            }
+        });
+    }
+
+    moveNPCTo(npc, newX, newY) {
+        if (npc.isMoving) return;
+
+        const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
+        npc.isMoving = true;
+
+        let animKey = 'farmer_right';
+        if (newY < npc.gridY) animKey = 'farmer_up';
+        else if (newY > npc.gridY) animKey = 'farmer_down';
+        else if (newX < npc.gridX) animKey = 'farmer_left';
+
+        if (this.scene.anims.exists(animKey)) {
+            npc.sprite.play(animKey, true);
+        } else {
+            npc.sprite.setTexture('farmer1');
+        }
+
+        this.scene.tweens.add({
+            targets: [npc.sprite, npc.nameText],
+            x: this.scene.cameras.main.centerX + tileX,
+            y: function (target, key, value, targetIndex) {
+                const baseY = this.scene.cameras.main.centerY + tileY;
+                return targetIndex === 0 ? baseY - 32 : baseY - 64;
+            },
+            duration: 600,
+            ease: 'Linear',
+            onComplete: () => {
+                npc.gridX = newX;
+                npc.gridY = newY;
+                npc.sprite.setDepth(newY + 2);
+                npc.isMoving = false;
+                npc.sprite.stop();
+            }
+        });
+    }
+
     moveNPCTo(npc, newX, newY) {
         if (npc.isMoving) return;
 
