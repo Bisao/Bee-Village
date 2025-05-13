@@ -672,6 +672,16 @@ export default class MainScene extends Phaser.Scene {
                         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                         npc.lumberSystem.startWorking(npc);
                         console.log('Lenhador iniciou o trabalho:', npc.config.name);
+                    } else if (this.selectedBuilding === 'minerHouse' && npc) {
+                        // Inicializa o sistema de trabalho do minerador
+                        this.MineSystem = MineSystem;
+                        npc.mineSystem = new MineSystem(this);
+                        npc.isAutonomous = false;
+                        npc.currentJob = 'mine';
+                        npc.config.emoji = '⛏️';
+                        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                        npc.mineSystem.startWorking(npc);
+                        console.log('Minerador iniciou o trabalho:', npc.config.name);
                     }
                 });
             }

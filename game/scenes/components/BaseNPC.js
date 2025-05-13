@@ -65,17 +65,26 @@ export default class BaseNPC {
     }
 
     leaveHouse() {
-        const newY = this.gridY + 1;
-        if (this.scene.grid.isValidPosition(this.gridX, newY) && 
-            !this.scene.isTileOccupied(this.gridX, newY)) {
-            this.moveTo(this.gridX, newY);
-            this.scene.tweens.add({
-                targets: this.sprite,
-                alpha: { from: 0, to: 1 },
-                duration: 500,
-                onStart: () => this.sprite.setVisible(true)
-            });
-            return true;
+        // Verifica todas as posições adjacentes
+        const positions = [
+            { x: this.gridX, y: this.gridY + 1 }, // baixo
+            { x: this.gridX, y: this.gridY - 1 }, // cima
+            { x: this.gridX + 1, y: this.gridY }, // direita
+            { x: this.gridX - 1, y: this.gridY }  // esquerda
+        ];
+
+        for (const pos of positions) {
+            if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
+                !this.scene.isTileOccupied(pos.x, pos.y)) {
+                this.moveTo(pos.x, pos.y);
+                this.scene.tweens.add({
+                    targets: this.sprite,
+                    alpha: { from: 0, to: 1 },
+                    duration: 500,
+                    onStart: () => this.sprite.setVisible(true)
+                });
+                return true;
+            }
         }
         return false;
     }
