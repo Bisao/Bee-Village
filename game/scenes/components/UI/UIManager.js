@@ -27,6 +27,24 @@ export default class UIManager {
         this.ui.createUI();
     }
 
+    showSiloModal(resources) {
+        const panel = this.panels.get('silo');
+        if (panel) {
+            panel.show(resources);
+        }
+    }
+
+    showSettingsPanel() {
+        const panel = this.panels.get('settings');
+        if (panel) {
+            panel.show();
+        }
+    }
+
+    cleanupExistingModals() {
+        document.querySelectorAll('.modal').forEach(modal => modal.remove());
+    }
+
     showPanel(panelName, data) {
         const panel = this.panels.get(panelName);
         if (panel) {

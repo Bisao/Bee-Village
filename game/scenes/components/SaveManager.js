@@ -22,6 +22,21 @@ export default class SaveManager {
         }
     }
 
+    serializeBuildingGrid() {
+        const serializedGrid = {};
+        Object.entries(this.scene.grid.buildingGrid).forEach(([key, value]) => {
+            if (!value || !value.gridX || !value.gridY) return;
+            
+            serializedGrid[key] = {
+                type: value.type,
+                gridX: value.gridX,
+                gridY: value.gridY,
+                buildingType: value.sprite?.texture?.key || null
+            };
+        });
+        return serializedGrid;
+    }
+
     createGameState(timestamp) {
         return {
             version: '1.0',

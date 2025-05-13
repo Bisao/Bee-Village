@@ -5,6 +5,27 @@ export default class FeedbackManager {
         this.feedbacks = new Map();
     }
 
+    clearTileHighlights() {
+        this.scene.grid.grid.flat().forEach(tile => {
+            tile.clearTint();
+        });
+    }
+
+    updateTileHighlights() {
+        this.scene.grid.grid.flat().forEach(tile => {
+            const gridPosition = tile.data;
+            const key = `${gridPosition.gridX},${gridPosition.gridY}`;
+
+            if (this.scene.grid.buildingGrid[key]) {
+                tile.setTint(0xFF0000);
+            } else if (this.scene.grid.isValidPosition(gridPosition.gridX, gridPosition.gridY)) {
+                tile.setTint(0x00FF00);
+            } else {
+                tile.setTint(0xFF0000);
+            }
+        });
+    }
+
     showFeedback(message, isSuccess = true, duration = 2000) {
         const text = this.scene.add.text(
             this.scene.cameras.main.centerX,
