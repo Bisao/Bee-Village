@@ -18,14 +18,7 @@ placeBuilding(gridX, gridY, worldX, worldY) {
 
     // Create NPC for each house if it's a valid house type
     if (['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
-        const npc = await this.npcManager.createFarmerNPC(gridX, gridY, worldX, worldY);
-
-        // Iniciar sistema de mineração se for uma casa de minerador
-        if (this.selectedBuilding === 'minerHouse' && npc.config.profession === 'Miner') {
-            this.MineSystem = MineSystem; // Torna o MineSystem disponível na cena
-            npc.mineSystem = new MineSystem(this);
-            npc.mineSystem.startWorking(npc);
-        }
+        this.createFarmerNPC(gridX, gridY, worldX, worldY);
     }
 
     // Add click handler for silo
@@ -189,41 +182,52 @@ autoSave() {
     }
 }
 
+showSiloModal(resources) {
+        const existingModal = document.querySelector('.silo-modal');
+        if (existingModal) existingModal.remove();
+
+        const modal = document.createElement('div');
+        modal.className = 'silo-modal';
+        modal.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        `;
+        modal.innerHTML = `
+            <div class="silo-content">
+                <div class="silo-header">
+                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
+                    <button class="close-button">✕</button>
+                </div>
+                <div class="resources-grid">
+                    ${resources.map(resource => `
+                        <div class="resource-item">
+                            <div class="resource-icon">${resource.icon}</div>
+                            <div class="resource-name">${resource.name}</div>
+                            <div class="resource-amount">${resource.amount}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Fechar modal
+        const closeButton = modal.querySelector('.close-button');
+        closeButton.onclick = () => modal.remove();
+
+        // Fechar ao clicar fora
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
+        };
+    }
+
     enablePlayerControl(npc) {
-constructor() {
-        super({ key: 'MainScene' });
-        this.selectedBuilding = null;
-        this.previewBuilding = null;
-        this.resourceSystem = null;
-        this.npcControlPanel = null;
-    }
-
-    create() {
-        // Existing create code...
-        import('./components/UI/NPCControlPanel.js').then(({default: NPCControlPanel}) => {
-            this.npcControlPanel = new NPCControlPanel(this);
-        });
-    }
-
-    showFeedback(message, success = true) {
-        this.uiController.showFeedback(message, success);
-    }
-
-    showSiloModal(resources) {
-        import('./components/UI/SiloPanel.js').then(({default: SiloPanel}) => {
-            SiloPanel.showSiloModal(resources);
-        });
-    }
-
-    showNPCControls(npc) {
-        if (this.npcControlPanel) {
-            this.npcControlPanel.showNPCControls(npc);
-        }
-    }
-
-    cleanupNPCControls() {
-        if (this.npcControlPanel) {
-            this.npcControlPanel.cleanupNPCControls();
-        }
-    }
-}

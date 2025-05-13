@@ -1,3 +1,4 @@
+
 export default class BaseNPC {
     constructor(scene, x, y, config = {}) {
         this.scene = scene;
@@ -5,7 +6,7 @@ export default class BaseNPC {
         this.gridY = y;
         this.isMoving = false;
         this.isAutonomous = true;
-
+        
         // Configurações customizáveis
         this.config = {
             name: config.name || 'Unknown',
@@ -25,18 +26,23 @@ export default class BaseNPC {
     }
 
     init() {
+        // Inventário do NPC baseado na profissão
         this.inventory = this.getInitialInventory();
+        
         const {tileX, tileY} = this.scene.grid.gridToIso(this.gridX, this.gridY);
         const worldX = this.scene.cameras.main.centerX + tileX;
         const worldY = this.scene.cameras.main.centerY + tileY;
-
+        
+        // Criar sprite
         this.sprite = this.scene.add.sprite(worldX, worldY - 32, 'farmer1');
         this.sprite.setScale(this.config.scale);
         this.sprite.setDepth(this.gridY + 2);
         this.sprite.setInteractive();
-
+        
+        // Verificar se está na posição inicial (casa)
         this.checkIfInHouse();
 
+        // Criar texto do nome
         this.nameText = this.scene.add.text(worldX, worldY - 64, 
             `${this.config.emoji} ${this.config.name}`, {
                 fontSize: '14px',
@@ -48,17 +54,8 @@ export default class BaseNPC {
         ).setOrigin(0.5);
         this.nameText.setDepth(this.gridY + 3);
 
+        // Setup de eventos
         this.setupEvents();
-        this.setupControls();
-    }
-
-    setupControls() {
-        this.controls = this.scene.input.keyboard.addKeys({
-            w: Phaser.Input.Keyboard.KeyCodes.W,
-            a: Phaser.Input.Keyboard.KeyCodes.A,
-            s: Phaser.Input.Keyboard.KeyCodes.S,
-            d: Phaser.Input.Keyboard.KeyCodes.D
-        });
     }
 
     setupEvents() {
@@ -67,60 +64,90 @@ export default class BaseNPC {
         this.homePosition = { x: this.gridX, y: this.gridY };
     }
 
-    startAutonomousMovement() {
-        if (!this.isAutonomous) return;
-
-        const firstStep = () => {
-            const newY = this.gridY + 1;
-            if (this.scene.grid.isValidPosition(this.gridX, newY) && 
-                !this.scene.isTileOccupied(this.gridX, newY)) {
-                this.moveTo(this.gridX, newY);
-            }
-        };
-
-        firstStep();
-
-        const moveNPC = () => {
-            if (!this.isAutonomous || this.isMoving) return;
-
-            const directions = this.scene.getAvailableDirections(this.gridX, this.gridY);
-            if (directions.length === 0) return;
-
-            const randomDir = directions[Math.floor(Math.random() * directions.length)];
-            this.moveTo(this.gridX + randomDir.x, this.gridY + randomDir.y);
-        };
-
-        this.movementTimer = this.scene.time.addEvent({
-            delay: 2000,
-            callback: moveNPC,
-            loop: true
-        });
+    leaveHouse() {
+        const newY = this.gridY + 1;
+        if (this.scene.grid.isValidPosition(this.gridX, newY) && 
+            !this.scene.isTileOccupied(this.gridX, newY)) {
+            this.moveTo(this.gridX, newY);
+            this.scene.tweens.add({
+                targets: this.sprite,
+                alpha: { from: 0, to: 1 },
+                duration: 500,
+                onStart: () => this.sprite.setVisible(true)
+            });
+            return true;
+        }
+        return false;
     }
 
-    enablePlayerControl() {
-        this.updateHandler = () => {
-            if (!this || this.isMoving || this.isAutonomous || this.scene.currentControlledNPC !== this) return;
-
-            let newX = this.gridX;
-            let newY = this.gridY;
-
-            if (this.controls.w.isDown) newY--;
-            else if (this.controls.s.isDown) newY++;
-            else if (this.controls.a.isDown) newX--;
-            else if (this.controls.d.isDown) newX++;
-
-            if (newX !== this.gridX || newY !== this.gridY) {
-                if (this.scene.grid.isValidPosition(newX, newY) && !this.scene.isTileOccupied(newX, newY)) {
-                    this.moveTo(newX, newY);
-                }
-            }
-        };
-
-        this.scene.events.on('update', this.updateHandler);
+    returnHome() {
+        if (this.homePosition) {
+            this.moveTo(this.homePosition.x, this.homePosition.y);
+            this.scene.time.delayedCall(1000, () => {
+                this.sprite.setVisible(false);
+            });
+        }
     }
 
     showControls() {
         this.scene.showNPCControls(this);
+    }
+
+    startAutonomousMovement() {
+        if (!this.isAutonomous) return;
+
+        if (this.currentJob === 'lumber') {
+            const lumberSystem = this.scene.lumberSystem;
+            if (lumberSystem && lumberSystem.isWorking) {
+                const tree = lumberSystem.findNearestTree(this);
+                if (tree) {
+                    lumberSystem.moveToTree(this, tree);
+                }
+            }
+            return;
+        }
+
+        // Se não está trabalhando, volta para casa
+        this.returnHome();
+    }
+
+    setRestMode(enabled) {
+        if (enabled) {
+            // Finaliza o trabalho atual
+            if (this.currentJob === 'lumber') {
+                const lumberSystem = this.scene.lumberSystem;
+                if (lumberSystem) {
+                    lumberSystem.stopWorking();
+                }
+            }
+            
+            // Retorna para casa
+            this.returnHome();
+            this.currentJob = 'rest';
+        } else {
+            this.currentJob = null;
+        }
+    }
+
+    findNearbyTrees(x, y, radius) {
+        const trees = [];
+        for (const [key, value] of Object.entries(this.scene.grid.buildingGrid)) {
+            if (value.type === 'tree' && !value.isCut) {
+                const [treeX, treeY] = key.split(',').map(Number);
+                const distance = Math.abs(x - treeX) + Math.abs(y - treeY);
+                if (distance <= radius) {
+                    trees.push({ x: treeX, y: treeY, distance });
+                }
+            }
+        }
+        return trees;
+    }
+
+    checkIfInHouse() {
+        const key = `${this.gridX},${this.gridY}`;
+        const currentTile = this.scene.grid.buildingGrid[key];
+        const isInHouse = currentTile && currentTile.type === 'building';
+        this.sprite.setVisible(!isInHouse);
     }
 
     moveTo(newX, newY) {
@@ -129,30 +156,27 @@ export default class BaseNPC {
         const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
         this.isMoving = true;
 
+        // Mostra o sprite ao sair da casa
         this.sprite.setVisible(true);
 
-        let animationKey;
-        if (newY < this.gridY) animationKey = 'up';
-        else if (newY > this.gridY) animationKey = 'down';
-        else if (newX < this.gridX) animationKey = 'left';
-        else animationKey = 'right';
+        // Define frames da animação baseado na direção
+        let frameRange;
+        if (newY < this.gridY) frameRange = [1, 4];  // up
+        else if (newY > this.gridY) frameRange = [9, 12];  // down
+        else if (newX < this.gridX) frameRange = [5, 8];  // left
+        else frameRange = [1, 4];  // right/default
 
-        const frameConfig = {
-            'up': [1, 4],
-            'down': [9, 12],
-            'left': [5, 8],
-            'right': [1, 4]
-        };
-        const frameRange = frameConfig[animationKey];
-
+        // Atualiza frame estático quando não há animação
         const baseFrame = `${this.config.spritesheet}${frameRange[0]}`;
         this.sprite.setTexture(baseFrame);
 
+        // Gera frames para animação
         const frames = [];
         for (let i = frameRange[0]; i <= frameRange[1]; i++) {
             frames.push({ key: `${this.config.spritesheet}${i}` });
         }
 
+        // Cria e toca animação temporária
         const animKey = `temp_move_${Date.now()}`;
         this.scene.anims.create({
             key: animKey,
@@ -162,6 +186,7 @@ export default class BaseNPC {
         });
         this.sprite.play(animKey);
 
+        // Move o NPC
         this.scene.tweens.add({
             targets: [this.sprite, this.nameText],
             x: this.scene.cameras.main.centerX + tileX,
@@ -180,6 +205,7 @@ export default class BaseNPC {
                 this.sprite.stop();
                 this.checkIfInHouse();
 
+                // Adiciona uma pequena animação de "bounce" ao parar
                 this.scene.tweens.add({
                     targets: [this.sprite, this.nameText],
                     y: '-=2',
@@ -189,46 +215,6 @@ export default class BaseNPC {
                 });
             }
         });
-    }
-
-    leaveHouse() {
-        const positions = [
-            { x: this.gridX, y: this.gridY + 1 },
-            { x: this.gridX, y: this.gridY - 1 },
-            { x: this.gridX + 1, y: this.gridY },
-            { x: this.gridX - 1, y: this.gridY }
-        ];
-
-        for (const pos of positions) {
-            if (this.scene.grid.isValidPosition(pos.x, pos.y) && 
-                !this.scene.isTileOccupied(pos.x, pos.y)) {
-                this.moveTo(pos.x, pos.y);
-                this.scene.tweens.add({
-                    targets: this.sprite,
-                    alpha: { from: 0, to: 1 },
-                    duration: 500,
-                    onStart: () => this.sprite.setVisible(true)
-                });
-                return true;
-            }
-        }
-        return false;
-    }
-
-    returnHome() {
-        if (this.homePosition) {
-            this.moveTo(this.homePosition.x, this.homePosition.y);
-            this.scene.time.delayedCall(1000, () => {
-                this.sprite.setVisible(false);
-            });
-        }
-    }
-
-    checkIfInHouse() {
-        const key = `${this.gridX},${this.gridY}`;
-        const currentTile = this.scene.grid.buildingGrid[key];
-        const isInHouse = currentTile && currentTile.type === 'building';
-        this.sprite.setVisible(!isInHouse);
     }
 
     getToolsByProfession(profession) {
@@ -255,6 +241,53 @@ export default class BaseNPC {
             ]
         };
         return toolsets[profession] || [];
+    }
+
+    destroy() {
+        this.sprite.destroy();
+        this.nameText.destroy();
+    }
+
+    addItemToStorage(itemType) {
+        if (this.inventory[itemType] < this.inventory.maxCapacity) {
+            this.inventory[itemType]++;
+            
+            // Feedback visual
+            const text = this.scene.add.text(
+                this.sprite.x, 
+                this.sprite.y - 40,
+                `+1 ${itemType}`, 
+                { fontSize: '16px', fill: '#fff' }
+            );
+            
+            this.scene.tweens.add({
+                targets: text,
+                y: text.y - 30,
+                alpha: 0,
+                duration: 1000,
+                onComplete: () => text.destroy()
+            });
+            
+            return true;
+        }
+        
+        // Feedback de inventário cheio
+        const text = this.scene.add.text(
+            this.sprite.x,
+            this.sprite.y - 40,
+            'Inventário cheio!',
+            { fontSize: '16px', fill: '#ff0000' }
+        );
+        
+        this.scene.tweens.add({
+            targets: text,
+            y: text.y - 30,
+            alpha: 0,
+            duration: 1000,
+            onComplete: () => text.destroy()
+        });
+        
+        return false;
     }
 
     getInitialInventory() {
@@ -351,12 +384,14 @@ export default class BaseNPC {
 
     gainExperience(amount) {
         this.config.xp += amount;
-
+        
+        // Level up se atingir XP máximo
         if (this.config.xp >= this.config.maxXp) {
             this.config.level++;
             this.config.xp = 0;
             this.config.maxXp *= 1.5;
-
+            
+            // Feedback visual de level up
             const levelUpText = this.scene.add.text(
                 this.sprite.x,
                 this.sprite.y - 50,
@@ -372,58 +407,5 @@ export default class BaseNPC {
                 onComplete: () => levelUpText.destroy()
             });
         }
-    }
-
-    destroy() {
-        if (this.movementTimer) {
-            this.movementTimer.remove();
-        }
-        if (this.updateHandler) {
-            this.scene.events.off('update', this.updateHandler);
-        }
-        this.sprite.destroy();
-        this.nameText.destroy();
-    }
-
-    addItemToStorage(itemType) {
-        if (this.inventory[itemType] < this.inventory.maxCapacity) {
-            this.inventory[itemType]++;
-            
-            // Feedback visual
-            const text = this.scene.add.text(
-                this.sprite.x, 
-                this.sprite.y - 40,
-                `+1 ${itemType}`, 
-                { fontSize: '16px', fill: '#fff' }
-            );
-            
-            this.scene.tweens.add({
-                targets: text,
-                y: text.y - 30,
-                alpha: 0,
-                duration: 1000,
-                onComplete: () => text.destroy()
-            });
-            
-            return true;
-        }
-        
-        // Feedback de inventário cheio
-        const text = this.scene.add.text(
-            this.sprite.x,
-            this.sprite.y - 40,
-            'Inventário cheio!',
-            { fontSize: '16px', fill: '#ff0000' }
-        );
-        
-        this.scene.tweens.add({
-            targets: text,
-            y: text.y - 30,
-            alpha: 0,
-            duration: 1000,
-            onComplete: () => text.destroy()
-        });
-        
-        return false;
     }
 }

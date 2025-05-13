@@ -28,45 +28,38 @@ export default class MineSystem {
         }
 
         this.state.isWorking = true;
-        npc.currentJob = 'mine';
+        npc.currentJob = 'miner';
         npc.isAutonomous = true;
         this.workCycle(npc);
     }
 
     async workCycle(npc) {
-        while (this.state.isWorking && npc.currentJob === 'mine') {
+        while (this.state.isWorking) {
             try {
-                // Verificar se precisa depositar recursos
-                if (npc.inventory.ore >= this.config.maxInventory) {
-                    this.updateNPCStatus(npc, '📦', 'Inventário cheio');
-                    await this.depositOre(npc);
-                    continue;
+                if (npc.currentJob === 'rest') {
+                    this.stopWorking();
+                    return;
                 }
 
-                // Verificar se está processando
                 if (this.state.isProcessingRock) {
                     await this.waitFor(1000);
                     continue;
                 }
 
-                // Procurar e minerar rocha
                 const rock = await this.findAndProcessRock(npc);
                 if (!rock) {
-                    this.updateNPCStatus(npc, '🔍', 'Procurando rochas');
                     await this.waitFor(3000);
                     continue;
                 }
 
+                if (npc.inventory.ore >= this.config.maxInventory) {
+                    await this.depositOre(npc);
+                }
             } catch (error) {
                 console.error('[MineSystem] Erro no ciclo:', error);
-                this.updateNPCStatus(npc, '⚠️', 'Erro no sistema');
                 await this.waitFor(1000);
             }
         }
-        
-        // Limpar estado ao finalizar
-        this.stopWorking();
-        this.updateNPCStatus(npc, '💤', 'Descansando');
     }
 
     stopWorking() {
@@ -173,7 +166,7 @@ export default class MineSystem {
                tile.type === 'rock' && 
                tile.sprite && 
                !tile.isMined && 
-               ['rock_small', 'rock_medium', 'rock_large'].includes(tile.sprite.texture.key);
+               ['big_rock', 'small_rock'].includes(tile.sprite.texture.key);
     }
 
     validateNPC(npc) {
