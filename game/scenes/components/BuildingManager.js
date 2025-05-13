@@ -4,6 +4,98 @@ export default class BuildingManager {
     }
 
     placeBuilding(gridX, gridY, worldX, worldY) {
+        try {
+            if (!this.scene.selectedBuilding) {
+                console.log('No building selected');
+                return false;
+            }
+
+            if (!worldX || !worldY) {
+                console.error('Invalid world coordinates');
+                return false;
+            }
+
+            if (!this.scene.grid.isValidPosition(gridX, gridY)) {
+                this.scene.feedbackManager.showFeedback('Posição inválida', false);
+                return false;
+            }
+
+            const key = `${gridX},${gridY}`;
+            if (this.scene.grid.buildingGrid[key]) {
+                this.scene.feedbackManager.showFeedback('Posição já ocupada', false);
+                return false;
+            }
+
+            const building = this.createBuilding(gridX, gridY, worldX, worldY);
+            if (!building) {
+                return false;
+            }
+
+            this.registerBuildingInGrid(key, building, gridX, gridY);
+            this.handleSpecialBuildings(building, gridX, gridY, worldX, worldY);
+            
+            this.scene.feedbackManager.showFeedback('Estrutura construída!', true);
+            return true;
+        } catch (error) {
+            console.error('Error placing building:', error);
+            this.scene.feedbackManager.showFeedback('Erro ao construir estrutura', false);
+            return false;
+        }
+    }
+
+    createBuilding(gridX, gridY, worldX, worldY) {
+        try {
+            const building = this.scene.add.sprite(worldX, worldY, this.scene.selectedBuilding);
+            if (!building) {
+                throw new Error('Failed to create building sprite');
+            }
+
+            const scale = (this.scene.grid.tileWidth * 1.4) / building.width;
+            building.setScale(scale);
+            building.setOrigin(0.5, 0.75);
+            building.setDepth(gridY + 1);
+
+            return building;
+        } catch (error) {
+            console.error('Failed to create building:', error);
+            return null;
+        }
+    }
+
+    registerBuildingInGrid(key, building, gridX, gridY) {
+        this.scene.grid.buildingGrid[key] = {
+            sprite: building,
+            type: 'building',
+            buildingType: this.scene.selectedBuilding,
+            gridX: gridX,
+            gridY: gridY
+        };
+    }
+
+    handleSpecialBuildings(building, gridX, gridY, worldX, worldY) {
+        if (this.scene.selectedBuilding === 'silo') {
+            this.setupSilo(building, gridX, gridY);
+        }
+
+        if (['farmerHouse', 'minerHouse', 'FishermanHouse', 'lumberHouse'].includes(this.scene.selectedBuilding)) {
+            this.scene.createFarmerNPC(gridX, gridY, worldX, worldY);
+        }
+    }
+
+    setupSilo(building, gridX, gridY) {
+        building.setInteractive({ useHandCursor: true });
+        this.scene.resourceSystem.registerSilo(gridX, gridY, building);
+        building.on('pointerdown', () => {
+            const resources = this.scene.resourceSystem.getSiloResources(gridX, gridY);
+            this.scene.showSiloModal([
+                { name: 'Madeira', amount: resources.wood },
+                { name: 'Trigo', amount: resources.wheat },
+                { name: 'Minério', amount: resources.ore }
+            ]);
+        });
+    }
+
+    placeBuilding(gridX, gridY, worldX, worldY) {
         if (!this.validateBuildingPlacement(gridX, gridY)) {
             return false;
         }
