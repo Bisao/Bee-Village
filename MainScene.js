@@ -1,4 +1,3 @@
-
 import Grid from './game/scenes/components/Grid.js';
 import InputManager from './game/scenes/components/InputManager.js';
 import ResourceSystem from './game/scenes/components/ResourceSystem.js';

@@ -4,6 +4,43 @@ export default class AssetManager {
     }
 
     loadAssets() {
+        if (this.scene.textures.exists('tile_grass')) return;
+
+        // Load farmer sprites
+        for (let i = 1; i <= 12; i++) {
+            this.scene.load.image(`farmer${i}`, `game/assets/shared/Farmer_${i}-ezgif.com-resize.png`);
+        }
+
+        // Load tiles
+        const tiles = [
+            'tile_grass',
+            'tile_grass_2',
+            'tile_grass_2_flowers',
+            'tile_grass_3_flowers'
+        ];
+
+        tiles.forEach(tile => {
+            this.scene.load.image(tile, `game/assets/tiles/${tile}.png`);
+        });
+
+        // Load buildings
+        const buildings = [
+            'silo|Silo',
+            'well|WaterWell',
+            'windmill|Windmill',
+            'farmerHouse|FarmerHouse',
+            'FishermanHouse|FishermanHouse',
+            'lumberHouse|LumberJackHouse',
+            'minerHouse|MinerHouse'
+        ];
+
+        buildings.forEach(building => {
+            const [key, filename] = building.split('|');
+            this.scene.load.image(key, `game/assets/buildings/${filename}.png`);
+        });
+    }
+
+    loadAssets() {
         // Load farmer sprites
         for (let i = 1; i <= 12; i++) {
             this.scene.load.image(`farmer${i}`, `game/assets/shared/Farmer_${i}-ezgif.com-resize.png`);
