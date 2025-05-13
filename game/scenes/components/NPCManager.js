@@ -89,6 +89,8 @@ export default class NPCManager {
     }
 
     getToolsForProfession(profession) {
+        if (!profession) return [];
+        
         const tools = {
             Farmer: [
                 { name: 'Pá', emoji: '🚜', description: 'Usada para arar a terra.' },

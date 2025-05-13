@@ -43,6 +43,85 @@ export default class BuildingManager {
                gridY < this.scene.grid.height;
     }
 
+    placeBuilding(gridX, gridY, worldX, worldY) {
+        if (!this.validateBuildingPlacement(gridX, gridY)) {
+            return false;
+        }
+
+        const building = this.createBuilding(gridX, gridY);
+        if (!building) {
+            return false;
+        }
+
+        this.registerBuildingEvents(building);
+        this.updateGridState(gridX, gridY, building);
+        this.scene.feedbackManager.provideVisualFeedback(gridX, gridY);
+
+        // Validate if it's a house that can have NPC
+        const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse', 'lumberHouse'];
+        const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+
+        // Create NPC for each house if it's a valid house type
+        if (isNPCHouse) {
+            this.scene.npcManager.createNPC(gridX, gridY, worldX, worldY);
+        }
+
+        // Add click handler for silo
+        if (this.selectedBuilding === 'silo') {
+            building.setInteractive({ useHandCursor: true });
+            building.on('pointerdown', (pointer) => {
+                if (!pointer.rightButtonDown()) {
+                    this.scene.uiManager.showPanel('silo', [
+                        { name: 'Sementes', icon: '🌾', amount: 0 },
+                        { name: 'Trigo', icon: '🌾', amount: 0 },
+                        { name: 'Cenoura', icon: '🥕', amount: 0 },
+                        { name: 'Milho', icon: '🌽', amount: 0 },
+                        { name: 'Madeira', icon: '🪵', amount: 0 },
+                        { name: 'Peixe', icon: '🐟', amount: 0 },
+                        { name: 'Minério', icon: '⛏️', amount: 0 }
+                    ]);
+                }
+            });
+        }
+
+        return true;
+    }
+
+    validateBuildingPlacement(gridX, gridY) {
+        return this.scene.grid.isValidPosition(gridX, gridY) && 
+               !this.scene.grid.isOccupied(gridX, gridY);
+    }
+
+    createBuilding(gridX, gridY) {
+        try {
+            const building = this.scene.add.sprite(
+                gridX * this.scene.grid.tileWidth,
+                gridY * this.scene.grid.tileHeight,
+                this.selectedBuilding
+            );
+            building.setDepth(1);
+            return building;
+        } catch (error) {
+            console.error('Failed to create building:', error);
+            return null;
+        }
+    }
+
+    registerBuildingEvents(building) {
+        // Add events here if needed
+    }
+
+    updateGridState(gridX, gridY, building) {
+        const key = `${gridX},${gridY}`;
+        this.scene.grid.buildingGrid[key] = {
+            sprite: building,
+            type: 'building',
+            buildingType: this.selectedBuilding,
+            gridX: gridX,
+            gridY: gridY
+        };
+    }
+
     clearBuildingSelection() {
         this.selectedBuilding = null;
         if (this.previewBuilding) {
