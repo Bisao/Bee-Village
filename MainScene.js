@@ -22,8 +22,9 @@ placeBuilding(gridX, gridY, worldX, worldY) {
         
         // Iniciar sistema de mineração se for uma casa de minerador
         if (this.selectedBuilding === 'minerHouse' && npc.config.profession === 'Miner') {
-            const mineSystem = new MineSystem(this);
-            mineSystem.startWorking(npc);
+            this.MineSystem = MineSystem; // Torna o MineSystem disponível na cena
+            npc.mineSystem = new MineSystem(this);
+            npc.mineSystem.startWorking(npc);
         }
     }
 
