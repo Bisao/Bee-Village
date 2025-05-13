@@ -21,15 +21,22 @@ export default class MineSystem {
     }
 
     startWorking(npc) {
-        if (!this.validateNPC(npc)) return;
+        if (!this.validateNPC(npc)) {
+            console.log('[MineSystem] NPC inválido para mineração');
+            return;
+        }
+
         if (!npc.leaveHouse()) {
             console.log('[MineSystem] NPC não conseguiu sair da casa');
             return;
         }
 
         this.state.isWorking = true;
-        npc.currentJob = 'miner';
+        npc.currentJob = 'mine';
         npc.isAutonomous = true;
+        npc.config.emoji = '⛏️';
+        npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+        console.log('[MineSystem] Iniciando trabalho:', npc.config.name);
         this.workCycle(npc);
     }
 
@@ -166,7 +173,7 @@ export default class MineSystem {
                tile.type === 'rock' && 
                tile.sprite && 
                !tile.isMined && 
-               ['big_rock', 'small_rock'].includes(tile.sprite.texture.key);
+               ['rock_small', 'rock_medium', 'rock_large'].includes(tile.sprite.texture.key);
     }
 
     validateNPC(npc) {
