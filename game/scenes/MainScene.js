@@ -49,13 +49,19 @@ export default class MainScene extends Phaser.Scene {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
+        
+        // Import e inicializa o UIController
+        import('./components/UI/UIController.js').then(({default: UIController}) => {
+            this.uiController = new UIController(this);
+        });
+        
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
         this.resourceSystem = new ResourceSystem(this);
 
         this.grid.create();
         this.inputManager.init();
-        this.setupUIHandlers();
+        this.uiController.init();
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
