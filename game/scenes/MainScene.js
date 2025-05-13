@@ -1,7 +1,15 @@
-import Grid from '../scenes/components/Grid.js';
-import InputManager from '../scenes/components/InputManager.js';
-import LumberSystem from '../scenes/components/LumberSystem.js';
-import ResourceSystem from '../scenes/components/ResourceSystem.js';
+import Grid from './components/Grid.js';
+import InputManager from './components/InputManager.js';
+import BuildingManager from './components/BuildingManager.js';
+import UIManager from './components/UI/UIManager.js';
+import NPCManager from './components/NPCManager.js';
+import SaveManager from './components/SaveManager.js';
+import AssetManager from './components/AssetManager.js';
+import FeedbackManager from './components/FeedbackManager.js';
+import MovementManager from './components/MovementManager.js';
+import EnvironmentManager from './components/EnvironmentManager.js';
+import MobileManager from './components/MobileManager.js';
+import ProfessionManager from './components/ProfessionManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -39,7 +47,9 @@ export default class MainScene extends Phaser.Scene {
     }
 
     preload() {
-        this.loadAssets();
+        this.assetManager = new AssetManager(this);
+        this.assetManager.loadAssets();
+
         this.load.on('complete', () => {
             this.game.events.emit('ready');
         });
@@ -47,53 +57,60 @@ export default class MainScene extends Phaser.Scene {
 
     create() {
         if (!this.textures.exists('tile_grass')) {
-            return; // Wait for assets to load
+            return;
         }
+
+        // Initialize all managers
         this.grid = new Grid(this, 10, 10);
         this.inputManager = new InputManager(this);
-        this.resourceSystem = new ResourceSystem(this);
+        this.buildingManager = new BuildingManager(this);
+        this.uiManager = new UIManager(this);
+        this.npcManager = new NPCManager(this);
+        this.saveManager = new SaveManager(this);
+        this.feedbackManager = new FeedbackManager(this);
+        this.movementManager = new MovementManager(this);
+        this.environmentManager = new EnvironmentManager(this);
+        this.mobileManager = new MobileManager(this);
+        this.professionManager = new ProfessionManager(this);
 
+        // Initialize core systems
         this.grid.create();
         this.inputManager.init();
+        this.uiManager.setupUIHandlers();
         this.setupUIHandlers();
 
         this.input.on('pointerdown', this.handleClick, this);
         this.input.on('pointermove', this.updatePreview, this);
 
+        // Place initial environment and buildings
+        this.environmentManager.placeEnvironmentObjects();
         this.placeEnvironmentObjects();
 
-        // Posiciona a casa do lenhador inicial
-        this.placeBuilding(1, 1, 
-            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
-            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
-            'lumberHouse'
-        );
+        // Place initial buildings
+        const initialBuildings = [
+            { x: 1, y: 1, type: 'lumberHouse' },
+            { x: 3, y: 1, type: 'silo' }
+        ];
 
-        // Posiciona o silo inicial
-        this.placeBuilding(3, 1,
-            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
-            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
-            'silo'
-        );
+        initialBuildings.forEach(building => {
+            const {tileX, tileY} = this.grid.gridToIso(building.x, building.y);
+            const worldX = this.cameras.main.centerX + tileX;
+            const worldY = this.cameras.main.centerY + tileY;
 
-        // Adicionar casa de lenhador inicial
-        this.placeBuilding(1, 1, 
-            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
-            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
-            'lumberHouse'
-        );
-
-        // Adicionar silo inicial
-        this.placeBuilding(3, 1,
-            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
-            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
-            'silo'
-        );
+            this.buildingManager.placeBuilding(building.x, building.y, worldX, worldY, building.type);
+        });
 
         // Define zoom inicial diferente para mobile e desktop
         const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
         const initialZoom = isMobile ? 0.8 : 1.5;
         this.cameras.main.setZoom(initialZoom);
+
+        // Setup auto-save
+        this.time.addEvent({
+            delay: 60000,
+            callback: () => this.saveManager.autoSave(),
+            loop: true
+        });
     }
 
     createFarmer() {
@@ -194,7 +211,7 @@ export default class MainScene extends Phaser.Scene {
             if ('ontouchstart' in window) {
                 const buttons = {
                     'mobile-up': 'W',
-                    'mobile-down': 'S', 
+                    'mobile-down': 'S',
                     'mobile-left': 'A',
                     'mobile-right': 'D'
                 };
@@ -581,10 +598,10 @@ export default class MainScene extends Phaser.Scene {
                     <div class="storage-grid">
                         ${Array(4).fill().map((_, i) => `
                             <div class="storage-slot">
-                                <div class="storage-icon">${npc.config.profession === 'Lumberjack' ? '🌳' : 
+                                <div class="storage-icon">${npc.config.profession === 'Lumberjack' ? '🌳' :
                                     npc.config.profession === 'Farmer' ? '🌾' :
                                     npc.config.profession === 'Miner' ? '⛏️' : '🐟'}</div>
-                                <div class="storage-amount">${i < (npc.inventory[npc.config.profession === 'Lumberjack' ? 'wood' : 
+                                <div class="storage-amount">${i < (npc.inventory[npc.config.profession === 'Lumberjack' ? 'wood' :
                                     npc.config.profession === 'Farmer' ? 'wheat' :
                                     npc.config.profession === 'Miner' ? 'ore' : 'fish'] || 0) ? '1' : '0'}/1</div>
                             </div>
@@ -755,7 +772,7 @@ export default class MainScene extends Phaser.Scene {
         if (!this.usedNames[buildingType]) this.usedNames[buildingType] = new Set();
 
         // Filter available names
-        const availableNames = nameData.names.filter(name => 
+        const availableNames = nameData.names.filter(name =>
             !this.usedNames[buildingType].has(name)
         );
 
@@ -878,13 +895,13 @@ export default class MainScene extends Phaser.Scene {
 
         // Trabalhos específicos por profissão
         if (npc.config.profession === 'Lumberjack') {
-            jobs.push({ 
-                id: 'lumber', 
-                name: 'Cortar Madeira', 
-                icon: '🪓', 
-                description: 'Corta árvores e coleta madeira.' 
+            jobs.push({
+                id: 'lumber',
+                name: 'Cortar Madeira',
+                icon: '🪓',
+                description: 'Corta árvores e coleta madeira.'
             });
-        }```python
+        }
 
         return jobs;
     }
@@ -953,5 +970,163 @@ export default class MainScene extends Phaser.Scene {
         closeButton.onclick = () => {
             modal.remove();
         };
+    }
+
+    setupUIHandlers() {
+        const buildButtons = document.querySelectorAll('.build-button');
+        buildButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const buildingType = button.dataset.building;
+                this.startBuildingPlacement(buildingType);
+            });
+        });
+        const saveButton = document.querySelector('.save-button');
+        if (saveButton) {
+            saveButton.addEventListener('click', () => {
+                this.saveManager.autoSave();
+            });
+        }
+
+        const clearSaveButton = document.querySelector('.clear-save-button');
+        if (clearSaveButton) {
+            clearSaveButton.addEventListener('click', () => {
+                localStorage.removeItem('gameState');
+                console.log('Save cleared');
+            });
+        }
+    }
+
+    loadAssets() {
+        this.load.image('tile_grass', 'attached_assets/tile_grass.png');
+        this.load.image('tile_dirt', 'attached_assets/tile_dirt.png');
+        this.load.image('tree', 'attached_assets/tree.png');
+        this.load.image('rock', 'attached_assets/rock.png');
+        this.load.image('lumberHouse', 'attached_assets/lumberHouse.png');
+        this.load.image('silo', 'attached_assets/silo.png');
+        this.load.image('farmerHouse', 'attached_assets/farmerHouse.png');
+        this.load.image('FishermanHouse', 'attached_assets/FishermanHouse.png');
+        this.load.image('minerHouse', 'attached_assets/minerHouse.png');
+
+        this.load.image('ui_lumberjack', 'attached_assets/ui_lumberjack.png');
+        this.load.image('ui_farmer', 'attached_assets/ui_farmer.png');
+        this.load.image('ui_miner', 'attached_assets/ui_miner.png');
+        this.load.image('ui_fisherman', 'attached_assets/ui_fisherman.png');
+
+        this.load.image('ui_house', 'attached_assets/ui_house.png');
+        this.load.image('ui_silo', 'attached_assets/ui_silo.png');
+
+        this.load.image('farmer1', 'attached_assets/Farmer_1-ezgif.com-resize.png');
+        this.load.image('farmer2', 'attached_assets/Farmer_2-ezgif.com-resize.png');
+        this.load.image('farmer3', 'attached_assets/Farmer_3-ezgif.com-resize.png');
+        this.load.image('farmer4', 'attached_assets/Farmer_4-ezgif.com-resize.png');
+        this.load.image('farmer5', 'attached_assets/Farmer_5-ezgif.com-resize.png');
+        this.load.image('farmer6', 'attached_assets/Farmer_6-ezgif.com-resize.png');
+        this.load.image('farmer7', 'attached_assets/Farmer_7-ezgif.com-resize.png');
+        this.load.image('farmer8', 'attached_assets/Farmer_8-ezgif.com-resize.png');
+        this.load.image('farmer9', 'attached_assets/Farmer_9-ezgif.com-resize.png');
+        this.load.image('farmer10', 'attached_assets/Farmer_10-ezgif.com-resize.png');
+        this.load.image('farmer11', 'attached_assets/Farmer_11-ezgif.com-resize.png');
+        this.load.image('farmer12', 'attached_assets/Farmer_12-ezgif.com-resize.png');
+    }
+
+    handleClick(pointer) {
+        if (this.selectedBuilding) {
+            const gridX = Math.floor((pointer.worldX - this.cameras.main.centerX) / this.grid.tileWidth);
+            const gridY = Math.floor((pointer.worldY - this.cameras.main.centerY) / this.grid.tileHeight);
+
+            if (this.isValidGridPosition(gridX, gridY) && !this.isTileOccupied(gridX, gridY)) {
+                const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+                const worldX = this.cameras.main.centerX + tileX;
+                const worldY = this.cameras.main.centerY + tileY;
+
+                this.buildingManager.placeBuilding(gridX, gridY, worldX, worldY, this.selectedBuilding);
+
+                this.cancelBuildingSelection();
+            } else {
+                console.log("Invalid position for building.");
+                this.feedbackManager.showFeedback("Invalid position!", false);
+            }
+        }
+    }
+
+    updatePreview(pointer) {
+        if (this.selectedBuilding) {
+            const gridX = Math.floor((pointer.worldX - this.cameras.main.centerX) / this.grid.tileWidth);
+            const gridY = Math.floor((pointer.worldY - this.cameras.main.centerY) / this.grid.tileHeight);
+
+            if (this.isValidGridPosition(gridX, gridY)) {
+                const {tileX, tileY} = this.grid.gridToIso(gridX, gridY);
+                const worldX = this.cameras.main.centerX + tileX;
+                const worldY = this.cameras.main.centerY + tileY;
+
+                if (!this.previewBuilding) {
+                    this.previewBuilding = this.add.sprite(worldX, worldY, this.selectedBuilding);
+                    this.previewBuilding.setOrigin(0.5, 1);
+                    this.previewBuilding.setAlpha(0.5);
+                } else {
+                    this.previewBuilding.x = worldX;
+                    this.previewBuilding.y = worldY;
+                }
+            } else {
+                if (this.previewBuilding) {
+                    this.previewBuilding.destroy();
+                    this.previewBuilding = null;
+                }
+            }
+        }
+    }
+
+    startBuildingPlacement(buildingType) {
+        this.selectedBuilding = buildingType;
+    }
+
+    placeBuilding(x, y, worldX, worldY, buildingType) {
+        const building = this.add.sprite(worldX, worldY, buildingType);
+        building.setOrigin(0.5, 1);
+        building.type = 'building';
+        building.gridX = x;
+        building.gridY = y;
+
+        const key = `${x},${y}`;
+        this.grid.buildingGrid[key] = building;
+    }
+
+    placeEnvironmentObjects() {
+        const treeCount = 10;
+        for (let i = 0; i < treeCount; i++) {
+            let x, y;
+            do {
+                x = Phaser.Math.Between(0, this.grid.width - 1);
+                y = Phaser.Math.Between(0, this.grid.height - 1);
+            } while (this.isTileOccupied(x, y));
+
+            const {tileX, tileY} = this.grid.gridToIso(x, y);
+            const worldX = this.cameras.main.centerX + tileX;
+            const worldY = this.cameras.main.centerY + tileY;
+
+            const tree = this.add.sprite(worldX, worldY, 'tree');
+            tree.setOrigin(0.5, 1);
+            tree.setDepth(y);
+
+            const key = `${x},${y}`;
+            this.grid.buildingGrid[key] = tree;
+        }
+    }
+
+    showFeedback(text, isGood) {
+        const feedbackElement = document.createElement('div');
+        feedbackElement.classList.add('feedback');
+        feedbackElement.textContent = text;
+
+        if (isGood) {
+            feedbackElement.classList.add('good');
+        } else {
+            feedbackElement.classList.add('bad');
+        }
+
+        document.body.appendChild(feedbackElement);
+        setTimeout(() => {
+            feedbackElement.remove();
+        }, 3000);
     }
 }
