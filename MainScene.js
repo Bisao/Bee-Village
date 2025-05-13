@@ -197,15 +197,43 @@ showSiloModal(resources) {
     enablePlayerControl(npc) {
 constructor() {
         super({ key: 'MainScene' });
-        this.selectedBuilding = null;
-        this.previewBuilding = null;
+        
+        // Core systems
+        this.grid = null;
+        this.inputManager = null;
         this.resourceSystem = null;
+
+        // Managers
+        this.assetManager = null;
+        this.buildingManager = null;
+        this.uiManager = null;
+        this.npcManager = null;
+        this.saveManager = null;
+        this.movementManager = null;
+        this.animationManager = null;
+        this.feedbackManager = null;
+        this.professionManager = null;
+        this.inventoryManager = null;
         this.uiComponents = {};
 }
 async create() {
         if (!this.textures.exists('tile_grass')) {
             return; // Wait for assets to load
         }
+
+        // Initialize managers
+        this.assetManager = new AssetManager(this);
+        this.buildingManager = new BuildingManager(this);
+        this.uiManager = new UIManager(this);
+        this.npcManager = new NPCManager(this);
+        this.saveManager = new SaveManager(this);
+        this.movementManager = new MovementManager(this);
+        this.animationManager = new AnimationManager(this);
+        this.feedbackManager = new FeedbackManager(this);
+        this.professionManager = new ProfessionManager(this);
+        this.inventoryManager = new InventoryManager(this);
+
+        // Initialize core systems
 
         // Initialize UI components
         const { default: NPCControlPanel } = await import('./components/UI/NPCControlPanel.js');

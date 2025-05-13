@@ -7,42 +7,62 @@ export default class AnimationManager {
     createFarmerAnimations() {
         const frames = [];
         for (let i = 1; i <= 12; i++) {
-            const key = `farmer${i}`;
-            if (!this.scene.textures.exists(key)) {
-                this.scene.load.image(key, `game/assets/shared/Farmer_${i}-ezgif.com-resize.png`);
-            }
-            frames.push({ key });
+            frames.push({ key: `farmer${i}` });
         }
 
-        this.scene.load.once('complete', () => {
-            this.scene.anims.create({
-                key: 'farmer_walk',
-                frames: frames,
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.createDirectionalAnimations();
+        this.scene.anims.create({
+            key: 'farmer_walk',
+            frames: frames,
+            frameRate: 8,
+            repeat: -1
         });
 
-        this.scene.load.start();
-    }
+        this.scene.anims.create({
+            key: 'farmer_up',
+            frames: [
+                { key: 'farmer1' },
+                { key: 'farmer2' },
+                { key: 'farmer3' },
+                { key: 'farmer4' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
 
-    createDirectionalAnimations() {
-        const directions = {
-            up: [1, 2, 3, 4],
-            down: [9, 10, 11, 12],
-            left: [5, 6, 7, 8],
-            right: [1, 2, 3, 4]
-        };
+        this.scene.anims.create({
+            key: 'farmer_down',
+            frames: [
+                { key: 'farmer9' },
+                { key: 'farmer10' },
+                { key: 'farmer11' },
+                { key: 'farmer12' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
 
-        Object.entries(directions).forEach(([direction, frameNumbers]) => {
-            this.scene.anims.create({
-                key: `farmer_${direction}`,
-                frames: frameNumbers.map(num => ({ key: `farmer${num}` })),
-                frameRate: 8,
-                repeat: -1
-            });
+        this.scene.anims.create({
+            key: 'farmer_left',
+            frames: [
+                { key: 'farmer5' },
+                { key: 'farmer6' },
+                { key: 'farmer7' },
+                { key: 'farmer8' }
+            ],
+            frameRate: 8,
+            repeat: -1
+        });
+
+        this.scene.anims.create({
+            key: 'farmer_right',
+            frames: [
+                { key: 'farmer1' },
+                { key: 'farmer2' },
+                { key: 'farmer3' },
+                { key: 'farmer4' }
+            ],
+            frameRate: 8,
+            repeat: -1
         });
     }
 }
