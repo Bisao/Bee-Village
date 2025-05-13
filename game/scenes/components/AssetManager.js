@@ -9,6 +9,53 @@ export default class AssetManager {
         this.loadEnvironment();
         this.loadUI();
         this.loadCharacters();
+        this.loadFarmerSprites();
+    }
+
+    loadFarmerSprites() {
+        for (let i = 1; i <= 12; i++) {
+            const key = `farmer${i}`;
+            this.scene.load.image(key, `game/assets/shared/Farmer_${i}-ezgif.com-resize.png`);
+        }
+    }
+
+    loadAllAssets() {
+        // Load farmer sprites
+        this.loadFarmerSprites();
+
+        // Load tiles
+        const tiles = [
+            'tile_grass',
+            'tile_grass_2',
+            'tile_grass_2_flowers',
+            'tile_grass_3_flowers'
+        ];
+
+        tiles.forEach(tile => {
+            this.scene.load.image(tile, `game/assets/tiles/${tile}.png`);
+        });
+
+        // Load rocks
+        const rocks = [
+            { key: 'rock_small', path: 'game/assets/rocks/small_rock.png' },
+            { key: 'rock_medium', path: 'game/assets/rocks/2_rock.png' },
+            { key: 'rock_large', path: 'game/assets/rocks/big_rock.png' }
+        ];
+
+        rocks.forEach(rock => {
+            this.scene.load.image(rock.key, rock.path);
+        });
+
+        // Load trees
+        const trees = [
+            { key: 'tree_simple', path: 'game/assets/trees/tree_simple.png' },
+            { key: 'tree_pine', path: 'game/assets/trees/tree_pine.png' },
+            { key: 'tree_fruit', path: 'game/assets/trees/tree_autumn.png' }
+        ];
+
+        trees.forEach(tree => {
+            this.scene.load.image(tree.key, tree.path);
+        });
     }
 
     loadTiles() {

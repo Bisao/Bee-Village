@@ -1,7 +1,6 @@
 
 export default class ProfessionManager {
-    constructor(scene) {
-        this.scene = scene;
+    constructor() {
         this.professionEmojis = {
             'Farmer': '🥕',
             'Miner': '⛏️',
@@ -9,6 +8,7 @@ export default class ProfessionManager {
             'Lumberjack': '🪓',
             'Villager': '👤'
         };
+
         this.professionNames = {
             farmerHouse: {
                 prefix: 'Farmer',
@@ -27,14 +27,37 @@ export default class ProfessionManager {
                 names: ['Paul', 'Jack', 'Woody', 'Axel', 'Oak', 'Forest', 'Timber', 'Cedar']
             }
         };
+
+        this.usedNames = {};
     }
 
     getProfessionEmoji(profession) {
         return this.professionEmojis[profession] || '👤';
     }
 
-    getProfessionNames() {
-        return this.professionNames;
+    getRandomName(buildingType) {
+        const nameData = this.professionNames[buildingType];
+        if (!nameData || !nameData.names || nameData.names.length === 0) {
+            console.warn(`No names available for building type: ${buildingType}`);
+            return 'Unknown';
+        }
+
+        if (!this.usedNames[buildingType]) {
+            this.usedNames[buildingType] = new Set();
+        }
+
+        const availableNames = nameData.names.filter(name => 
+            !this.usedNames[buildingType].has(name)
+        );
+
+        if (availableNames.length === 0) {
+            this.usedNames[buildingType].clear();
+            return this.getRandomName(buildingType);
+        }
+
+        const randomName = availableNames[Math.floor(Math.random() * availableNames.length)];
+        this.usedNames[buildingType].add(randomName);
+        return randomName;
     }
 
     getToolsForProfession(profession) {
@@ -62,22 +85,5 @@ export default class ProfessionManager {
             default:
                 return [];
         }
-    }
-
-    getAvailableJobs(npc) {
-        const jobs = [
-            { id: 'idle', name: 'Descanso', icon: '☕', description: 'Não faz nada.' }
-        ];
-
-        if (npc.config.profession === 'Lumberjack') {
-            jobs.push({
-                id: 'lumber',
-                name: 'Cortar Madeira',
-                icon: '🪓',
-                description: 'Corta árvores e coleta madeira.'
-            });
-        }
-
-        return jobs;
     }
 }
