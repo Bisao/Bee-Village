@@ -1005,48 +1005,6 @@ html, body {
         padding: 10px;
     }
 
-    .<replit_final_file>
-.npc-modal {
-    position: fixed;
-    top: 65px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 65px);
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    z-index: 3000;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
-    pointer-events: auto;
-}
-
-.npc-modal::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: -1;
-    pointer-events: none;
-}
-
-.modal-content {
-    background: var(--accent-color);
-    pointer-events: auto;
-    position: relative;
-    z-index: 1001;
-}
-
-@media (max-width: 768px) {
-    .npc-modal {
-        padding: 10px;
-    }
-
     .modal-content {
         padding: 15px;
         width: 95%;
