@@ -3,6 +3,98 @@ export default class NPCManager {
         this.scene = scene;
         this.npcs = new Map();
         this.usedNames = new Map();
+        this.professionEmojis = {
+            'Farmer': '🥕',
+            'Miner': '⛏️',
+            'Fisher': '🎣',
+            'Lumberjack': '🪓',
+            'Villager': '👤'
+        };
+    }
+
+    enablePlayerControl(npc) {
+        this.cleanupNPCControls();
+        
+        npc.controls = this.scene.input.keyboard.addKeys({
+            w: Phaser.Input.Keyboard.KeyCodes.W,
+            a: Phaser.Input.Keyboard.KeyCodes.A,
+            s: Phaser.Input.Keyboard.KeyCodes.S,
+            d: Phaser.Input.Keyboard.KeyCodes.D
+        });
+
+        if (this.scene.inputManager.isMobile) {
+            this.setupMobileControls(npc);
+        }
+
+        npc.updateHandler = () => {
+            if (!npc || npc.isMoving || npc.isAutonomous) return;
+
+            let newX = npc.gridX;
+            let newY = npc.gridY;
+
+            if (npc.controls.w.isDown) newY--;
+            else if (npc.controls.s.isDown) newY++;
+            else if (npc.controls.a.isDown) newX--;
+            else if (npc.controls.d.isDown) newX++;
+
+            if (newX !== npc.gridX || newY !== npc.gridY) {
+                if (this.scene.grid.isValidPosition(newX, newY) && !this.scene.grid.isTileOccupied(newX, newY)) {
+                    this.scene.movementManager.moveNPCTo(npc, newX, newY);
+                }
+            }
+        };
+
+        this.scene.events.on('update', npc.updateHandler);
+    }
+
+    setupMobileControls(npc) {
+        const buttons = {
+            'mobile-up': 'w',
+            'mobile-down': 's',
+            'mobile-left': 'a',
+            'mobile-right': 'd'
+        };
+
+        Object.entries(buttons).forEach(([className, key]) => {
+            const button = document.querySelector(`.${className}`);
+            if (button) {
+                button.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    npc.controls[key].isDown = true;
+                });
+                button.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    npc.controls[key].isDown = false;
+                });
+            }
+        });
+    }
+
+    cleanupNPCControls() {
+        if (this.scene.currentControlledNPC) {
+            const previousNPC = this.scene.currentControlledNPC;
+            previousNPC.isAutonomous = true;
+
+            if (previousNPC.movementTimer) {
+                previousNPC.movementTimer.remove();
+            }
+
+            if (previousNPC.controls) {
+                Object.values(previousNPC.controls).forEach(key => key.destroy());
+                previousNPC.controls = null;
+            }
+
+            if (previousNPC.updateHandler) {
+                this.scene.events.off('update', previousNPC.updateHandler);
+                previousNPC.updateHandler = null;
+            }
+
+            this.scene.currentControlledNPC = null;
+
+            this.scene.time.delayedCall(100, () => {
+                this.startNPCMovement(previousNPC);
+            });
+        }
     }
 
     async createFarmerNPC(houseX, houseY, worldX, worldY) {
