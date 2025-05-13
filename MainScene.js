@@ -183,51 +183,14 @@ autoSave() {
 }
 
 showSiloModal(resources) {
-        const existingModal = document.querySelector('.silo-modal');
-        if (existingModal) existingModal.remove();
-
-        const modal = document.createElement('div');
-        modal.className = 'silo-modal';
-        modal.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 500px;
-        `;
-        modal.innerHTML = `
-            <div class="silo-content">
-                <div class="silo-header">
-                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
-                    <button class="close-button">✕</button>
-                </div>
-                <div class="resources-grid">
-                    ${resources.map(resource => `
-                        <div class="resource-item">
-                            <div class="resource-icon">${resource.icon}</div>
-                            <div class="resource-name">${resource.name}</div>
-                            <div class="resource-amount">${resource.amount}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Fechar modal
-        const closeButton = modal.querySelector('.close-button');
-        closeButton.onclick = () => modal.remove();
-
-        // Fechar ao clicar fora
-        modal.onclick = (e) => {
-            if (e.target === modal) modal.remove();
-        };
+        if (!this.siloPanel) {
+            import('./components/UI/SiloPanel.js').then(module => {
+                this.siloPanel = new module.default(this);
+                this.siloPanel.show(resources);
+            });
+        } else {
+            this.siloPanel.show(resources);
+        }
     }
 
     enablePlayerControl(npc) {
@@ -236,4 +199,23 @@ showNPCControls(npc) {
             this.npcControlPanel = new NPCControlPanel(this);
         }
         this.npcControlPanel.show(npc);
+    }
+constructor() {
+        super({ key: 'MainScene' });
+        this.selectedBuilding = null;
+        this.previewBuilding = null;
+        this.resourceSystem = null;
+        this.uiComponents = {};
+}
+async create() {
+        if (!this.textures.exists('tile_grass')) {
+            return; // Wait for assets to load
+        }
+
+        // Initialize UI components
+        const { default: NPCControlPanel } = await import('./components/UI/NPCControlPanel.js');
+        const { default: SiloPanel } = await import('./components/UI/SiloPanel.js');
+
+        this.uiComponents.npcPanel = new NPCControlPanel(this);
+        this.uiComponents.siloPanel = new SiloPanel(this);
     }
