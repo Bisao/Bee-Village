@@ -3,6 +3,24 @@ export default class EnvironmentManager {
         this.scene = scene;
     }
 
+    placeInitialEnvironment() {
+        // Posiciona a casa do lenhador inicial
+        this.scene.buildingManager.placeBuilding(1, 1, 
+            this.scene.cameras.main.centerX + this.scene.grid.gridToIso(1, 1).tileX,
+            this.scene.cameras.main.centerY + this.scene.grid.gridToIso(1, 1).tileY,
+            'lumberHouse'
+        );
+
+        // Posiciona o silo inicial
+        this.scene.buildingManager.placeBuilding(3, 1,
+            this.scene.cameras.main.centerX + this.scene.grid.gridToIso(3, 1).tileX,
+            this.scene.cameras.main.centerY + this.scene.grid.gridToIso(3, 1).tileY,
+            'silo'
+        );
+
+        this.placeEnvironmentObjects();
+    }
+
     placeEnvironmentObjects() {
         this.placeTrees();
         this.placeRocks();
