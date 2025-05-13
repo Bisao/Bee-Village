@@ -103,7 +103,10 @@
 </div>
 
 
-<script>
+<script type="module">
+import MainScene from './game/scenes/MainScene.js';
+import BuildingManager from './game/scenes/components/BuildingManager.js';
+
 function showFeedback(message, duration = 2000) {
     const feedback = document.createElement('div');
     feedback.className = 'feedback-message';
@@ -215,7 +218,7 @@ function toggleFullScreen() {
 document.addEventListener('DOMContentLoaded', () => {
     const fullscreenButton = document.getElementById('fullscreen-button');
     const playButton = document.getElementById('play-button');
-    
+
     if (fullscreenButton) {
         fullscreenButton.addEventListener('click', () => {
             if (!document.fullscreenElement) {
@@ -229,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-    
+
     if (playButton) {
         playButton.addEventListener('click', () => {
             if (!document.fullscreenElement) {
