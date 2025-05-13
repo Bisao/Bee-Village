@@ -148,6 +148,10 @@ autoSave() {
     // Resource management moved to ResourceSystem.js
 
     enablePlayerControl(npc) {
+preload() {
+        this.initializationManager = new InitializationManager(this);
+        this.initializationManager.preload();
+    }
 createFarmer() {
         if (this.farmerCreated) return;
         this.farmerCreated = true;
