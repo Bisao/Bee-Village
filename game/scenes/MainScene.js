@@ -1,6 +1,8 @@
 import InitializationManager from './components/InitializationManager.js';
 import AssetManager from './components/AssetManager.js';
 import SaveManager from './components/SaveManager.js';
+import Grid from './components/Grid.js';
+import ScreenManager from './components/ScreenManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -8,6 +10,7 @@ export default class MainScene extends Phaser.Scene {
         this.initManager = null;
         this.assetManager = null;
         this.saveManager = null;
+        this.screenManager = null;
     }
 
     preload() {

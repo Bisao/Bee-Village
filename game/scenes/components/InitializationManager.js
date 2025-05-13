@@ -1,4 +1,16 @@
 
+import Grid from './Grid.js';
+import StateManager from './StateManager.js';
+import InputManager from './InputManager.js';
+import ResourceSystem from './ResourceSystem.js';
+import BuildingManager from './BuildingManager.js';
+import NPCManager from './NPCManager.js';
+import GridManager from './GridManager.js';
+import ProfessionManager from './ProfessionManager.js';
+import EnvironmentManager from './EnvironmentManager.js';
+import MovementManager from './MovementManager.js';
+import ScreenManager from './ScreenManager.js';
+
 export default class InitializationManager {
     constructor(scene) {
         this.scene = scene;
