@@ -41,22 +41,7 @@ export default class UIController {
         const resourceBar = this.scene.add.container(window.innerWidth - 200, 60);
         resourceBar.setScrollFactor(0).setDepth(1000);
 
-        const resources = [
-            { icon: '🪙', value: '1000' },
-            { icon: '🪵', value: '50' },
-            { icon: '🪨', value: '30' }
-        ];
-
-        resources.forEach((resource, index) => {
-            const y = index * 30;
-            const text = this.scene.add.text(0, y, `${resource.icon} ${resource.value}`, {
-                fontSize: '16px',
-                color: '#ffffff',
-                backgroundColor: '#2d2d2d',
-                padding: { x: 10, y: 5 }
-            });
-            resourceBar.add(text);
-        });
+        // Removed resource counters
 
         this.uiElements.set('resourceBar', resourceBar);
     }
