@@ -8,8 +8,7 @@ autoSave() {
 
     // Resource management moved to ResourceSystem.js
 
-    enablePlayerControl(npc) {
-preload() {
+    preload() {
         this.initializationManager = new InitializationManager(this);
         this.initializationManager.preload();
     }

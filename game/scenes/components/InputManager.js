@@ -81,4 +81,10 @@ export default class InputManager {
         this.isDragging = false;
         this.scene.game.canvas.style.cursor = 'default';
     }
+
+    enablePlayerControl(npc) {
+        if (!npc) return;
+        this.scene.currentPlayer = npc;
+        this.scene.cameras.main.startFollow(npc.sprite);
+    }
 }
