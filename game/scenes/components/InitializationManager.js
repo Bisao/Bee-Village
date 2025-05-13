@@ -29,6 +29,7 @@ export default class InitializationManager {
         this.scene.grid.create();
         this.scene.inputManager.init();
         this.scene.environmentManager.placeInitialEnvironment();
+        this.scene.screenManager.initializeCamera();
     }
 
     loadAssets() {

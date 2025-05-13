@@ -1,4 +1,7 @@
+The code adds camera initialization logic to the ScreenManager class.
+```
 
+```javascript
 export default class ScreenManager {
     constructor(scene) {
         this.scene = scene;
@@ -8,7 +11,7 @@ export default class ScreenManager {
             height: window.innerHeight
         };
         this.uiElements = new Map();
-        
+
         // Atualiza as dimensões quando a tela é redimensionada
         window.addEventListener('resize', () => {
             this.dimensions = {
@@ -38,6 +41,12 @@ export default class ScreenManager {
         return browser;
     }
 
+    initializeCamera() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const initialZoom = isMobile ? 0.8 : 1.5;
+        this.scene.cameras.main.setZoom(initialZoom);
+    }
+
     registerElement(key, element, config) {
         this.uiElements.set(key, { element, config });
         this.adjustElement(key);
@@ -56,7 +65,7 @@ export default class ScreenManager {
             const baseScale = config.scale.base || 1;
             const mobileScale = config.scale.mobile || baseScale * 0.8;
             const tabletScale = config.scale.tablet || baseScale * 0.9;
-            
+
             element.setScale(isMobile ? mobileScale : isTablet ? tabletScale : baseScale);
         }
 
@@ -133,3 +142,4 @@ export default class ScreenManager {
         };
     }
 }
+```The code adds camera initialization logic to the ScreenManager class.

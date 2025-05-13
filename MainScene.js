@@ -10,6 +10,7 @@ import MovementManager from './game/scenes/components/MovementManager.js';
 import StateManager from './game/scenes/components/StateManager.js';
 import AssetManager from './game/scenes/components/AssetManager.js';
 import InitializationManager from './game/scenes/components/InitializationManager.js';
+import ScreenManager from './game/scenes/components/ScreenManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
