@@ -1,4 +1,3 @@
-
 export default class InputManager {
     constructor(scene) {
         this.scene = scene;
@@ -10,7 +9,45 @@ export default class InputManager {
 
     init() {
         this.setupInputHandlers();
-        this.setupPinchZoom();
+        this.setupKeyboardControls();
+        if (this.isMobile) {
+            this.setupTouchHandlers();
+        }
+    }
+
+    handleKeyDown(event) {
+        if (this.scene.farmer.isMoving) return;
+
+        let direction = null;
+        let animKey = null;
+
+        switch(event.key.toLowerCase()) {
+            case 'w':
+                direction = { x: 0, y: -1 };
+                animKey = 'farmer_up';
+                break;
+            case 's':
+                direction = { x: 0, y: 1 };
+                animKey = 'farmer_down';
+                break;
+            case 'a':
+                direction = { x: -1, y: 0 };
+                animKey = 'farmer_left';
+                break;
+            case 'd':
+                direction = { x: 1, y: 0 };
+                animKey = 'farmer_right';
+                break;
+        }
+
+        if (direction) {
+            const newX = this.scene.farmer.gridX + direction.x;
+            const newY = this.scene.farmer.gridY + direction.y;
+
+            if (this.scene.grid.isValidPosition(newX, newY) && !this.scene.isTileOccupied(newX, newY)) {
+                this.scene.movementManager.moveFarmer(direction, animKey);
+            }
+        }
     }
 
     setupInputHandlers() {
@@ -96,5 +133,13 @@ export default class InputManager {
                 this.scene.buildingManager.cancelBuildingSelection();
             }
         });
+    }
+
+    setupKeyboardControls() {
+        document.addEventListener('keydown', this.handleKeyDown.bind(this));
+    }
+
+    setupTouchHandlers() {
+        this.setupPinchZoom();
     }
 }

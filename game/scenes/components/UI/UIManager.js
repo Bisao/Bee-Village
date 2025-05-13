@@ -18,7 +18,7 @@ export default class UIManager {
         buildButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const buildingType = button.dataset.building;
-                this.scene.startBuildingPlacement(buildingType);
+                this.scene.buildingManager.selectBuilding(buildingType);
             });
         });
     }

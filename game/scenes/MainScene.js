@@ -113,128 +113,6 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    createFarmer() {
-        if (this.farmerCreated) return;
-        this.farmerCreated = true;
-
-        const frames = [];
-        for (let i = 1; i <= 12; i++) {
-            const key = `farmer${i}`;
-            if (!this.textures.exists(key)) {
-                this.load.image(key, `attached_assets/Farmer_${i}-ezgif.com-resize.png`);
-            }
-            frames.push({ key });
-        }
-
-        this.load.once('complete', () => {
-            this.anims.create({
-                key: 'farmer_walk',
-                frames: frames,
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_up',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_down',
-                frames: [
-                    { key: 'farmer9' },
-                    { key: 'farmer10' },
-                    { key: 'farmer11' },
-                    { key: 'farmer12' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_left',
-                frames: [
-                    { key: 'farmer5' },
-                    { key: 'farmer6' },
-                    { key: 'farmer7' },
-                    { key: 'farmer8' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            this.anims.create({
-                key: 'farmer_right',
-                frames: [
-                    { key: 'farmer1' },
-                    { key: 'farmer2' },
-                    { key: 'farmer3' },
-                    { key: 'farmer4' }
-                ],
-                frameRate: 8,
-                repeat: -1
-            });
-
-            const startX = Math.floor(this.grid.width / 2);
-            const startY = Math.floor(this.grid.height / 2);
-            const {tileX, tileY} = this.grid.gridToIso(startX, startY);
-
-            this.farmer = this.add.sprite(
-                this.cameras.main.centerX + tileX,
-                this.cameras.main.centerY + tileY - 16,
-                'farmer1'
-            );
-
-            this.farmer.gridX = startX;
-            this.farmer.gridY = startY;
-            this.farmer.setScale(0.8);
-            this.farmer.setDepth(startY + 1);
-
-            this.cameras.main.startFollow(this.farmer, true, 0.5, 0.5);
-
-            this.keys = this.input.keyboard.addKeys({
-                w: Phaser.Input.Keyboard.KeyCodes.W,
-                a: Phaser.Input.Keyboard.KeyCodes.A,
-                s: Phaser.Input.Keyboard.KeyCodes.S,
-                d: Phaser.Input.Keyboard.KeyCodes.D
-            });
-
-            this.input.keyboard.on('keydown', this.handleKeyDown, this);
-
-            if ('ontouchstart' in window) {
-                const buttons = {
-                    'mobile-up': 'W',
-                    'mobile-down': 'S',
-                    'mobile-left': 'A',
-                    'mobile-right': 'D'
-                };
-
-                Object.entries(buttons).forEach(([className, key]) => {
-                    const button = document.querySelector(`.${className}`);
-                    if (button) {
-                        button.addEventListener('touchstart', (e) => {
-                            e.preventDefault();
-                            this.keys[key.toLowerCase()].isDown = true;
-                        });
-                        button.addEventListener('touchend', (e) => {
-                            e.preventDefault();
-                            this.keys[key.toLowerCase()].isDown = false;
-                        });
-                    }
-                });
-            }
-        });
-
-        this.load.start();
-    }
-
     update() {
         if (!this.farmer || this.farmer.isMoving) return;
 
@@ -987,7 +865,7 @@ export default class MainScene extends Phaser.Scene {
             });
         }
 
-        const clearSaveButton = document.querySelector('.clear-save-button');
+        const clearSaveButton = documentquerySelector('.clear-save-button');
         if (clearSaveButton) {
             clearSaveButton.addEventListener('click', () => {
                 localStorage.removeItem('gameState');
