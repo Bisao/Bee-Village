@@ -3,6 +3,44 @@ export default class SaveManager {
         this.scene = scene;
     }
 
+    saveGame() {
+        try {
+            const gameState = {
+                grid: this.scene.grid.buildingGrid,
+                resources: this.scene.resourceSystem.getAllResources(),
+                npcs: this.scene.npcManager.getAllNPCs()
+            };
+
+            localStorage.setItem('villageGame', JSON.stringify(gameState));
+            this.scene.feedbackManager.showFeedback('Jogo salvo com sucesso!', true);
+        } catch (error) {
+            console.error('Error saving game:', error);
+            this.scene.feedbackManager.showFeedback('Erro ao salvar o jogo', false);
+        }
+    }
+
+    loadGame() {
+        try {
+            const savedState = localStorage.getItem('villageGame');
+            if (!savedState) {
+                this.scene.feedbackManager.showFeedback('Nenhum jogo salvo encontrado', false);
+                return false;
+            }
+
+            const gameState = JSON.parse(savedState);
+            this.scene.grid.buildingGrid = gameState.grid;
+            this.scene.resourceSystem.setResources(gameState.resources);
+            this.scene.npcManager.restoreNPCs(gameState.npcs);
+
+            this.scene.feedbackManager.showFeedback('Jogo carregado com sucesso!', true);
+            return true;
+        } catch (error) {
+            console.error('Error loading game:', error);
+            this.scene.feedbackManager.showFeedback('Erro ao carregar o jogo', false);
+            return false;
+        }
+    }
+
     autoSave() {
         if (!this.scene.farmer || !this.scene.grid) {
             console.warn('Cannot save: game state not fully initialized');

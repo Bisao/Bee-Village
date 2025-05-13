@@ -22,6 +22,7 @@ export default class MainScene extends Phaser.Scene {
     preload() {
         this.initManager = new InitializationManager(this);
         this.assetManager = new AssetManager(this);
+        this.saveManager = new SaveManager(this);
         this.initManager.preload();
     }
 
