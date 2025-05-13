@@ -254,10 +254,16 @@ export default class NPCControlPanel {
             npc.currentJob = "mine";
             npc.config.emoji = "⛏️";
             npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
-            npc.mineSystem.startWorking(npc);
+            if (npc.mineSystem) {
+                npc.mineSystem.startWorking(npc);
+                console.log('Iniciando trabalho de mineração:', npc.config.name);
+            }
         } else if (jobId === "idle") {
             npc.isAutonomous = true;
             npc.currentJob = "idle";
+            if (npc.mineSystem) {
+                npc.mineSystem.stopWorking();
+            }
             this.scene.startNPCMovement(npc);
         }
     }
