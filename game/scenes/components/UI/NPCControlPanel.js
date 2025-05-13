@@ -72,8 +72,6 @@ export default class NPCControlPanel {
         `;
 
         document.body.appendChild(modal);
-
-        // Setup event listeners
         this.setupEventListeners(modal, npc);
     }
 
@@ -95,7 +93,6 @@ export default class NPCControlPanel {
 
         closeBtn.onclick = () => modal.remove();
 
-        // Tab switching
         tabBtns.forEach(btn => {
             btn.onclick = () => {
                 tabBtns.forEach(b => b.classList.remove('active'));
@@ -109,7 +106,6 @@ export default class NPCControlPanel {
             };
         });
 
-        // Rest button
         if (restBtn) {
             restBtn.onclick = () => {
                 npc.setRestMode(true);
@@ -117,7 +113,6 @@ export default class NPCControlPanel {
             };
         }
 
-        // Work button
         if (workBtn) {
             workBtn.onclick = () => {
                 npc.setRestMode(false);
