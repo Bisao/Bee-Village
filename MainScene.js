@@ -15,6 +15,8 @@ import ScreenManager from './game/scenes/components/ScreenManager.js';
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
+        this.initManager = null;
+        this.updateManager = null;
     }
 
     preload() {
