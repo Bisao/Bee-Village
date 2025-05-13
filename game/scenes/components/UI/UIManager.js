@@ -1,6 +1,12 @@
+
 export default class UIManager {
     constructor(scene) {
         this.scene = scene;
+        this.initializeUI();
+    }
+
+    initializeUI() {
+        this.setupUIHandlers();
     }
 
     setupUIHandlers() {
@@ -13,7 +19,7 @@ export default class UIManager {
         buildButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const buildingType = button.dataset.building;
-                this.scene.buildingManager.startBuildingPlacement(buildingType);
+                this.scene.startBuildingPlacement(buildingType);
             });
         });
     }
@@ -33,15 +39,6 @@ export default class UIManager {
                 console.log('Save cleared');
             });
         }
-    }
-
-    showFeedback(text, isGood) {
-        const feedbackElement = document.createElement('div');
-        feedbackElement.classList.add('feedback');
-        feedbackElement.textContent = text;
-        feedbackElement.classList.add(isGood ? 'good' : 'bad');
-        document.body.appendChild(feedbackElement);
-        setTimeout(() => feedbackElement.remove(), 3000);
     }
 
     showSiloModal(resources) {
@@ -64,7 +61,9 @@ export default class UIManager {
                     <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
                     <button class="close-button">✕</button>
                 </div>
-                ${this.createResourceCategories(resources)}
+                <div class="resources-grid">
+                    ${this.createResourceCategories(resources)}
+                </div>
             </div>
         `;
     }
@@ -74,48 +73,51 @@ export default class UIManager {
             {
                 icon: '🪓',
                 title: 'Recursos de Madeira',
-                resource: 'Madeira',
+                resourceName: 'Madeira',
                 resourceIcon: '🌳'
             },
             {
                 icon: '🌾',
                 title: 'Recursos Agrícolas',
-                resource: 'Trigo',
+                resourceName: 'Trigo',
                 resourceIcon: '🌾'
             },
             {
                 icon: '⛏️',
                 title: 'Recursos Minerais',
-                resource: 'Minério',
+                resourceName: 'Minério',
                 resourceIcon: '⛏️'
             }
         ];
 
-        return `
-            <div class="resources-grid">
-                ${categories.map(category => this.createResourceCategory(category, resources)).join('')}
-            </div>
-        `;
-    }
+        return categories.map(category => {
+            const amount = resources.find(r => r.name === category.resourceName)?.amount || 0;
+            const progress = (amount / 100) * 100;
 
-    createResourceCategory(category, resources) {
-        const amount = resources.find(r => r.name === category.resource)?.amount || 0;
-        const progress = (amount / 100) * 100;
-
-        return `
-            <div class="resource-category">
-                <h3>${category.icon} ${category.title}</h3>
-                <div class="resource-item">
-                    <div class="resource-icon">${category.resourceIcon}</div>
-                    <div class="resource-info">
-                        <div class="resource-name">${category.resource}</div>
-                        <div class="resource-amount">${amount}</div>
-                    </div>
-                    <div class="resource-progress">
-                        <div class="progress-bar" style="width: ${progress}%"></div>
+            return `
+                <div class="resource-category">
+                    <h3>${category.icon} ${category.title}</h3>
+                    <div class="resource-item">
+                        <div class="resource-icon">${category.resourceIcon}</div>
+                        <div class="resource-info">
+                            <div class="resource-name">${category.resourceName}</div>
+                            <div class="resource-amount">${amount}</div>
+                        </div>
+                        <div class="resource-progress">
+                            <div class="progress-bar" style="width: ${progress}%"></div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
+            `;
+        }).join('');
+    }
+
+    showFeedback(text, isGood) {
+        const feedbackElement = document.createElement('div');
+        feedbackElement.classList.add('feedback');
+        feedbackElement.textContent = text;
+        feedbackElement.classList.add(isGood ? 'good' : 'bad');
+        document.body.appendChild(feedbackElement);
+        setTimeout(() => feedbackElement.remove(), 3000);
     }
 }
