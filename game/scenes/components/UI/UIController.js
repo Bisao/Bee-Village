@@ -11,6 +11,28 @@ export default class UIController {
         this.createBuildingButtons();
         this.createResourcePanel(); 
         this.setupResizeHandlers();
+        this.createTopBar();
+    }
+
+    createTopBar() {
+        const topBarBg = this.scene.add.rectangle(0, 0, window.innerWidth, 50, 0x2d2d2d);
+        topBarBg.setOrigin(0, 0);
+        topBarBg.setScrollFactor(0);
+        topBarBg.setDepth(1000);
+        this.uiElements.set('topBarBg', topBarBg);
+
+        const saveIcon = this.scene.add.text(10, 15, '💾', {
+            fontSize: '20px'
+        }).setScrollFactor(0).setDepth(1000);
+        this.uiElements.set('saveIcon', saveIcon);
+
+        const titleText = this.scene.add.text(50, 15, 'My Village', {
+            fontSize: '20px',
+            color: '#ffffff',
+            fontFamily: 'Arial',
+            fontWeight: 'bold'
+        }).setScrollFactor(0).setDepth(1000);
+        this.uiElements.set('titleText', titleText);
     }
 
     createSidePanel() {
@@ -37,12 +59,32 @@ export default class UIController {
         });
     }
 
+    showFeedback(message, success = true) {
+        const text = this.scene.add.text(
+            this.scene.cameras.main.centerX,
+            this.scene.cameras.main.centerY - 100,
+            message,
+            { 
+                fontSize: '16px',
+                fill: success ? '#4CAF50' : '#f44336',
+                backgroundColor: 'rgba(0,0,0,0.5)',
+                padding: { x: 10, y: 5 }
+            }
+        ).setOrigin(0.5);
+
+        this.scene.tweens.add({
+            targets: text,
+            alpha: 0,
+            y: text.y - 20,
+            duration: 5000,
+            ease: 'Power2',
+            onComplete: () => text.destroy()
+        });
+    }
+
     createResourcePanel() {
         const resourceBar = this.scene.add.container(window.innerWidth - 200, 60);
         resourceBar.setScrollFactor(0).setDepth(1000);
-
-        // Removed resource counters
-
         this.uiElements.set('resourceBar', resourceBar);
     }
 
@@ -51,6 +93,10 @@ export default class UIController {
             const resourceBar = this.uiElements.get('resourceBar');
             if (resourceBar) {
                 resourceBar.setPosition(window.innerWidth - 200, 60);
+            }
+            const topBarBg = this.uiElements.get('topBarBg');
+            if (topBarBg) {
+                topBarBg.width = window.innerWidth;
             }
         });
     }
@@ -84,52 +130,13 @@ export default class UIController {
         }
     }
 
-    setupTabHandlers(panel) {
-        const tabs = panel.querySelectorAll('.tab-btn');
-        const contents = panel.querySelectorAll('.tab-content');
-
-        tabs.forEach(tab => {
-            tab.addEventListener('click', () => {
-                tabs.forEach(t => t.classList.remove('active'));
-                contents.forEach(c => c.classList.remove('active'));
-                
-                tab.classList.add('active');
-                const content = panel.querySelector(`#${tab.dataset.tab}-tab`);
-                if (content) content.classList.add('active');
-            });
-        });
-    }
-
     clearBuildingSelection() {
         const buttons = document.querySelectorAll('.building-btn');
         buttons.forEach(b => b.classList.remove('selected'));
-        this.scene.selectedBuilding = null;
         if (this.scene.previewBuilding) {
             this.scene.previewBuilding.destroy();
             this.scene.previewBuilding = null;
         }
-    }
-
-    showFeedback(message, success = true) {
-        const text = this.scene.add.text(
-            this.scene.cameras.main.centerX,
-            this.scene.cameras.main.centerY - 100,
-            message,
-            { 
-                fontSize: '16px',
-                fill: success ? '#4CAF50' : '#f44336',
-                backgroundColor: 'rgba(0,0,0,0.5)',
-                padding: { x: 10, y: 5 }
-            }
-        ).setOrigin(0.5);
-
-        this.scene.tweens.add({
-            targets: text,
-            alpha: 0,
-            y: text.y - 20,
-            duration: 5000,
-            ease: 'Power2',
-            onComplete: () => text.destroy()
-        });
+        this.scene.selectedBuilding = null;
     }
 }

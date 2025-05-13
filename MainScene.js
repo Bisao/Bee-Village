@@ -222,4 +222,8 @@ constructor() {
             this.npcControlPanel.cleanupNPCControls();
         }
     }
+
+    showFeedback(message, success = true) {
+        this.uiController.showFeedback(message, success);
+    }
 }
