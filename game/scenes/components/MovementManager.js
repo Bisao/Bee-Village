@@ -214,3 +214,45 @@ export default class MovementManager {
         });
     }
 }
+export default class MovementManager {
+    constructor(scene) {
+        this.scene = scene;
+    }
+
+    moveNPCTo(npc, newX, newY) {
+        if (npc.isMoving) return;
+
+        const {tileX, tileY} = this.scene.grid.gridToIso(newX, newY);
+        npc.isMoving = true;
+
+        let animKey = 'farmer_right';
+        if (newY < npc.gridY) animKey = 'farmer_up';
+        else if (newY > npc.gridY) animKey = 'farmer_down';
+        else if (newX < npc.gridX) animKey = 'farmer_left';
+
+        if (this.scene.anims.exists(animKey)) {
+            npc.sprite.play(animKey, true);
+        } else {
+            console.warn(`Animation ${animKey} not found`);
+            npc.sprite.setTexture('farmer1');
+        }
+
+        this.scene.tweens.add({
+            targets: [npc.sprite, npc.nameText],
+            x: this.scene.cameras.main.centerX + tileX,
+            y: function (target, key, value, targetIndex) {
+                const baseY = this.scene.cameras.main.centerY + tileY;
+                return targetIndex === 0 ? baseY - 32 : baseY - 64;
+            },
+            duration: 600,
+            ease: 'Linear',
+            onComplete: () => {
+                npc.gridX = newX;
+                npc.gridY = newY;
+                npc.sprite.setDepth(newY + 2);
+                npc.isMoving = false;
+                npc.sprite.stop();
+            }
+        });
+    }
+}
