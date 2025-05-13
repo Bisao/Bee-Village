@@ -21,24 +21,6 @@ placeBuilding(gridX, gridY, worldX, worldY) {
         this.createFarmerNPC(gridX, gridY, worldX, worldY);
     }
 
-    // Add click handler for silo
-    if (this.selectedBuilding === 'silo') {
-        building.setInteractive({ useHandCursor: true });
-        building.on('pointerdown', (pointer) => {
-            if (!pointer.rightButtonDown()) {
-                this.showSiloModal([
-            { name: 'Sementes', icon: '🌾', amount: 0 },
-            { name: 'Trigo', icon: '🌾', amount: 0 },
-            { name: 'Cenoura', icon: '🥕', amount: 0 },
-            { name: 'Milho', icon: '🌽', amount: 0 },
-            { name: 'Madeira', icon: '🪵', amount: 0 },
-            { name: 'Peixe', icon: '🐟', amount: 0 },
-            { name: 'Minério', icon: '⛏️', amount: 0 }
-        ]);
-            }
-        });
-    }
-
     return true;
 }
 
@@ -119,24 +101,6 @@ autoSave() {
                 gridY: gridY
             };
 
-            // Adicionar interatividade ao silo
-            if (this.selectedBuilding === 'silo') {
-                building.setInteractive({ useHandCursor: true });
-                building.on('pointerdown', (pointer) => {
-                    if (!pointer.rightButtonDown()) {
-                        this.showSiloModal([
-                            { name: 'Sementes', icon: '🌾', amount: 0 },
-                            { name: 'Trigo', icon: '🌾', amount: 0 },
-                            { name: 'Cenoura', icon: '🥕', amount: 0 },
-                            { name: 'Milho', icon: '🌽', amount: 0 },
-                            { name: 'Madeira', icon: '🪵', amount: 0 },
-                            { name: 'Peixe', icon: '🐟', amount: 0 },
-                            { name: 'Minério', icon: '⛏️', amount: 0 }
-                        ]);
-                    }
-                });
-            }
-
             // Create NPC for each house if it's a valid house type
             const backupKey = `gameState_backup_${timestamp}`;
             const backups = JSON.parse(localStorage.getItem('gameStateBackups') || '[]');
@@ -182,52 +146,6 @@ autoSave() {
     }
 }
 
-showSiloModal(resources) {
-        const existingModal = document.querySelector('.silo-modal');
-        if (existingModal) existingModal.remove();
-
-        const modal = document.createElement('div');
-        modal.className = 'silo-modal';
-        modal.style.cssText = `
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 1000;
-            background: rgba(0, 0, 0, 0.8);
-            padding: 20px;
-            border-radius: 10px;
-            width: 80%;
-            max-width: 500px;
-        `;
-        modal.innerHTML = `
-            <div class="silo-content">
-                <div class="silo-header">
-                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
-                    <button class="close-button">✕</button>
-                </div>
-                <div class="resources-grid">
-                    ${resources.map(resource => `
-                        <div class="resource-item">
-                            <div class="resource-icon">${resource.icon}</div>
-                            <div class="resource-name">${resource.name}</div>
-                            <div class="resource-amount">${resource.amount}</div>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        // Fechar modal
-        const closeButton = modal.querySelector('.close-button');
-        closeButton.onclick = () => modal.remove();
-
-        // Fechar ao clicar fora
-        modal.onclick = (e) => {
-            if (e.target === modal) modal.remove();
-        };
-    }
+    // Resource management moved to ResourceSystem.js
 
     enablePlayerControl(npc) {

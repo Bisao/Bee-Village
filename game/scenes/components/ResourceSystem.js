@@ -1,14 +1,49 @@
-
 export default class ResourceSystem {
     constructor(scene) {
         this.scene = scene;
+        this.silos = new Map();
         this.resources = {
             wood: 0,
             wheat: 0,
             ore: 0,
             fish: 0
         };
-        this.silos = new Map(); // Armazena referências dos silos e seus recursos
+    }
+
+    registerSilo(x, y, sprite) {
+        const key = `${x},${y}`;
+        this.silos.set(key, {
+            position: { x, y },
+            sprite: sprite,
+            resources: {
+                wood: 0,
+                wheat: 0,
+                ore: 0,
+                fish: 0
+            }
+        });
+    }
+
+    getSiloResources(x, y) {
+        const key = `${x},${y}`;
+        const silo = this.silos.get(key);
+        return silo ? silo.resources : null;
+    }
+
+    addResource(type, amount) {
+        if (this.resources.hasOwnProperty(type)) {
+            this.resources[type] += amount;
+            this.scene.events.emit('resourceUpdated', { type, amount: this.resources[type] });
+        }
+    }
+
+    removeResource(type, amount) {
+        if (this.resources.hasOwnProperty(type) && this.resources[type] >= amount) {
+            this.resources[type] -= amount;
+            this.scene.events.emit('resourceUpdated', { type, amount: this.resources[type] });
+            return true;
+        }
+        return false;
     }
 
     // Adiciona um silo ao sistema
@@ -31,9 +66,9 @@ export default class ResourceSystem {
     depositResource(siloX, siloY, resourceType, amount) {
         const key = `${siloX},${siloY}`;
         const silo = this.silos.get(key);
-        
+
         if (!silo) return false;
-        
+
         if (silo.storage[resourceType] + amount <= silo.capacity) {
             silo.storage[resourceType] += amount;
             return true;
