@@ -1,6 +1,6 @@
-import InitializationManager from './game/scenes/components/InitializationManager.js';
-import AssetManager from './game/scenes/components/AssetManager.js';
-import SaveManager from './game/scenes/components/SaveManager.js';
+import InitializationManager from './components/InitializationManager.js';
+import AssetManager from './components/AssetManager.js';
+import SaveManager from './components/SaveManager.js';
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
