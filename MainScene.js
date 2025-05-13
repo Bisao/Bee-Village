@@ -9,8 +9,8 @@ autoSave() {
     // Resource management moved to ResourceSystem.js
 
     preload() {
-        this.initializationManager = new InitializationManager(this);
-        this.initializationManager.preload();
+        this.assetManager = new AssetManager(this);
+        this.assetManager.loadAssets();
     }
 createFarmer() {
         if (this.farmerCreated) return;
