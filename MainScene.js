@@ -1,8 +1,6 @@
 export default class MainScene extends Phaser.Scene {
     constructor() {
         super({ key: 'MainScene' });
-        this.selectedBuilding = null;
-        this.resourceSystem = null;
     }
 
     async create() {
@@ -11,46 +9,27 @@ export default class MainScene extends Phaser.Scene {
         }
 
         // Initialize managers
-        this.assetManager = new AssetManager(this);
-        this.buildingManager = new BuildingManager(this);
-        this.uiManager = new UIManager(this);
-        this.npcManager = new NPCManager(this);
-        this.saveManager = new SaveManager(this);
-        this.movementManager = new MovementManager(this);
-        this.animationManager = new AnimationManager(this);
-        this.feedbackManager = new FeedbackManager(this);
-        this.gridManager = new GridManager(this);
-        this.inputManager = new InputManager(this);
-        this.professionManager = new ProfessionManager(this);
-        this.inventoryManager = new InventoryManager(this);
+        this.initManager = new InitializationManager(this);
+        this.updateManager = new UpdateManager(this);
 
-        // Load initial assets
-        await this.assetManager.loadAssets();
+        // Initialize all systems through InitializationManager
+        this.managers = this.initManager.initializeManagers();
+
+        // Register managers that need updates
+        this.managers.forEach(manager => {
+            this.updateManager.registerManager(manager);
+        });
 
         // Setup autosave
         this.time.addEvent({
             delay: 60000,
-            callback: () => this.saveManager.autoSave(),
+            callback: () => this.managers.get('save').autoSave(),
             loop: true
         });
-
-        // Setup input handlers
-        this.inputManager.init();
-
-        // Initialize UI
-        await this.uiManager.initializePanels();
-    }
-
-    placeBuilding(gridX, gridY, worldX, worldY) {
-        return this.buildingManager.placeBuilding(gridX, gridY, worldX, worldY);
     }
 
     update() {
-        // Core update logic
-        this.managers.forEach(manager => {
-            if (manager.update) {
-                manager.update();
-            }
-        });
+        // Delegate updates to UpdateManager
+        this.updateManager.update();
     }
 }
