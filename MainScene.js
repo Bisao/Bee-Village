@@ -64,7 +64,6 @@ export default class MainScene extends Phaser.Scene {
 
     handleClick(pointer) {
         if (pointer.rightButtonDown()) return;
-        // Apenas delega para o BuildingManager se necessário
         if (this.stateManager.getState('buildMode')) {
             this.buildingManager.handleBuildingPlacement(pointer);
         }
@@ -78,6 +77,5 @@ export default class MainScene extends Phaser.Scene {
 
     update() {
         // Lógica de update específica da cena principal
-        // A maior parte da lógica de update foi movida para seus respectivos managers
     }
 }

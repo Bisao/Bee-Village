@@ -27,6 +27,31 @@ export default class ProfessionManager {
                 names: ['Paul', 'Jack', 'Woody', 'Axel', 'Oak', 'Forest', 'Timber', 'Cedar']
             }
         };
+        this.professionEmojis = {
+            'Farmer': '🥕',
+            'Miner': '⛏️',
+            'Fisher': '🎣',
+            'Lumberjack': '🪓',
+            'Villager': '👤'
+        };
+        this.professionNames = {
+            farmerHouse: {
+                prefix: 'Farmer',
+                names: ['John', 'Peter', 'Mary', 'Lucas', 'Emma', 'Sofia', 'Miguel', 'Julia']
+            },
+            FishermanHouse: {
+                prefix: 'Fisher',
+                names: ['Jack', 'Tom', 'Nina', 'Marco', 'Ana', 'Leo', 'Luna', 'Kai']
+            },
+            minerHouse: {
+                prefix: 'Miner',
+                names: ['Max', 'Sam', 'Alex', 'Cole', 'Ruby', 'Jade', 'Rocky', 'Crystal']
+            },
+            lumberHouse: {
+                prefix: 'Lumberjack',
+                names: ['Paul', 'Jack', 'Woody', 'Axel', 'Oak', 'Forest', 'Timber', 'Cedar']
+            }
+        };
         this.usedNames = new Map();
     }
 
