@@ -9,8 +9,65 @@ export default class UIController {
         this.setupUIHandlers();
         this.createSidePanel();
         this.createBuildingButtons();
-        this.createResourcePanel();
+        this.createResourcePanel(); 
         this.setupResizeHandlers();
+    }
+
+    createSidePanel() {
+        const sidePanel = document.getElementById('side-panel');
+        if (sidePanel) {
+            sidePanel.style.display = 'none';
+            this.setupTabHandlers(sidePanel);
+        }
+    }
+
+    createBuildingButtons() {
+        const buttons = document.querySelectorAll('.building-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('selected'));
+                btn.classList.add('selected');
+                this.scene.selectedBuilding = btn.dataset.building;
+                if (this.scene.previewBuilding) {
+                    this.scene.previewBuilding.destroy();
+                    this.scene.previewBuilding = null;
+                }
+                document.getElementById('side-panel').style.display = 'none';
+            });
+        });
+    }
+
+    createResourcePanel() {
+        const resourceBar = this.scene.add.container(window.innerWidth - 200, 60);
+        resourceBar.setScrollFactor(0).setDepth(1000);
+
+        const resources = [
+            { icon: '🪙', value: '1000' },
+            { icon: '🪵', value: '50' },
+            { icon: '🪨', value: '30' }
+        ];
+
+        resources.forEach((resource, index) => {
+            const y = index * 30;
+            const text = this.scene.add.text(0, y, `${resource.icon} ${resource.value}`, {
+                fontSize: '16px',
+                color: '#ffffff',
+                backgroundColor: '#2d2d2d',
+                padding: { x: 10, y: 5 }
+            });
+            resourceBar.add(text);
+        });
+
+        this.uiElements.set('resourceBar', resourceBar);
+    }
+
+    setupResizeHandlers() {
+        window.addEventListener('resize', () => {
+            const resourceBar = this.uiElements.get('resourceBar');
+            if (resourceBar) {
+                resourceBar.setPosition(window.innerWidth - 200, 60);
+            }
+        });
     }
 
     setupUIHandlers() {
@@ -40,6 +97,22 @@ export default class UIController {
                 }
             });
         }
+    }
+
+    setupTabHandlers(panel) {
+        const tabs = panel.querySelectorAll('.tab-btn');
+        const contents = panel.querySelectorAll('.tab-content');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                
+                tab.classList.add('active');
+                const content = panel.querySelector(`#${tab.dataset.tab}-tab`);
+                if (content) content.classList.add('active');
+            });
+        });
     }
 
     clearBuildingSelection() {
@@ -73,55 +146,5 @@ export default class UIController {
             ease: 'Power2',
             onComplete: () => text.destroy()
         });
-    }
-
-    showSiloModal(resources) {
-        const existingModal = document.querySelector('.silo-modal');
-        if (existingModal) existingModal.remove();
-
-        const modal = document.createElement('div');
-        modal.className = 'silo-modal';
-        modal.innerHTML = `
-            <div class="silo-content">
-                <div class="silo-header">
-                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
-                    <button class="close-button">✕</button>
-                </div>
-                <div class="resources-grid">
-                    <div class="resource-category">
-                        <h3>🪓 Recursos de Madeira</h3>
-                        <div class="resource-item">
-                            <div class="resource-icon">🌳</div>
-                            <div class="resource-info">
-                                <div class="resource-name">Toras de Madeira</div>
-                                <div class="resource-amount">${resources.find(r => r.name === 'Madeira')?.amount || 0}</div>
-                            </div>
-                            <div class="resource-progress">
-                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Madeira')?.amount || 0) / 100 * 100}%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="resource-category">
-                        <h3>⛏️ Recursos Minerais</h3>
-                        <div class="resource-item">
-                            <div class="resource-icon">⛏️</div>
-                            <div class="resource-info">
-                                <div class="resource-name">Minério</div>
-                                <div class="resource-amount">${resources.find(r => r.name === 'Minério')?.amount || 0}</div>
-                            </div>
-                            <div class="resource-progress">
-                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Minério')?.amount || 0) / 100 * 100}%"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        `;
-
-        document.body.appendChild(modal);
-
-        const closeButton = modal.querySelector('.close-button');
-        closeButton.onclick = () => modal.remove();
     }
 }
