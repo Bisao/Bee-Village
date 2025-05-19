@@ -1,0 +1,112 @@
+fishermanHouse.png:1  Failed to load resource: the server responded with a status of 404 (Not Found)
+ UIManager: DOMContentLoaded event fired. Initializing UIManager.
+ UIManager: Constructor called.
+ UIManager: settingsButton found.
+ UIManager: settingsPanel found.
+uiManager.js:25 UIManager: structuresToggleButton FOUND in constructor. Listener will be attached if element exists now.
+uiManager.js:38 UIManager: Initializing event listeners.
+/favicon.ico:1 
+            
+            
+           Failed to load resource: the server responded with a status of 404 (Not Found)
+phaser.min.js:1      Phaser v3.60.0 (WebGL | Web Audio)  https://phaser.io
+LumberSystem.js:257 [LumberSystem] Forest: Procurando
+LumberSystem.js:257 [LumberSystem] Forest: Movendo
+MainScene.js:671 Lenhador iniciou o trabalho: Forest
+MineSystem.js:21 MineSystem initialized with new structure
+MainScene.js:676 Minerador NPC criado: Ruby
+LumberSystem.js:257 [LumberSystem] Forest: Procurando
+LumberSystem.js:257 [LumberSystem] Forest: Movendo
+LumberSystem.js:257 [LumberSystem] Forest: Cortando
+MineSystem.js:42 [MineSystem] Ruby começou a minerar.
+MineSystem.js:379 [MineSystem] Ruby: Procurando Rocha
+MainScene.js:1036 Iniciando trabalho de minerador: Ruby
+MineSystem.js:75 [MineSystem] Erro no ciclo de trabalho: TypeError: this.scene.grid.isTileOccupiedByBuildingOrNPC is not a function
+    at MineSystem.findBestAdjacentPosition (MineSystem.js:298:34)
+    at MineSystem.findNearestRock (MineSystem.js:135:42)
+    at MineSystem.findAndProcessRock (MineSystem.js:101:27)
+    at MineSystem.workCycle (MineSystem.js:66:41)
+    at MineSystem.startWorking (MineSystem.js:44:14)
+    at HTMLDivElement.<anonymous> (MainScene.js:1034:36)
+workCycle @ MineSystem.js:75
+MineSystem.js:379 [MineSystem] Ruby: Erro
+MineSystem.js:379 [MineSystem] Ruby: Procurando Rocha
+MineSystem.js:75 [MineSystem] Erro no ciclo de trabalho: TypeError: this.scene.grid.isTileOccupiedByBuildingOrNPC is not a function
+    at MineSystem.findBestAdjacentPosition (MineSystem.js:298:34)
+    at MineSystem.findNearestRock (MineSystem.js:135:42)
+    at MineSystem.findAndProcessRock (MineSystem.js:101:27)
+    at MineSystem.workCycle (MineSystem.js:66:41)
+workCycle @ MineSystem.js:75
+MineSystem.js:379 [MineSystem] Ruby: Erro
+MineSystem.js:379 [MineSystem] Ruby: Procurando Rocha
+MineSystem.js:75 [MineSystem] Erro no ciclo de trabalho: TypeError: this.scene.grid.isTileOccupiedByBuildingOrNPC is not a function
+    at MineSystem.findBestAdjacentPosition (MineSystem.js:298:34)
+    at MineSystem.findNearestRock (MineSystem.js:135:42)
+    at MineSystem.findAndProcessRock (MineSystem.js:101:27)
+    at MineSystem.workCycle (MineSystem.js:66:41)
+workCycle @ MineSystem.js:75
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+requestAnimationFrame
+e @ phaser.min.js:1
+MineSystem.js:379 [MineSystem] Ruby: Erro

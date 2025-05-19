@@ -36,6 +36,16 @@ export default class ResourceSystem {
         
         if (silo.storage[resourceType] + amount <= silo.capacity) {
             silo.storage[resourceType] += amount;
+            
+            // Atualiza UI do silo se estiver aberta
+            const siloModal = document.querySelector('.silo-modal');
+            if (siloModal) {
+                const resourceElement = siloModal.querySelector(`[data-resource="${resourceType}"]`);
+                if (resourceElement) {
+                    resourceElement.textContent = silo.storage[resourceType];
+                }
+            }
+            
             return true;
         }
         return false;

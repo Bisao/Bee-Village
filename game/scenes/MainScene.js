@@ -2,6 +2,7 @@ import Grid from '../scenes/components/Grid.js';
 import InputManager from '../scenes/components/InputManager.js';
 import LumberSystem from '../scenes/components/LumberSystem.js';
 import ResourceSystem from '../scenes/components/ResourceSystem.js';
+import MineSystem from '../scenes/components/MineSystem.js'; // Adicionar importação
 
 export default class MainScene extends Phaser.Scene {
     constructor() {
@@ -68,22 +69,16 @@ export default class MainScene extends Phaser.Scene {
             this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
             'lumberHouse'
         );
+        
+        // Adiciona casa de minerador para teste
+        this.placeBuilding(1, 3, 
+            this.cameras.main.centerX + this.grid.gridToIso(1, 3).tileX,
+            this.cameras.main.centerY + this.grid.gridToIso(1, 3).tileY,
+            'minerHouse'
+        );
+
 
         // Posiciona o silo inicial
-        this.placeBuilding(3, 1,
-            this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
-            this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
-            'silo'
-        );
-
-        // Adicionar casa de lenhador inicial
-        this.placeBuilding(1, 1, 
-            this.cameras.main.centerX + this.grid.gridToIso(1, 1).tileX,
-            this.cameras.main.centerY + this.grid.gridToIso(1, 1).tileY,
-            'lumberHouse'
-        );
-
-        // Adicionar silo inicial
         this.placeBuilding(3, 1,
             this.cameras.main.centerX + this.grid.gridToIso(3, 1).tileX,
             this.cameras.main.centerY + this.grid.gridToIso(3, 1).tileY,
@@ -598,11 +593,12 @@ export default class MainScene extends Phaser.Scene {
         });
     }
 
-    placeBuilding(gridX, gridY, worldX, worldY) {
+    placeBuilding(gridX, gridY, worldX, worldY, buildingTypeOverride = null) {
         try {
+            const currentBuildingType = buildingTypeOverride || this.selectedBuilding;
             // Validações iniciais
-            if (!this.selectedBuilding) {
-                console.log('No building selected');
+            if (!currentBuildingType) {
+                console.log('No building selected or provided');
                 return false;
             }
             if (!worldX || !worldY) {
@@ -617,16 +613,17 @@ export default class MainScene extends Phaser.Scene {
 
             const key = `${gridX},${gridY}`;
             if (this.grid.buildingGrid[key]) {
-                this.showFeedback('Posição já ocupada', false);
+                // Não mostra feedback se for override, pois pode ser a recriação da casa inicial
+                if (!buildingTypeOverride) this.showFeedback('Posição já ocupada', false);
                 return;
             }
 
             // Validar se é uma casa que pode ter NPC
-            const npcHouses = ['farmerHouse', 'minerHouse', 'fishermanHouse'];
-            const isNPCHouse = npcHouses.includes(this.selectedBuilding);
+            const npcHouses = ['farmerHouse', 'minerHouse', 'FishermanHouse', 'lumberHouse'];
+            const isNPCHouse = npcHouses.includes(currentBuildingType);
 
             // Criar a estrutura
-            const building = this.add.sprite(worldX, worldY, this.selectedBuilding);
+            const building = this.add.sprite(worldX, worldY, currentBuildingType);
             if (!building) {
                 throw new Error('Failed to create building sprite: sprite is null');
             }
@@ -641,13 +638,13 @@ export default class MainScene extends Phaser.Scene {
             this.grid.buildingGrid[key] = {
                 sprite: building,
                 type: 'building',
-                buildingType: this.selectedBuilding,
+                buildingType: currentBuildingType,
                 gridX: gridX,
                 gridY: gridY
             };
 
             // Adicionar interatividade ao silo
-            if (this.selectedBuilding === 'silo') {
+            if (currentBuildingType === 'silo') {
                 building.setInteractive({ useHandCursor: true });
                 this.resourceSystem.registerSilo(gridX, gridY, building);
                 building.on('pointerdown', () => {
@@ -661,9 +658,9 @@ export default class MainScene extends Phaser.Scene {
             }
 
             // Create NPC for each house if it's a valid house type
-            if (['farmerHouse', 'minerHouse', 'FishermanHouse', 'lumberHouse'].includes(this.selectedBuilding)) {
+            if (isNPCHouse) {
                 this.createFarmerNPC(gridX, gridY, worldX, worldY).then(npc => {
-                    if (this.selectedBuilding === 'lumberHouse' && npc) {
+                    if (currentBuildingType === 'lumberHouse' && npc) {
                         // Inicializa o sistema de trabalho do lenhador imediatamente
                         npc.lumberSystem = new LumberSystem(this);
                         npc.isAutonomous = false;
@@ -672,6 +669,11 @@ export default class MainScene extends Phaser.Scene {
                         npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                         npc.lumberSystem.startWorking(npc);
                         console.log('Lenhador iniciou o trabalho:', npc.config.name);
+                    } else if (currentBuildingType === 'minerHouse' && npc) {
+                        // Inicializa o sistema de trabalho do minerador
+                        npc.mineSystem = new MineSystem(this); // Assumindo que MineSystem existe
+                        // Outras configurações específicas para o minerador podem ser adicionadas aqui
+                        console.log('Minerador NPC criado:', npc.config.name);
                     }
                 });
             }
@@ -697,7 +699,7 @@ export default class MainScene extends Phaser.Scene {
             });
 
             // Feedback visual
-            this.showFeedback('Estrutura construída!', true);
+            if (!buildingTypeOverride) this.showFeedback('Estrutura construída!', true);
 
             // Limpar seleção e highlights
             this.clearBuildingSelection();
@@ -707,15 +709,15 @@ export default class MainScene extends Phaser.Scene {
             this.events.emit('buildingPlaced', {
                 gridX,
                 gridY,
-                buildingType: this.selectedBuilding
+                buildingType: currentBuildingType
             });
 
             // Show panel after structure placement
-            document.getElementById('side-panel').style.display = 'flex';
+            if (!buildingTypeOverride) document.getElementById('side-panel').style.display = 'flex';
 
         } catch (error) {
             console.error('Error placing building:', error);
-            this.showFeedback('Erro ao construir estrutura', false);
+            if (!buildingTypeOverride) this.showFeedback('Erro ao construir estrutura', false);
         }
     }
 
@@ -1020,8 +1022,18 @@ export default class MainScene extends Phaser.Scene {
                     npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
                     npc.lumberSystem.startWorking(npc);
                     modal.remove();
-
                     console.log('Iniciando trabalho de lenhador:', npc.config.name);
+                } else if (jobId === 'mine') { // Adicionar lógica para minerador
+                    if (!npc.mineSystem) {
+                        npc.mineSystem = new MineSystem(this); // Assumindo que MineSystem existe e é importado
+                    }
+                    npc.isAutonomous = false;
+                    npc.currentJob = 'mine';
+                    npc.config.emoji = '⛏️'; // Emoji de minerador
+                    npc.nameText.setText(`${npc.config.emoji} ${npc.config.name}`);
+                    npc.mineSystem.startWorking(npc); // Método a ser implementado em MineSystem
+                    modal.remove();
+                    console.log('Iniciando trabalho de minerador:', npc.config.name);
                 }
             });
         });
@@ -1280,6 +1292,13 @@ export default class MainScene extends Phaser.Scene {
                 icon: '🪓', 
                 description: 'Corta árvores e coleta madeira.' 
             });
+        } else if (npc.config.profession === 'Miner') { // Adicionar trabalho para Minerador
+            jobs.push({ 
+                id: 'mine', 
+                name: 'Minerar Pedra', 
+                icon: '⛏️', 
+                description: 'Extrai pedras e minérios.' 
+            });
         }
 
         return jobs;
@@ -1294,60 +1313,25 @@ export default class MainScene extends Phaser.Scene {
         modal.innerHTML = `
             <div class="silo-content">
                 <div class="silo-header">
-                    <h2 class="silo-title">🏗️ Armazém de Recursos</h2>
-                    <button class="close-button">✕</button>
+                    <h2 class="silo-title">🏗️ Armazém do Silo</h2>
+                    <button class="close-silo-btn">✕</button>
                 </div>
-                <div class="resources-grid">
-                    <div class="resource-category">
-                        <h3>🪓 Recursos de Madeira</h3>
-                        <div class="resource-item">
-                            <div class="resource-icon">🌳</div>
-                            <div class="resource-info">
-                                <div class="resource-name">Toras de Madeira</div>
-                            <div class="resource-amount">${resources.find(r => r.name === 'Madeira')?.amount || 0}</div>
+                <div class="silo-resources">
+                    ${resources.map(res => `
+                        <div class="silo-resource-item">
+                            <span class="resource-name">${res.name}:</span>
+                            <span class="resource-amount">${res.amount}</span>
                         </div>
-                            <div class="resource-progress">
-                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Madeira')?.amount || 0) / 100 * 100}%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="resource-category">
-                        <h3>🌾 Recursos Agrícolas</h3>
-                        <div class="resource-item">
-                            <div class="resource-icon">🌾</div>
-                            <div class="resource-info">
-                                <div class="resource-name">Trigo</div>
-                                <div class="resource-amount">${resources.find(r => r.name === 'Trigo')?.amount || 0}</div>
-                            </div>
-                            <div class="resource-progress">
-                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Trigo')?.amount || 0) / 100 * 100}%"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="resource-category">
-                        <h3>⛏️ Recursos Minerais</h3>
-                        <div class="resource-item">
-                            <div class="resource-icon">⛏️</div>
-                            <div class="resource-info">
-                                <div class="resource-name">Minério</div>
-                                <div class="resource-amount">${resources.find(r => r.name === 'Minério')?.amount || 0}</div>
-                            </div>
-                            <div class="resource-progress">
-                                <div class="progress-bar" style="width: ${(resources.find(r => r.name === 'Minério')?.amount || 0) / 100 * 100}%"></div>
-                            </div>
-                        </div>
-                    </div>
+                    `).join('')}
                 </div>
             </div>
         `;
-
         document.body.appendChild(modal);
 
-        const closeButton = modal.querySelector('.close-button');
-        closeButton.onclick = () => {
-            modal.remove();
+        modal.querySelector('.close-silo-btn').onclick = () => modal.remove();
+        modal.onclick = (e) => {
+            if (e.target === modal) modal.remove();
         };
     }
 }
+

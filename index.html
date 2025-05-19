@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -27,12 +27,12 @@
         <div class="settings-content">
             <!-- Add settings options here -->
             <div class="setting-item">
-                <label>Som</label>
-                <input type="range" min="0" max="100" value="50">
+                <label for="gameSound">Som</label>
+                <input type="range" id="gameSound" name="gameSound" min="0" max="100" value="50" aria-label="Som">
             </div>
             <div class="setting-item">
-                <label>Música</label>
-                <input type="range" min="0" max="100" value="50">
+                <label for="backgroundMusic">Música</label>
+                <input type="range" id="backgroundMusic" name="backgroundMusic" min="0" max="100" value="50" aria-label="Música">
             </div>
             <div class="setting-item themes">
                 <label>Temas</label>
@@ -205,6 +205,10 @@
         </div>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+    <script src="game/ui/uiManager.js"></script>
+    <script src="game/managers/settingsManager.js"></script>
+    <script src="game/managers/fullscreenManager.js"></script>
     <script src="game/config.js" type="module"></script>
+    <!-- The old script.js content is now handled by the managers above -->
 </body>
 </html>

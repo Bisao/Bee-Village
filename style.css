@@ -313,7 +313,7 @@ html, body {
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     z-index: 1000;
-    display: flex;
+    display: none;
     flex-direction: column;
     overflow: hidden;
 }
@@ -580,7 +580,7 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 2001;
+    z-index: 10000; /* Aumentado para ficar acima do start-screen */
     display: none;
     width: 90%;
     max-width: 400px;
@@ -1408,140 +1408,103 @@ html, body {
 /* Silo Modal Styles */
 .silo-modal {
     position: fixed;
-    top: 65px;
-    left: 0;
-    width: 100%;
-    height: calc(100% - 65px);
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    z-index: 3000;
-    padding: 20px;
-    box-sizing: border-box;
-    overflow-y: auto;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
+    background: rgba(20, 20, 20, 0.95);
+    padding: 25px;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .silo-content {
-    background: var(--accent-color);
-    padding: 20px;
-    border-radius: 12px;
-    border: 2px solid var(--primary-color);
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    color: #fff;
 }
 
 .silo-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 20px;
-    padding-bottom: 10px;
-    border-bottom: 2px solid var(--primary-color);
+    margin-bottom: 25px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.1);
 }
 
 .silo-title {
-    color: var(--text-color);
+    font-size: 24px;
     margin: 0;
-    font-size: 1.4em;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+}
+
+.close-silo-btn {
+    background: transparent;
+    border: none;
+    color: #fff;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transition: background 0.3s;
+}
+
+.close-silo-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
 }
 
 .resources-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 15px;
-    padding: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
 }
 
 .resource-item {
-    background: rgba(0, 0, 0, 0.2);
+    background: rgba(255, 255, 255, 0.05);
     padding: 15px;
-    border-radius: 8px;
-    border: 1px solid var(--primary-color);
-    text-align: center;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    transition: transform 0.2s, background 0.3s;
+}
+
+.resource-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
 }
 
 .resource-icon {
-    font-size: 2em;
-    margin-bottom: 8px;
-}
-
-.resource-name {
-    color: var(--text-color);
-    font-size: 0.9em;
-    margin: 5px 0;
-}
-
-.resource-amount {
-    color: var(--text-color);
-    font-weight: bold;
-}
-
-.resource-category {
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: 8px;
-    padding: 15px;
-    margin-bottom: 15px;
-}
-
-.resource-category h3 {
-    color: var(--text-color);
-    margin: 0 0 10px 0;
-    font-size: 1.1em;
-    border-bottom: 1px solid var(--primary-color);
-    padding-bottom: 5px;
+    font-size: 32px;
+    margin-right: 15px;
 }
 
 .resource-info {
     flex: 1;
-    margin: 0 10px;
+}
+
+.resource-name {
+    font-size: 16px;
+    margin-bottom: 8px;
+    color: #fff;
+}
+
+.resource-amount {
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 5px;
 }
 
 .resource-progress {
-    width: 100%;
-    height: 8px;
+    height: 6px;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    margin-top: 5px;
+    border-radius: 3px;
     overflow: hidden;
 }
 
 .progress-bar {
     height: 100%;
-    background: var(--primary-color);
-    border-radius: 4px;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    border-radius: 3px;
     transition: width 0.3s ease;
-}
-
-.resource-item {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    padding: 10px;
-    border-radius: 4px;
-    background: rgba(255, 255, 255, 0.05);
-}
-
-.resource-icon {
-    font-size: 1.5em;
-    margin-right: 10px;
-}
-
-@media (max-width: 768px) {
-    .silo-modal {
-        padding: 10px;
-    }
-
-    .resources-grid {
-        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-        gap: 10px;
-    }
-
-    .resource-item {
-        padding: 10px;
-    }
 }

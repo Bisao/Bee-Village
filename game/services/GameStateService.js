@@ -1,4 +1,3 @@
-
 export default class GameStateService {
     constructor() {
         this.state = {
@@ -17,5 +16,14 @@ export default class GameStateService {
         if (savedState) {
             this.state = JSON.parse(savedState);
         }
+    }
+
+    setCookie(name, value, days) {
+        const expires = new Date(Date.now() + days * 864e5).toUTCString();
+        document.cookie = name + '=' + encodeURIComponent(value) + 
+            '; expires=' + expires + 
+            '; path=/' +
+            '; SameSite=Strict' +
+            '; Secure';
     }
 }

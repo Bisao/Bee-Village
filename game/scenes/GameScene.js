@@ -107,7 +107,7 @@ export default class GameScene extends Phaser.Scene {
         this.load.image('FarmerHouse', 'game/assets/buildings/FarmerHouse.png');
         this.load.image('MinerHouse', 'game/assets/buildings/MinerHouse.png');
         this.load.image('PigHouse', 'game/assets/buildings/PigHouse.png');
-        this.load.image('FishermanHouse', 'game/assets/buildings/fishermanHouse.png');
+        this.load.image('FishermanHouse', 'game/assets/buildings/FishermanHouse.png');
     }
 
     createStructuresPanel() {

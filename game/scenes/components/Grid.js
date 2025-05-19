@@ -1,5 +1,18 @@
 
 export default class Grid {
+    isTileOccupiedByBuildingOrNPC(x, y, excludeNPC = null) {
+        if (!this.isValidPosition(x, y)) return true;
+        
+        // Verifica se há construção
+        if (this.buildingGrid[`${x},${y}`]) return true;
+        
+        // Verifica se há NPC, excluindo o NPC especificado
+        const npcs = Object.values(this.scene.npcs || {});
+        return npcs.some(npc => {
+            if (excludeNPC && npc === excludeNPC) return false;
+            return npc.gridX === x && npc.gridY === y;
+        });
+    }
     constructor(scene, width, height) {
         this.scene = scene;
         this.width = width;

@@ -292,7 +292,7 @@ export default class BaseNPC {
 
     getInitialInventory() {
         const baseInventory = {
-            maxCapacity: 5
+            maxCapacity: 4
         };
 
         switch (this.config.profession) {
